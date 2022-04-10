@@ -16,7 +16,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-struct BSWVdata
+struct BSWVdata //создание структуры
 {
     QString name; //шифр канала
     QString namePort; //присвоенное имя порта
