@@ -28,6 +28,18 @@ struct BSWVdata //создание структуры
     float tcorp1;//"Температура 1 корпуса прибора"
 };
 
+struct BSWVtarir //создание структуры
+{
+    QString name; //шифр канала
+    QString namePort; //присвоенное имя порта
+    float uref;
+    float icap2; //"Суммарный ток нагрузки 2"
+    float icap1;//"Суммарный ток нагрузки 1"
+    float u2;//"Напряжение на силовых шинах 2"
+    float u1;//"Напряжение на силовых шинах 1"
+    float tcorp2;//"Температура 2 корпуса прибора"
+    float tcorp1;//"Температура 1 корпуса прибора"
+};
 
 class MainWindow : public QMainWindow
 {
@@ -56,6 +68,8 @@ private:
 
 BSWVdata BSWV;
 QList <BSWVdata>ListOfBSWVData;
+BSWVtarir BSWVt;
+QList <BSWVtarir>ListOfBSWVt;
 
 private:
    void LoadSettings();
