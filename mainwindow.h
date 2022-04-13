@@ -32,7 +32,7 @@ struct BSWVtarir //создание структуры
 {
     QString name; //шифр канала
     QString namePort; //присвоенное имя порта
-    float uref;
+    float uref; //Опорное напряжение
     float icap2; //"Суммарный ток нагрузки 2"
     float icap1;//"Суммарный ток нагрузки 1"
     float u2;//"Напряжение на силовых шинах 2"
@@ -53,6 +53,7 @@ public:
 private:
     Ui::MainWindow *ui;
     unsigned char data [6];
+    unsigned char dataT [6];
     QString name;
     int baudrate = 115200;
     int databits = 8;
@@ -62,7 +63,8 @@ private:
     unsigned char startByte = 170;
     unsigned char outAdr = 1; //адрес БЦУ
     unsigned char inAdr = 2; //адрес БСШ-В
-    unsigned char messType = 1; // Тип сообщения
+    unsigned char messType = 1; // Тип сообщения, 1 - телеметрия
+    unsigned char messType1 = 17; // Тип сообщения, 17 - данные АЦП для тарировки
 
    public:
 
@@ -80,7 +82,7 @@ public slots:
    void Print(QString dat);
    void Analize(QByteArray dataRead, QString comName);
    QString getPortName(QString dis, QString serial);
-   void AcpVis();
+   void AcpVisible();
 
 signals:
     //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
@@ -91,6 +93,7 @@ signals:
    void savesettings5(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void savesettings6(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
     void writeData(QByteArray dataQ);
+    void writeDataT(QByteArray dataQt);
     void con1();void con2();void con3();void con4();void con5();void con6();
 };
 #endif // MAINWINDOW_H

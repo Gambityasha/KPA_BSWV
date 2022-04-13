@@ -60,6 +60,8 @@ void MainWindow::LoadSettings()
          emit savesettings1(name1, baudrate, databits, parity, stopbits, flowcontrol);
          ListOfBSWVData[0].namePort = name1;
          ListOfBSWVData[0].name = "MK1-osn";
+         ListOfBSWVt[0].namePort = name1;
+         ListOfBSWVt[0].name = "MK1-osn";
          emit con1();
     }
     setting.endGroup();
@@ -72,6 +74,8 @@ void MainWindow::LoadSettings()
         emit savesettings2(name2, baudrate, databits, parity, stopbits, flowcontrol);
         ListOfBSWVData[1].namePort = name2;
          ListOfBSWVData[1].name = "MK1-rez";
+         ListOfBSWVt[1].namePort = name2;
+          ListOfBSWVt[1].name = "MK1-rez";
          emit con2();
     }
     setting.endGroup();
@@ -84,6 +88,9 @@ void MainWindow::LoadSettings()
     emit savesettings3(name3, baudrate, databits, parity, stopbits, flowcontrol);
     ListOfBSWVData[2].namePort = name3;
     ListOfBSWVData[2].name = "MK2-osn";
+    ListOfBSWVt[2].namePort = name3;
+    ListOfBSWVt[2].name = "MK2-osn";
+
     emit con3();
     }
     setting.endGroup();
@@ -96,6 +103,8 @@ void MainWindow::LoadSettings()
         emit savesettings4(name4, baudrate, databits, parity, stopbits, flowcontrol);
         ListOfBSWVData[3].namePort = name4;
          ListOfBSWVData[3].name = "MK2-rez";
+         ListOfBSWVt[3].namePort = name4;
+          ListOfBSWVt[3].name = "MK2-rez";
          emit con4();
     }
     setting.endGroup();
@@ -108,7 +117,9 @@ void MainWindow::LoadSettings()
     emit savesettings5(name5, baudrate, databits, parity, stopbits, flowcontrol);
     ListOfBSWVData[4].namePort = name5;
     ListOfBSWVData[4].name = "MK3-osn";
-     emit con5();
+    ListOfBSWVt[4].namePort = name5;
+    ListOfBSWVt[4].name = "MK3-osn";
+    emit con5();
     }
     setting.endGroup();
     setting.beginGroup("MK3-rez");// [MK3-rez] в ини файле
@@ -120,6 +131,8 @@ void MainWindow::LoadSettings()
         emit savesettings6(name6, baudrate, databits, parity, stopbits, flowcontrol);
         ListOfBSWVData[5].namePort = name6;
         ListOfBSWVData[5].name = "MK3-rez";
+        ListOfBSWVt[5].namePort = name6;
+        ListOfBSWVt[5].name = "MK3-rez";
         emit con6();
     }
     setting.endGroup();
@@ -145,6 +158,20 @@ MainWindow::MainWindow(QWidget *parent)
     BSWV.name = "MK3-rez"; BSWV.namePort = "Com";BSWV.icap2=0; BSWV.icap1 = 0; BSWV.u2 = 0; BSWV.u1 = 0;BSWV.tcorp2 = 0; BSWV.tcorp1=0;
     ListOfBSWVData.append(BSWV);
 
+    BSWVt.name = "MK1-osn"; BSWVt.namePort = "Com";BSWVt.icap2=0; BSWVt.icap1 = 0; BSWVt.u2 = 0; BSWVt.u1 = 0;BSWVt.tcorp2 = 0; BSWVt.tcorp1=0; BSWVt.uref=0;
+    ListOfBSWVt.append(BSWVt);
+    BSWVt.name = "MK1-rez"; BSWVt.namePort = "Com";BSWVt.icap2=0; BSWVt.icap1 = 0; BSWVt.u2 = 0; BSWVt.u1 = 0;BSWVt.tcorp2 = 0; BSWVt.tcorp1=0;BSWVt.uref=0;
+    ListOfBSWVt.append(BSWVt);
+    BSWVt.name = "MK2-osn"; BSWVt.namePort = "Com";BSWVt.icap2=0; BSWVt.icap1 = 0; BSWVt.u2 = 0; BSWVt.u1 = 0;BSWVt.tcorp2 = 0; BSWVt.tcorp1=0;BSWVt.uref=0;
+    ListOfBSWVt.append(BSWVt);
+    BSWVt.name = "MK2-rez"; BSWVt.namePort = "Com";BSWVt.icap2=0; BSWVt.icap1 = 0; BSWVt.u2 = 0; BSWVt.u1 = 0;BSWVt.tcorp2 = 0; BSWVt.tcorp1=0;BSWVt.uref=0;
+    ListOfBSWVt.append(BSWVt);
+    BSWVt.name = "MK3-osn"; BSWVt.namePort = "Com";BSWVt.icap2=0; BSWVt.icap1 = 0; BSWVt.u2 = 0; BSWVt.u1 = 0;BSWVt.tcorp2 = 0; BSWVt.tcorp1=0;BSWVt.uref=0;
+    ListOfBSWVt.append(BSWVt);
+    BSWVt.name = "MK3-rez"; BSWVt.namePort = "Com";BSWVt.icap2=0; BSWVt.icap1 = 0; BSWVt.u2 = 0; BSWVt.u1 = 0;BSWVt.tcorp2 = 0; BSWVt.tcorp1=0;BSWVt.uref=0;
+    ListOfBSWVt.append(BSWVt);
+
+
     ui->tblBSWV->setRowCount(6); //задание количества строк таблицы
     ui->tblBSWV->setColumnCount(6); //задание количества колонок таблицы
     ui->tblBSWV->setHorizontalHeaderLabels(QStringList()<<"МК1-осн"<<"МК1-рез"<<"МК2-осн"<<"МК2-рез"<<"МК3-осн"<<"МК3-рез"); //заполнение заголовков столбцов
@@ -153,9 +180,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tblAcp->setRowCount(7); //задание количества строк таблицы
     ui->tblAcp->setColumnCount(6); //задание количества колонок таблицы
     ui->tblAcp->setHorizontalHeaderLabels(QStringList()<<"МК1-осн"<<"МК1-рез"<<"МК2-осн"<<"МК2-рез"<<"МК3-осн"<<"МК3-рез"); //заполнение заголовков столбцов
-    ui->tblAcp->setVerticalHeaderLabels(QStringList()<<"Опорное напряжение Uref "<<"Суммарный ток нагрузки 2"<<"Суммарный ток нагрузки 1"<<"Напряжение на силовых шинах 2" //заполнение заголовков строк
-        <<"Напряжение на силовых шинах 1"<<"Температура 2 корпуса прибора"<<"Температура 1 корпуса прибора");
-
+    ui->tblAcp->setVerticalHeaderLabels(QStringList()<<"Суммарный ток нагрузки 2"<<"Суммарный ток нагрузки 1"<<"Напряжение на силовых шинах 2" //заполнение заголовков строк
+        <<"Напряжение на силовых шинах 1"<<"Температура 2 корпуса прибора"<<"Температура 1 корпуса прибора"<<"Опорное напряжение Uref ");
 
     port *PortMK1osn = new port();
     port *PortMK1rez = new port();
@@ -168,6 +194,7 @@ MainWindow::MainWindow(QWidget *parent)
     timerOut = new QTimer();
     timerVivod = new QTimer();
 
+    //-----------------Формирование исходящего сообщения для БСШ-В (тип 1 - обычный обмен)---------------------
     unsigned char pcBlock[4];
     pcBlock[0] = startByte;
     pcBlock[1] = outAdr;
@@ -186,6 +213,20 @@ MainWindow::MainWindow(QWidget *parent)
     data[5] = lower;
     // unsigned short full = (upper*256)+lower; // получение общего значения контрольной суммы из старшего и младшего байтов
     // unsigned short full = (unsigned short) (upper<<8) | lower; // получение общего значения контрольной суммы из старшего и младшего байтов с помощью побитового сложения
+
+    //-----------Конец формирования исходящего сообщения для БСШ-В (тип 1 - обычный обмен)-----------
+    dataT[0] = startByte;
+    dataT[1] = outAdr;
+    dataT[2] = inAdr;
+    dataT[3] = messType1;
+    unsigned char upperT = Crc16(dataT,len)>>8; //получение старшего байта контрольной суммы
+    unsigned char lowerT = Crc16(dataT,len);
+    dataT[4] = upperT;
+    dataT[5] = lowerT;
+
+
+
+
     ui->tblAcp->setVisible(false);
     connect(timerOut, SIGNAL(timeout()), this, SLOT(WritePreo()));
     connect(this,SIGNAL(savesettings1(QString,int,int,int,int,int)),PortMK1osn,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
@@ -200,7 +241,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this,SIGNAL(writeData(QByteArray)),PortMK1rez,SLOT(WriteToPort(QByteArray)));
     connect(this,SIGNAL(writeData(QByteArray)),PortMK2rez,SLOT(WriteToPort(QByteArray)));
     connect(this,SIGNAL(writeData(QByteArray)),PortMK3rez,SLOT(WriteToPort(QByteArray)));
-    connect(this, SIGNAL(con1()),PortMK1osn,SLOT(ConnectPort()));
+    connect(this,SIGNAL(writeDataT(QByteArray)),PortMK1osn,SLOT(WriteToPort(QByteArray)));
+    connect(this,SIGNAL(writeDataT(QByteArray)),PortMK2osn,SLOT(WriteToPort(QByteArray)));
+    connect(this,SIGNAL(writeDataT(QByteArray)),PortMK3osn,SLOT(WriteToPort(QByteArray)));
+    connect(this,SIGNAL(writeDataT(QByteArray)),PortMK1rez,SLOT(WriteToPort(QByteArray)));
+    connect(this,SIGNAL(writeDataT(QByteArray)),PortMK2rez,SLOT(WriteToPort(QByteArray)));
+    connect(this,SIGNAL(writeDataT(QByteArray)),PortMK3rez,SLOT(WriteToPort(QByteArray)));
+        connect(this, SIGNAL(con1()),PortMK1osn,SLOT(ConnectPort()));
     connect(this, SIGNAL(con2()),PortMK1rez,SLOT(ConnectPort()));
     connect(this, SIGNAL(con3()),PortMK2osn,SLOT(ConnectPort()));
     connect(this, SIGNAL(con4()),PortMK2rez,SLOT(ConnectPort()));
@@ -225,18 +272,20 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK3rez,SIGNAL(sendRTtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
     connect(PortMK3osn,SIGNAL(sendRTtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
     connect(timerVivod, SIGNAL(timeout()), this, SLOT(Vivod()));
-    connect(ui->cbAcp, SIGNAL(clicked()), this, SLOT(AcpVis()));
+    connect(ui->cbAcp, SIGNAL(clicked()), this, SLOT(AcpVisible()));
 
 
     timerOut->start(150);
     timerVivod->start(500);
 }
 
-void MainWindow::WritePreo ()          //
+void MainWindow::WritePreo ()          //Отправка набора сообщений
 {
     QByteArray dataQ = QByteArray::fromRawData((char*)data,sizeof(data));
     //dataQ[0] = reinterpret_cast<QByteArray>(data[0].data());
     emit writeData (dataQ);
+    QByteArray dataQt = QByteArray::fromRawData((char*)dataT,sizeof(dataT));
+    emit writeDataT (dataQt);
 }
 
 void MainWindow::Analize(QByteArray dataRead,QString comName)
@@ -299,11 +348,17 @@ QString MainWindow::getPortName(QString dis, QString serial)
     return namePort;
 }
 
-void MainWindow::AcpVis()
+void MainWindow::AcpVisible()
 {
-    if (ui->cbAcp->isChecked())
+    if (ui->cbAcp->isChecked()){
         ui->tblAcp->setVisible(true);
-    else ui->tblAcp->setVisible(false);
+    setMinimumSize(972,613);
+    resize(972,613);
+    }
+    else {ui->tblAcp->setVisible(false);
+    setMinimumSize(972,321);
+    resize(972,321);
+    }
 }
 
 void MainWindow::Print(QString dat)
@@ -326,16 +381,28 @@ for (int i=0;i<ListOfBSWVData.size();i++){
     ui->tblBSWV->setItem(4,i,itm4_0);
     QTableWidgetItem *itm5_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVData.at(i).tcorp1));
     ui->tblBSWV->setItem(5,i,itm5_0);
-
     // itm1_2->setTextColor(Qt::red); //задание цвета у текста определенной ячейки таблицы
     // itm1_2->setBackgroundColor(Qt::black); //задание цвета самой определенной ячейки таблицы
 //    QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(pcB[5]*0.2+0)); //перевод в QString данных из unsigned char
-//    ui->tblRT->setItem(1,0,itm1_0);
 
 }
-
+for (int j=0;j<ListOfBSWVt.size();j++){
+    QTableWidgetItem *itm0_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).icap2)); //создание итема таблицы для заполнения
+    ui->tblAcp->setItem(0,j,itm0_0); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
+    QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).icap1));
+    ui->tblAcp->setItem(1,j,itm1_0);
+    QTableWidgetItem *itm2_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).u2));
+    ui->tblAcp->setItem(2,j,itm2_0);
+    QTableWidgetItem *itm3_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).u1));
+    ui->tblAcp->setItem(3,j,itm3_0);
+    QTableWidgetItem *itm4_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).tcorp2));
+    ui->tblAcp->setItem(4,j,itm4_0);
+    QTableWidgetItem *itm5_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).tcorp1));
+    ui->tblAcp->setItem(5,j,itm5_0);
+    QTableWidgetItem *itm6_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).uref));
+    ui->tblAcp->setItem(6,j,itm6_0);
 }
-
+}
 
 MainWindow::~MainWindow()
 {
