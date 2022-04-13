@@ -35,7 +35,7 @@ public:
 
  signals:
     void finished_Port(); //Сигнал закрытия класса
-    void sendRTtm(QByteArray,QString);
+    void sendBSWVtm(QByteArray,QString);
 
     void error_(QString err);//Сигнал ошибок порта
 

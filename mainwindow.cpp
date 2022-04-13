@@ -190,9 +190,11 @@ MainWindow::MainWindow(QWidget *parent)
     port *PortMK3osn = new port();
     port *PortMK3rez = new port();
     QTimer *timerOut;
+    QTimer *timerIn;
     QTimer *timerVivod;
     timerOut = new QTimer();
     timerVivod = new QTimer();
+    timerIn = new QTimer();
 
     //-----------------Формирование исходящего сообщения для БСШ-В (тип 1 - обычный обмен)---------------------
     unsigned char pcBlock[4];
@@ -247,7 +249,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this,SIGNAL(writeDataT(QByteArray)),PortMK1rez,SLOT(WriteToPort(QByteArray)));
     connect(this,SIGNAL(writeDataT(QByteArray)),PortMK2rez,SLOT(WriteToPort(QByteArray)));
     connect(this,SIGNAL(writeDataT(QByteArray)),PortMK3rez,SLOT(WriteToPort(QByteArray)));
-        connect(this, SIGNAL(con1()),PortMK1osn,SLOT(ConnectPort()));
+    connect(this, SIGNAL(con1()),PortMK1osn,SLOT(ConnectPort()));
     connect(this, SIGNAL(con2()),PortMK1rez,SLOT(ConnectPort()));
     connect(this, SIGNAL(con3()),PortMK2osn,SLOT(ConnectPort()));
     connect(this, SIGNAL(con4()),PortMK2rez,SLOT(ConnectPort()));
@@ -265,18 +267,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK1rez,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
     connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK2rez,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
     connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK3rez,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
-    connect(PortMK1osn,SIGNAL(sendRTtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
-    connect(PortMK1rez,SIGNAL(sendRTtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
-    connect(PortMK2osn,SIGNAL(sendRTtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
-    connect(PortMK2rez,SIGNAL(sendRTtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
-    connect(PortMK3rez,SIGNAL(sendRTtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
-    connect(PortMK3osn,SIGNAL(sendRTtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
+    connect(PortMK1osn,SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
+    connect(PortMK1rez,SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
+    connect(PortMK2osn,SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
+    connect(PortMK2rez,SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
+    connect(PortMK3rez,SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
+    connect(PortMK3osn,SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
     connect(timerVivod, SIGNAL(timeout()), this, SLOT(Vivod()));
     connect(ui->cbAcp, SIGNAL(clicked()), this, SLOT(AcpVisible()));
 
 
     timerOut->start(150);
-    timerVivod->start(500);
+    timerVivod->start(200);
 }
 
 void MainWindow::WritePreo ()          //Отправка набора сообщений
@@ -292,7 +294,6 @@ void MainWindow::Analize(QByteArray dataRead,QString comName)
 {
     float icap2, icap1,u2,u1,tcorp2,tcorp1;
 
-    ui->label_2->setText(comName);
     unsigned char buffer [12];
     memcpy( buffer, dataRead.data(), dataRead.size() );
     unsigned char c1 = buffer[10];

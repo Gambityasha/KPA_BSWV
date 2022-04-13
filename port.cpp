@@ -81,7 +81,7 @@ void port :: ReadInPort(){//Чтение данных из порта
     if (dataRead.size() >= 15){
     QString comName = thisPort.portName();
     dataRead.resize(15);
-    emit sendRTtm(dataRead,comName);
+    emit sendBSWVtm(dataRead,comName);
     dataRead.clear();
     }
     //((QString)(adr.toInt())).toLatin1().toHex()

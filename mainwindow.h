@@ -26,6 +26,7 @@ struct BSWVdata //создание структуры
     float u1;//"Напряжение на силовых шинах 1"
     float tcorp2;//"Температура 2 корпуса прибора"
     float tcorp1;//"Температура 1 корпуса прибора"
+    QByteArray otvet;
 };
 
 struct BSWVtarir //создание структуры
@@ -39,6 +40,7 @@ struct BSWVtarir //создание структуры
     float u1;//"Напряжение на силовых шинах 1"
     float tcorp2;//"Температура 2 корпуса прибора"
     float tcorp1;//"Температура 1 корпуса прибора"
+    QByteArray otvet;
 };
 
 class MainWindow : public QMainWindow
@@ -72,6 +74,7 @@ BSWVdata BSWV;
 QList <BSWVdata>ListOfBSWVData;
 BSWVtarir BSWVt;
 QList <BSWVtarir>ListOfBSWVt;
+QByteArray otvet1MK1osn, otvet1MK1rez, otvet1MK2osn, otvet1MK2rez,otvet1MK3osn, otvet1MK3rez;
 
 private:
    void LoadSettings();
