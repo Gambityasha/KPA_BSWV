@@ -139,6 +139,8 @@ void MainWindow::LoadSettings()
 
 }
 
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -189,66 +191,78 @@ MainWindow::MainWindow(QWidget *parent)
     port *PortMK2rez = new port();
     port *PortMK3osn = new port();
     port *PortMK3rez = new port();
-    QTimer *timerOut;
-    QTimer *timerIn;
-    QTimer *timerVivod;
-    timerOut = new QTimer();
-    timerVivod = new QTimer();
-    timerIn = new QTimer();
+
+
 
     //-----------------Формирование исходящего сообщения для БСШ-В (тип 1 - обычный обмен)---------------------
-    unsigned char pcBlock[4];
-    pcBlock[0] = startByte;
-    pcBlock[1] = outAdr;
-    pcBlock[2] = inAdr;
-    pcBlock[3] = messType;
-    unsigned short len = 4;
-    unsigned char upper = Crc16(pcBlock,len)>>8; //получение старшего байта контрольной суммы
-    unsigned char lower = Crc16(pcBlock,len);
-    //     unsigned short lower1 = Crc16(pcBlock,len)<<8;
-    //     unsigned char lower = lower1>>8; //получение младшего байта контрольной суммы
     data[0] = startByte;
     data[1] = outAdr;
     data[2] = inAdr;
-    data[3] = messType;
+    data[3] = messType1;
+    unsigned short len = 4;
+    unsigned char upper = Crc16(data,len)>>8; //получение старшего байта контрольной суммы
+    unsigned char lower = Crc16(data,len);
+//  unsigned short lower1 = Crc16(pcBlock,len)<<8;
+//  unsigned char lower = lower1>>8; //получение младшего байта контрольной суммы
     data[4] = upper;
     data[5] = lower;
-    // unsigned short full = (upper*256)+lower; // получение общего значения контрольной суммы из старшего и младшего байтов
-    // unsigned short full = (unsigned short) (upper<<8) | lower; // получение общего значения контрольной суммы из старшего и младшего байтов с помощью побитового сложения
+//  unsigned short full = (upper*256)+lower; // получение общего значения контрольной суммы из старшего и младшего байтов
+//  unsigned short full = (unsigned short) (upper<<8) | lower; // получение общего значения контрольной суммы из старшего и младшего байтов с помощью побитового сложения
 
-    //-----------Конец формирования исходящего сообщения для БСШ-В (тип 1 - обычный обмен)-----------
+//-----------Конец формирования исходящего сообщения для БСШ-В (тип 1 - телеметрия)-----------
+//-----------Формирование исходящего сообщения для БСШ-В (тип 17 - данные АЦП для калибровки БСШ-В)--------
     dataT[0] = startByte;
     dataT[1] = outAdr;
     dataT[2] = inAdr;
-    dataT[3] = messType1;
+    dataT[3] = messType17;
     unsigned char upperT = Crc16(dataT,len)>>8; //получение старшего байта контрольной суммы
     unsigned char lowerT = Crc16(dataT,len);
     dataT[4] = upperT;
     dataT[5] = lowerT;
-
-
-
-
+//-----------Конец формирования исходящего сообщения для БСШ-В (тип 17 - данные АЦП для калибровки БСШ-В)-----------
+//-----------Формирование исходящего сообщения для БСШ-В (тип 255 - проверка связи)--------
+    dataProv[0] = startByte;
+    dataProv[1] = outAdr;
+    dataProv[2] = inAdr;
+    dataProv[3] = messType255;
+    unsigned char upperProv = Crc16(dataT,len)>>8; //получение старшего байта контрольной суммы
+    unsigned char lowerProv = Crc16(dataT,len);
+    dataProv[4] = upperProv;
+    dataProv[5] = lowerProv;
+//-----------Конец формирования исходящего сообщения для БСШ-В (тип 255 - проверка связи)-----------
+//-----------Формирование исходящего сообщения для БСШ-В (тип 34 - проверка номера МУКа)--------
+    dataNomer[0] = startByte;
+    dataNomer[1] = outAdr;
+    dataNomer[2] = inAdr;
+    dataNomer[3] = messType34;
+    unsigned char upperNomer = Crc16(dataNomer,len)>>8; //получение старшего байта контрольной суммы
+    unsigned char lowerNomer = Crc16(dataNomer,len);
+    dataNomer[4] = upperNomer;
+    dataNomer[5] = lowerNomer;
+    //-----------Конец формирования исходящего сообщения для БСШ-В (тип 34 - проверка номера МУКа)-----------
+    timerVivod = new QTimer();
+    timerZaprosaTelem = new QTimer();
+    timerZaprosaTarir = new QTimer();
+    timerIn = new QTimer();
+    timerZaprosaTelem->start(300);
+//  QTimer::singleShot(50,this,SLOT(TimerInStart()));
+    QTimer::singleShot(120,this,SLOT(TimerTarirStart()));
+    QTimer::singleShot(200,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 50 мс после их получения
     ui->tblAcp->setVisible(false);
-    connect(timerOut, SIGNAL(timeout()), this, SLOT(WritePreo()));
-    connect(this,SIGNAL(savesettings1(QString,int,int,int,int,int)),PortMK1osn,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
-    connect(this,SIGNAL(savesettings2(QString,int,int,int,int,int)),PortMK1rez,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
-    connect(this,SIGNAL(savesettings3(QString,int,int,int,int,int)),PortMK2osn,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
-    connect(this,SIGNAL(savesettings4(QString,int,int,int,int,int)),PortMK2rez,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
-    connect(this,SIGNAL(savesettings5(QString,int,int,int,int,int)),PortMK3osn,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
-    connect(this,SIGNAL(savesettings6(QString,int,int,int,int,int)),PortMK3rez,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
-    connect(this,SIGNAL(writeData(QByteArray)),PortMK1osn,SLOT(WriteToPort(QByteArray)));
-    connect(this,SIGNAL(writeData(QByteArray)),PortMK2osn,SLOT(WriteToPort(QByteArray)));
-    connect(this,SIGNAL(writeData(QByteArray)),PortMK3osn,SLOT(WriteToPort(QByteArray)));
-    connect(this,SIGNAL(writeData(QByteArray)),PortMK1rez,SLOT(WriteToPort(QByteArray)));
-    connect(this,SIGNAL(writeData(QByteArray)),PortMK2rez,SLOT(WriteToPort(QByteArray)));
-    connect(this,SIGNAL(writeData(QByteArray)),PortMK3rez,SLOT(WriteToPort(QByteArray)));
-    connect(this,SIGNAL(writeDataT(QByteArray)),PortMK1osn,SLOT(WriteToPort(QByteArray)));
-    connect(this,SIGNAL(writeDataT(QByteArray)),PortMK2osn,SLOT(WriteToPort(QByteArray)));
-    connect(this,SIGNAL(writeDataT(QByteArray)),PortMK3osn,SLOT(WriteToPort(QByteArray)));
-    connect(this,SIGNAL(writeDataT(QByteArray)),PortMK1rez,SLOT(WriteToPort(QByteArray)));
-    connect(this,SIGNAL(writeDataT(QByteArray)),PortMK2rez,SLOT(WriteToPort(QByteArray)));
-    connect(this,SIGNAL(writeDataT(QByteArray)),PortMK3rez,SLOT(WriteToPort(QByteArray)));
+    connect(timerZaprosaTelem, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTelem()));
+    connect(timerZaprosaTarir, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTarir()));
+    connect(this, SIGNAL(savesettings1(QString,int,int,int,int,int)),PortMK1osn,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
+    connect(this, SIGNAL(savesettings2(QString,int,int,int,int,int)),PortMK1rez,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
+    connect(this, SIGNAL(savesettings3(QString,int,int,int,int,int)),PortMK2osn,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
+    connect(this, SIGNAL(savesettings4(QString,int,int,int,int,int)),PortMK2rez,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
+    connect(this, SIGNAL(savesettings5(QString,int,int,int,int,int)),PortMK3osn,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
+    connect(this, SIGNAL(savesettings6(QString,int,int,int,int,int)),PortMK3rez,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
+    connect(this, SIGNAL(writeData(QByteArray)),PortMK1osn,SLOT(WriteToPort(QByteArray)));
+    connect(this, SIGNAL(writeData(QByteArray)),PortMK2osn,SLOT(WriteToPort(QByteArray)));
+    connect(this, SIGNAL(writeData(QByteArray)),PortMK3osn,SLOT(WriteToPort(QByteArray)));
+    connect(this, SIGNAL(writeData(QByteArray)),PortMK1rez,SLOT(WriteToPort(QByteArray)));
+    connect(this, SIGNAL(writeData(QByteArray)),PortMK2rez,SLOT(WriteToPort(QByteArray)));
+    connect(this, SIGNAL(writeData(QByteArray)),PortMK3rez,SLOT(WriteToPort(QByteArray)));
     connect(this, SIGNAL(con1()),PortMK1osn,SLOT(ConnectPort()));
     connect(this, SIGNAL(con2()),PortMK1rez,SLOT(ConnectPort()));
     connect(this, SIGNAL(con3()),PortMK2osn,SLOT(ConnectPort()));
@@ -267,27 +281,81 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK1rez,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
     connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK2rez,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
     connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK3rez,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
-    connect(PortMK1osn,SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
-    connect(PortMK1rez,SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
-    connect(PortMK2osn,SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
-    connect(PortMK2rez,SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
-    connect(PortMK3rez,SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
-    connect(PortMK3osn,SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
+    connect(PortMK1osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
+    connect(PortMK1rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
+    connect(PortMK2osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
+    connect(PortMK2rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
+    connect(PortMK3rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
+    connect(PortMK3osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
     connect(timerVivod, SIGNAL(timeout()), this, SLOT(Vivod()));
     connect(ui->cbAcp, SIGNAL(clicked()), this, SLOT(AcpVisible()));
 
-
-    timerOut->start(150);
-    timerVivod->start(200);
 }
 
-void MainWindow::WritePreo ()          //Отправка набора сообщений
+void MainWindow:: OtpravkaZaprosaTelem()
 {
     QByteArray dataQ = QByteArray::fromRawData((char*)data,sizeof(data));
     //dataQ[0] = reinterpret_cast<QByteArray>(data[0].data());
-    emit writeData (dataQ);
+    emit writeData (dataQ);    
+//    QByteArray dataQProv = QByteArray::fromRawData((char*)dataProv,sizeof(dataProv));
+//    emit writeData (dataQProv);
+//    QByteArray dataQNomer = QByteArray::fromRawData((char*)dataNomer,sizeof(dataProv));
+//    emit writeData (dataQNomer);
+}
+
+void MainWindow:: OtpravkaZaprosaTarir()
+{
     QByteArray dataQt = QByteArray::fromRawData((char*)dataT,sizeof(dataT));
-    emit writeDataT (dataQt);
+    emit writeData (dataQt);
+//    QByteArray dataQProv = QByteArray::fromRawData((char*)dataProv,sizeof(dataProv));
+//    emit writeData (dataQProv);
+//    QByteArray dataQNomer = QByteArray::fromRawData((char*)dataNomer,sizeof(dataProv));
+//    emit writeData (dataQNomer);
+}
+void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
+{
+//    unsigned char buffer [22];
+//    memcpy( buffer, dataRead.data(), dataRead.size() );
+    //unsigned char c1 = buffer[10];
+    //unsigned char c2 = buffer[11];
+    unsigned short lenData = 10;
+    unsigned short lenTarir = 20;
+    unsigned short lenProv = 4;
+    unsigned short lenNomerMK = 5;
+    for (int i=0;i<ListOfBSWVData.size();i++){
+            if (ListOfBSWVData.at(i).namePort == comName){
+                otvet.append(dataRead);
+                for (int j = 0; otvet[j]!=char(0xAA);j++) {
+                    otvet.remove(0,1);
+                }
+                switch (otvet[3]){
+                case char(1):
+                   if (otvet.size() == otvetTelemSize){
+                       ListOfBSWVData[i].otvet = otvet;
+                       otvet.clear();
+                    }
+                    break;
+                case char(17):
+                   if (otvet.size() == otvetTarirSize){
+                       ListOfBSWVt[i].otvet = otvet;
+                       otvet.clear();
+                   }
+                break;
+                case char(34):
+                   if (otvet.size() == otvetMKSize){
+                       ListOfBSWVnomer[i].otvet = otvet;
+                       otvet.clear();
+                   }
+                break;
+                case char(255):
+                    if (otvet.size() == otvetProvSize){
+                        ListOfBSWVprov[i].otvet = otvet;
+                        otvet.clear();
+                    }
+                break;
+                }
+            }
+    }
 }
 
 void MainWindow::Analize(QByteArray dataRead,QString comName)
@@ -298,7 +366,7 @@ void MainWindow::Analize(QByteArray dataRead,QString comName)
     memcpy( buffer, dataRead.data(), dataRead.size() );
     unsigned char c1 = buffer[10];
     unsigned char c2 = buffer[11];
-    unsigned short le = 11;
+    unsigned short le = 10;
     switch (buffer[1]){
     case 2:
            switch (buffer[2]){
@@ -336,7 +404,6 @@ void MainWindow::Analize(QByteArray dataRead,QString comName)
     }
 }
 
-
 QString MainWindow::getPortName(QString dis, QString serial)
 {
     QString namePort;
@@ -353,13 +420,29 @@ void MainWindow::AcpVisible()
 {
     if (ui->cbAcp->isChecked()){
         ui->tblAcp->setVisible(true);
-    setMinimumSize(972,613);
-    resize(972,613);
+        setMinimumSize(972,613);
+        resize(972,613);
     }
-    else {ui->tblAcp->setVisible(false);
-    setMinimumSize(972,321);
-    resize(972,321);
+    else {
+        ui->tblAcp->setVisible(false);
+        setMinimumSize(972,321);
+        resize(972,321);
     }
+}
+
+void MainWindow::TimerVivodStart()
+{
+    timerVivod->start(300);
+}
+
+void MainWindow::TimerInStart()
+{
+    timerIn->start(300);
+}
+
+void MainWindow::TimerTarirStart()
+{
+    timerZaprosaTarir->start(300);
 }
 
 void MainWindow::Print(QString dat)
@@ -382,9 +465,9 @@ for (int i=0;i<ListOfBSWVData.size();i++){
     ui->tblBSWV->setItem(4,i,itm4_0);
     QTableWidgetItem *itm5_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVData.at(i).tcorp1));
     ui->tblBSWV->setItem(5,i,itm5_0);
-    // itm1_2->setTextColor(Qt::red); //задание цвета у текста определенной ячейки таблицы
-    // itm1_2->setBackgroundColor(Qt::black); //задание цвета самой определенной ячейки таблицы
-//    QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(pcB[5]*0.2+0)); //перевод в QString данных из unsigned char
+//  itm1_2->setTextColor(Qt::red); //задание цвета у текста определенной ячейки таблицы
+//  itm1_2->setBackgroundColor(Qt::black); //задание цвета самой определенной ячейки таблицы
+//  QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(pcB[5]*0.2+0)); //перевод в QString данных из unsigned char
 
 }
 for (int j=0;j<ListOfBSWVt.size();j++){

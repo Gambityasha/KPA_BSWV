@@ -10,7 +10,9 @@
 #include <QSettings>
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
-
+//размеры пакетов данных (первые четыре байта всегда содержат начальный, адрес отправителя, адрес получателя и код сообщения, последние два байта - контрольная сумма)
+//тип сообщения 1 - 6 байт, 17 - 16 байт, 34 - 1 байт, 255 - 0 байт
+//итого весь пакет ответа: 1 - 12 байт, 17 - 22 байт, 34 - 7 байт, 255 - 6 байт
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -27,6 +29,7 @@ struct BSWVdata //создание структуры
     float tcorp2;//"Температура 2 корпуса прибора"
     float tcorp1;//"Температура 1 корпуса прибора"
     QByteArray otvet;
+    short otvetPoluchen; //0 - не получен, 1 - получен
 };
 
 struct BSWVtarir //создание структуры
@@ -41,7 +44,26 @@ struct BSWVtarir //создание структуры
     float tcorp2;//"Температура 2 корпуса прибора"
     float tcorp1;//"Температура 1 корпуса прибора"
     QByteArray otvet;
+    short otvetPoluchen; //0 - не получен, 1 - получен
 };
+struct BSWVprov //создание структуры
+{
+    QString name; //шифр канала
+    QString namePort; //присвоенное имя порта
+    QByteArray otvet;
+    short otvetPoluchen; //0 - не получен, 1 - получен
+};
+struct BSWVnomerMK //создание структуры
+{
+    QString name; //шифр канала
+    QString namePort; //присвоенное имя порта
+    unsigned char nMK; //номер МУКа, 1 - 1 МК, 2- 2 МК
+    unsigned char nChan;//номер канала, 0 - основной, 1 - резервный
+    QByteArray otvet;
+    short otvetPoluchen; //0 - не получен, 1 - получен
+};
+
+
 
 class MainWindow : public QMainWindow
 {
@@ -56,6 +78,8 @@ private:
     Ui::MainWindow *ui;
     unsigned char data [6];
     unsigned char dataT [6];
+    unsigned char dataProv [6];
+    unsigned char dataNomer [6];
     QString name;
     int baudrate = 115200;
     int databits = 8;
@@ -65,27 +89,46 @@ private:
     unsigned char startByte = 170;
     unsigned char outAdr = 1; //адрес БЦУ
     unsigned char inAdr = 2; //адрес БСШ-В
-    unsigned char messType = 1; // Тип сообщения, 1 - телеметрия
-    unsigned char messType1 = 17; // Тип сообщения, 17 - данные АЦП для тарировки
+    unsigned char messType1 = 1; // Тип сообщения, 1 - телеметрия
+    unsigned char messType17 = 17; // Тип сообщения, 17 - данные АЦП для тарировки
+    unsigned char messType34 = 34;//Тип сообщения, 34 - данные о номере мука и номере канала
+    unsigned char messType255 = 255;//Тип сообщения, 255 - проверка связи
+    int otvetTelemSize = 12;
+    int otvetTarirSize = 22;
+    int otvetMKSize = 7;
+    int otvetProvSize = 6;
 
-   public:
-
-BSWVdata BSWV;
-QList <BSWVdata>ListOfBSWVData;
-BSWVtarir BSWVt;
-QList <BSWVtarir>ListOfBSWVt;
-QByteArray otvet1MK1osn, otvet1MK1rez, otvet1MK2osn, otvet1MK2rez,otvet1MK3osn, otvet1MK3rez;
+public:
+    QTimer *timerZaprosaTelem;
+    QTimer *timerZaprosaTarir;
+    QTimer *timerIn;
+    QTimer *timerVivod;
+    QByteArray otvet;
+    BSWVdata BSWV;
+    QList <BSWVdata>ListOfBSWVData;
+    BSWVtarir BSWVt;
+    QList <BSWVtarir>ListOfBSWVt;
+    BSWVprov BSWVp;
+    QList <BSWVprov>ListOfBSWVprov;
+    BSWVnomerMK BSWVnomer;
+    QList <BSWVnomerMK>ListOfBSWVnomer;
 
 private:
    void LoadSettings();
 
 public slots:
    void Vivod(); //Вывод телеметрии в таблицу
-   void WritePreo ();
+   void OtpravkaZaprosaTelem ();
+   void OtpravkaZaprosaTarir ();
+
    void Print(QString dat);
    void Analize(QByteArray dataRead, QString comName);
+   void Kompanovka(QByteArray dataRead, QString comName);
    QString getPortName(QString dis, QString serial);
    void AcpVisible();
+   void TimerVivodStart();
+   void TimerInStart();
+   void TimerTarirStart();
 
 signals:
     //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
@@ -95,8 +138,7 @@ signals:
    void savesettings4(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void savesettings5(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void savesettings6(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
-    void writeData(QByteArray dataQ);
-    void writeDataT(QByteArray dataQt);
-    void con1();void con2();void con3();void con4();void con5();void con6();
+   void writeData(QByteArray dataQ);
+   void con1();void con2();void con3();void con4();void con5();void con6();
 };
 #endif // MAINWINDOW_H
