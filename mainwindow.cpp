@@ -360,7 +360,7 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
 
 void MainWindow::Analize(QByteArray dataRead,QString comName)
 {
-    float icap2, icap1,u2,u1,tcorp2,tcorp1;
+    float icap2, icap1,u2,u1,tcorp2,tcorp1;//набор перемнных под данные
 
     unsigned char buffer [12];
     memcpy( buffer, dataRead.data(), dataRead.size() );
