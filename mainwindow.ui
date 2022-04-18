@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>972</width>
-    <height>320</height>
+    <width>1132</width>
+    <height>725</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -20,47 +20,11 @@
    <string>КПА БСШ-В</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTableWidget" name="tblBSWV">
-    <property name="geometry">
-     <rect>
-      <x>99</x>
-      <y>0</y>
-      <width>827</width>
-      <height>251</height>
-     </rect>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>827</width>
-      <height>251</height>
-     </size>
-    </property>
-    <property name="rowCount">
-     <number>6</number>
-    </property>
-    <property name="columnCount">
-     <number>3</number>
-    </property>
-    <row/>
-    <row/>
-    <row/>
-    <row/>
-    <row/>
-    <row/>
-    <column/>
-    <column/>
-    <column/>
-    <item row="0" column="0">
-     <property name="text">
-      <string/>
-     </property>
-    </item>
-   </widget>
    <widget class="QPushButton" name="btnDisconnect">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>29</y>
+      <x>30</x>
+      <y>10</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -69,24 +33,11 @@
      <string>DisConnect</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>110</y>
-      <width>47</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>TextLabel</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>0</y>
+      <x>120</x>
+      <y>10</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -95,61 +46,130 @@
      <string>Connect all</string>
     </property>
    </widget>
-   <widget class="QTableWidget" name="tblAcp">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>280</y>
-      <width>827</width>
-      <height>271</height>
-     </rect>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>827</width>
-      <height>271</height>
-     </size>
-    </property>
-    <property name="rowCount">
-     <number>7</number>
-    </property>
-    <property name="columnCount">
-     <number>3</number>
-    </property>
-    <row/>
-    <row/>
-    <row/>
-    <row/>
-    <row/>
-    <row/>
-    <row/>
-    <column/>
-    <column/>
-    <column/>
-    <item row="0" column="0">
-     <property name="text">
-      <string/>
-     </property>
-    </item>
-   </widget>
-   <widget class="QCheckBox" name="cbAcp">
+   <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>260</y>
-      <width>261</width>
-      <height>17</height>
+      <y>40</y>
+      <width>881</width>
+      <height>641</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Показывать данные АЦП для калибровки</string>
+    <property name="currentIndex">
+     <number>1</number>
     </property>
-    <property name="checked">
-     <bool>false</bool>
-    </property>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>Телеметрия</string>
+     </attribute>
+     <widget class="QTableWidget" name="tblBSWV">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>827</width>
+        <height>251</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>827</width>
+        <height>251</height>
+       </size>
+      </property>
+      <property name="rowCount">
+       <number>6</number>
+      </property>
+      <property name="columnCount">
+       <number>3</number>
+      </property>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <column/>
+      <column/>
+      <column/>
+      <item row="0" column="0">
+       <property name="text">
+        <string/>
+       </property>
+      </item>
+     </widget>
+     <widget class="QCheckBox" name="cbAcp">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>280</y>
+        <width>261</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Показывать данные АЦП для калибровки</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QTableWidget" name="tblAcp">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>310</y>
+        <width>827</width>
+        <height>271</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>827</width>
+        <height>271</height>
+       </size>
+      </property>
+      <property name="rowCount">
+       <number>7</number>
+      </property>
+      <property name="columnCount">
+       <number>3</number>
+      </property>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <column/>
+      <column/>
+      <column/>
+      <item row="0" column="0">
+       <property name="text">
+        <string/>
+       </property>
+      </item>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_2">
+     <attribute name="title">
+      <string>Контроль</string>
+     </attribute>
+     <widget class="QPlainTextEdit" name="plainTextEdit">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>631</width>
+        <height>311</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -157,7 +177,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>972</width>
+     <width>1132</width>
      <height>21</height>
     </rect>
    </property>

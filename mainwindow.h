@@ -29,7 +29,7 @@ struct BSWVdata //создание структуры
     float tcorp2;//"Температура 2 корпуса прибора"
     float tcorp1;//"Температура 1 корпуса прибора"
     QByteArray otvet;
-    short otvetPoluchen; //0 - не получен, 1 - получен
+    short otvetPoluchen; //0 - не получен, 1 - получен    
 };
 
 struct BSWVtarir //создание структуры
@@ -44,7 +44,7 @@ struct BSWVtarir //создание структуры
     float tcorp2;//"Температура 2 корпуса прибора"
     float tcorp1;//"Температура 1 корпуса прибора"
     QByteArray otvet;
-    short otvetPoluchen; //0 - не получен, 1 - получен
+    short otvetPoluchen; //0 - не получен, 1 - получен  
 };
 struct BSWVprov //создание структуры
 {
@@ -122,7 +122,7 @@ public slots:
    void OtpravkaZaprosaTarir ();
 
    void Print(QString dat);
-   void Analize(QByteArray dataRead, QString comName);
+   void Analize(QByteArray otvet, QString comName);
    void Kompanovka(QByteArray dataRead, QString comName);
    QString getPortName(QString dis, QString serial);
    void AcpVisible();
@@ -140,5 +140,6 @@ signals:
    void savesettings6(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void writeData(QByteArray dataQ);
    void con1();void con2();void con3();void con4();void con5();void con6();
+   void readyToAnalize(QByteArray otvet, QString comName);
 };
 #endif // MAINWINDOW_H

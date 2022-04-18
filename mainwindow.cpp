@@ -289,6 +289,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK3osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
     connect(timerVivod, SIGNAL(timeout()), this, SLOT(Vivod()));
     connect(ui->cbAcp, SIGNAL(clicked()), this, SLOT(AcpVisible()));
+    connect(this, SIGNAL(readyToAnalize(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
 
 }
 
@@ -318,10 +319,7 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
 //    memcpy( buffer, dataRead.data(), dataRead.size() );
     //unsigned char c1 = buffer[10];
     //unsigned char c2 = buffer[11];
-    unsigned short lenData = 10;
-    unsigned short lenTarir = 20;
-    unsigned short lenProv = 4;
-    unsigned short lenNomerMK = 5;
+
     for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData.at(i).namePort == comName){
                 otvet.append(dataRead);
@@ -332,76 +330,123 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
                 case char(1):
                    if (otvet.size() == otvetTelemSize){
                        ListOfBSWVData[i].otvet = otvet;
-                       otvet.clear();
+                       emit readyToAnalize(ListOfBSWVData.at(i).otvet, ListOfBSWVData.at(i).namePort);
                     }
                     break;
                 case char(17):
                    if (otvet.size() == otvetTarirSize){
                        ListOfBSWVt[i].otvet = otvet;
-                       otvet.clear();
+                       emit readyToAnalize(ListOfBSWVt.at(i).otvet, ListOfBSWVt.at(i).namePort);
                    }
                 break;
                 case char(34):
                    if (otvet.size() == otvetMKSize){
                        ListOfBSWVnomer[i].otvet = otvet;
-                       otvet.clear();
+                       emit readyToAnalize(ListOfBSWVnomer.at(i).otvet, ListOfBSWVnomer.at(i).namePort);
                    }
                 break;
                 case char(255):
                     if (otvet.size() == otvetProvSize){
                         ListOfBSWVprov[i].otvet = otvet;
-                        otvet.clear();
+                        emit readyToAnalize(ListOfBSWVprov.at(i).otvet, ListOfBSWVprov.at(i).namePort);
                     }
                 break;
                 }
+                otvet.clear();
             }
     }
 }
 
-void MainWindow::Analize(QByteArray dataRead,QString comName)
+void MainWindow::Analize(QByteArray otvet,QString comName)
 {
-    float icap2, icap1,u2,u1,tcorp2,tcorp1;//набор перемнных под данные
-
-    unsigned char buffer [12];
-    memcpy( buffer, dataRead.data(), dataRead.size() );
-    unsigned char c1 = buffer[10];
-    unsigned char c2 = buffer[11];
-    unsigned short le = 10;
+//    int otvetLenght;
+//    unsigned short len;
+//    switch (MessageType) {
+//          case 1: {
+//                otvetLenght=12;
+//          break;
+//          }
+//          case 2:
+//                otvetLenght=22;
+//          break;
+//          case 3:
+//                otvetLenght=22;
+//          break;
+    unsigned char buffer [otvet.size()];
+    memcpy( buffer, otvet.data(), otvet.size());
+    unsigned char upperCRC = buffer[otvet.size()-2];
+    unsigned char lowerCRC = buffer[otvet.size()-1];
+    unsigned char upperCRCR;
+    unsigned char lowerCRCR;
+    unsigned short le = otvet.size()-2;
     switch (buffer[1]){
     case 2:
            switch (buffer[2]){
            case 1:
                 switch (buffer[3]){
                 case 1:
-                     unsigned char upperCRC = c1;
-                     unsigned char lowerCRC = c2;
-                     // unsigned short fullCRC = (unsigned short) (upperCRC<<8) | lowerCRC;
-                     unsigned char upperCRCR = Crc16(buffer,le)>>8;
-                     unsigned char lowerCRCR = Crc16(buffer,le);
-                     if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
-                        icap2 = float(buffer[4])*1+0; //"Суммарный ток нагрузки 2"
-                        icap1 = float(buffer[5])*1+0;//"Суммарный ток нагрузки 1"
-                        u2 = float(buffer[6])*0.2+85;//"Напряжение на силовых шинах 2"
-                        u1 = float(buffer[7])*0.2+85;//"Напряжение на силовых шинах 1"
-                        tcorp2 = float(buffer[8])*0.36+0;//"Температура 2 корпуса прибора"
-                        tcorp1 = float(buffer[9])*0.36+0;//"Температура 1 корпуса прибора"
+                    for (int i=0;i<ListOfBSWVData.size();i++){
+                        if (ListOfBSWVData.at(i).namePort == comName){
+                            // unsigned short fullCRC = (unsigned short) (upperCRC<<8) | lowerCRC;
+                            upperCRCR = Crc16(buffer,le)>>8;
+                            lowerCRCR = Crc16(buffer,le);
+                            if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
+                                  ListOfBSWVData[i].icap2 = float(buffer[4])*1+0; //"Суммарный ток нагрузки 2"
+                                  ListOfBSWVData[i].icap1 = float(buffer[5])*1+0;//"Суммарный ток нагрузки 1"
+                                  ListOfBSWVData[i].u2 = float(buffer[6])*0.2+85;//"Напряжение на силовых шинах 2"
+                                  ListOfBSWVData[i].u1 = float(buffer[7])*0.2+85;//"Напряжение на силовых шинах 1"
+                                  ListOfBSWVData[i].tcorp2 = float(buffer[8])*0.36+0;//"Температура 2 корпуса прибора"
+                                  ListOfBSWVData[i].tcorp1 = float(buffer[9])*0.36+0;//"Температура 1 корпуса прибора"
+                                  ListOfBSWVData[i].otvetPoluchen=1;
+                            }
+                        }
                      }
+                 break;
+                 case 17:
+                    for (int i=0;i<ListOfBSWVt.size();i++){
+                        if (ListOfBSWVt.at(i).namePort == comName){
+                            upperCRCR = Crc16(buffer,le)>>8;
+                            lowerCRCR = Crc16(buffer,le);
+                            if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
+                                ListOfBSWVt[i].uref = float((unsigned short) (buffer[4]<<8) | buffer[5]);
+                                ListOfBSWVt[i].icap2 =  float((unsigned short) (buffer[8]<<8) | buffer[9]);//"Суммарный ток нагрузки 2"
+                                ListOfBSWVt[i].icap1 = float((unsigned short) (buffer[10]<<8) | buffer[11]);//"Суммарный ток нагрузки 1"
+                                ListOfBSWVt[i].u2 = float((unsigned short) (buffer[12]<<8) | buffer[13]);//"Напряжение на силовых шинах 2"
+                                ListOfBSWVt[i].u1 = float((unsigned short) (buffer[14]<<8) | buffer[15]);//"Напряжение на силовых шинах 1"
+                                ListOfBSWVt[i].tcorp2 =float((unsigned short) (buffer[16]<<8) | buffer[17]); //"Температура 2 корпуса прибора"
+                                ListOfBSWVt[i].tcorp1 = float((unsigned short) (buffer[18]<<8) | buffer[19]);//"Температура 1 корпуса прибора"
+                            }
+                            ListOfBSWVt[i].otvetPoluchen=1;
+                        }
+                    }
+                 break;
+                 case 34:
+                      for (int i=0;i<ListOfBSWVnomer.size();i++){
+                          if (ListOfBSWVnomer.at(i).namePort == comName){
+                              upperCRCR = Crc16(buffer,le)>>8;
+                              lowerCRCR = Crc16(buffer,le);
+                              if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
+                                   unsigned char nMK = buffer[4]<<4;
+                                   ListOfBSWVnomer[i].nMK=nMK>>4; //номер МУКа, 1 - 1 МК, 2- 2 МК
+                                   ListOfBSWVnomer[i].nChan=buffer[4]>>4;
+                                   ListOfBSWVnomer[i].otvetPoluchen=1;
+                              }
+                          }
+                      }
+                 break;
+                 case 255:
+                      for (int i=0;i<ListOfBSWVprov.size();i++){
+                          if (ListOfBSWVprov.at(i).namePort == comName){
+                              ListOfBSWVprov[i].otvetPoluchen=1;
+                          }
+                      }
                  break;
                  }
              break;
              }
     break;
     }
-    for (int i=0;i<ListOfBSWVData.size();i++){
-        if (ListOfBSWVData.at(i).namePort == comName){
-        ListOfBSWVData[i].icap2 = icap2;
-        ListOfBSWVData[i].icap1 = icap1;
-        ListOfBSWVData[i].u2 = u2;
-        ListOfBSWVData[i].u1 = u1;
-        ListOfBSWVData[i].tcorp2 = tcorp2;
-        ListOfBSWVData[i].tcorp1 = tcorp1;
-        }
-    }
+
 }
 
 QString MainWindow::getPortName(QString dis, QString serial)
@@ -449,7 +494,7 @@ void MainWindow::Print(QString dat)
 {
 //    ui->consol->textCursor().insertText(dat+'\r'); // Вывод текста в консоль
 //    ui->consol->moveCursor(QTextCursor::End);//Scroll
-    ui->label->setText(dat);
+    //ui->label->setText(dat);
 }
 void MainWindow::Vivod(){
 for (int i=0;i<ListOfBSWVData.size();i++){
