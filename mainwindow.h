@@ -10,6 +10,7 @@
 #include <QSettings>
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
+#include <QPixmap>
 //размеры пакетов данных (первые четыре байта всегда содержат начальный, адрес отправителя, адрес получателя и код сообщения, последние два байта - контрольная сумма)
 //тип сообщения 1 - 6 байт, 17 - 16 байт, 34 - 1 байт, 255 - 0 байт
 //итого весь пакет ответа: 1 - 12 байт, 17 - 22 байт, 34 - 7 байт, 255 - 6 байт
@@ -57,8 +58,8 @@ struct BSWVnomerMK //создание структуры
 {
     QString name; //шифр канала
     QString namePort; //присвоенное имя порта
-    unsigned char nMK; //номер МУКа, 1 - 1 МК, 2- 2 МК
-    unsigned char nChan;//номер канала, 0 - основной, 1 - резервный
+    QString nMK; //номер МУКа, 1 - 1 МК, 2- 2 МК
+    QString nChan;//номер канала, 0 - основной, 1 - резервный
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
 };
@@ -97,11 +98,12 @@ private:
     int otvetTarirSize = 22;
     int otvetMKSize = 7;
     int otvetProvSize = 6;
+    QString error;
 
 public:
     QTimer *timerZaprosaTelem;
     QTimer *timerZaprosaTarir;
-    QTimer *timerIn;
+    QTimer *timerZaprosaProv;
     QTimer *timerVivod;
     QByteArray otvet;
     BSWVdata BSWV;
@@ -120,15 +122,18 @@ public slots:
    void Vivod(); //Вывод телеметрии в таблицу
    void OtpravkaZaprosaTelem ();
    void OtpravkaZaprosaTarir ();
-
+   void OtpravkaZaprosaNomer();
+   void OtpravkaZaprosaProv();
    void Print(QString dat);
    void Analize(QByteArray otvet, QString comName);
    void Kompanovka(QByteArray dataRead, QString comName);
    QString getPortName(QString dis, QString serial);
-   void AcpVisible();
    void TimerVivodStart();
-   void TimerInStart();
+   void TimerProvStart();
    void TimerTarirStart();
+   void Knopka();
+   void ChangeColor();
+   void ProverkaNomera();
 
 signals:
     //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
@@ -141,5 +146,9 @@ signals:
    void writeData(QByteArray dataQ);
    void con1();void con2();void con3();void con4();void con5();void con6();
    void readyToAnalize(QByteArray otvet, QString comName);
+   void errorMessage(QString);
+
+private slots:
+   void on_btnNomer_clicked();
 };
 #endif // MAINWINDOW_H

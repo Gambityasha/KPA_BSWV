@@ -62,6 +62,10 @@ void MainWindow::LoadSettings()
          ListOfBSWVData[0].name = "MK1-osn";
          ListOfBSWVt[0].namePort = name1;
          ListOfBSWVt[0].name = "MK1-osn";
+         ListOfBSWVprov[0].namePort = name1;
+         ListOfBSWVprov[0].name = "MK1-osn";
+         ListOfBSWVnomer[0].namePort = name1;
+         ListOfBSWVnomer[0].name = "MK1-osn";
          emit con1();
     }
     setting.endGroup();
@@ -73,10 +77,14 @@ void MainWindow::LoadSettings()
         QString name2 = getPortName(dis2,serial2);
         emit savesettings2(name2, baudrate, databits, parity, stopbits, flowcontrol);
         ListOfBSWVData[1].namePort = name2;
-         ListOfBSWVData[1].name = "MK1-rez";
-         ListOfBSWVt[1].namePort = name2;
-          ListOfBSWVt[1].name = "MK1-rez";
-         emit con2();
+        ListOfBSWVData[1].name = "MK1-rez";
+        ListOfBSWVt[1].namePort = name2;
+        ListOfBSWVt[1].name = "MK1-rez";
+        ListOfBSWVprov[1].namePort = name2;
+        ListOfBSWVprov[1].name = "MK1-rez";
+        ListOfBSWVnomer[1].namePort = name2;
+        ListOfBSWVnomer[1].name = "MK1-rez";
+        emit con2();
     }
     setting.endGroup();
     setting.beginGroup("MK2-osn");// [MK2-osn] в ини файле
@@ -90,6 +98,10 @@ void MainWindow::LoadSettings()
     ListOfBSWVData[2].name = "MK2-osn";
     ListOfBSWVt[2].namePort = name3;
     ListOfBSWVt[2].name = "MK2-osn";
+    ListOfBSWVprov[2].namePort = name3;
+    ListOfBSWVprov[2].name = "MK2-osn";
+    ListOfBSWVnomer[2].namePort = name3;
+    ListOfBSWVnomer[2].name = "MK2-osn";
 
     emit con3();
     }
@@ -102,24 +114,32 @@ void MainWindow::LoadSettings()
         QString name4 = getPortName(dis4,serial4);
         emit savesettings4(name4, baudrate, databits, parity, stopbits, flowcontrol);
         ListOfBSWVData[3].namePort = name4;
-         ListOfBSWVData[3].name = "MK2-rez";
-         ListOfBSWVt[3].namePort = name4;
-          ListOfBSWVt[3].name = "MK2-rez";
-         emit con4();
+        ListOfBSWVData[3].name = "MK2-rez";
+        ListOfBSWVt[3].namePort = name4;
+        ListOfBSWVt[3].name = "MK2-rez";
+        ListOfBSWVprov[3].namePort = name4;
+        ListOfBSWVprov[3].name = "MK2-rez";
+        ListOfBSWVnomer[3].namePort = name4;
+        ListOfBSWVnomer[3].name = "MK2-rez";
+        emit con4();
     }
     setting.endGroup();
     setting.beginGroup("MK3-osn");// [MK3-osn] в ини файле
     QString status5 = setting.value("work","0").toString();
     if ( status5 == "on") {
-    dis5 = setting.value("description","0").toString();
-    serial5 = setting.value("serialNumber","0").toString();
-    QString name5 = getPortName(dis5,serial5);
-    emit savesettings5(name5, baudrate, databits, parity, stopbits, flowcontrol);
-    ListOfBSWVData[4].namePort = name5;
-    ListOfBSWVData[4].name = "MK3-osn";
-    ListOfBSWVt[4].namePort = name5;
-    ListOfBSWVt[4].name = "MK3-osn";
-    emit con5();
+        dis5 = setting.value("description","0").toString();
+        serial5 = setting.value("serialNumber","0").toString();
+        QString name5 = getPortName(dis5,serial5);
+        emit savesettings5(name5, baudrate, databits, parity, stopbits, flowcontrol);
+        ListOfBSWVData[4].namePort = name5;
+        ListOfBSWVData[4].name = "MK3-osn";
+        ListOfBSWVt[4].namePort = name5;
+        ListOfBSWVt[4].name = "MK3-osn";
+        ListOfBSWVprov[4].namePort = name5;
+        ListOfBSWVprov[4].name = "MK3-osn";
+        ListOfBSWVnomer[4].namePort = name5;
+        ListOfBSWVnomer[4].name = "MK3-osn";
+        emit con5();
     }
     setting.endGroup();
     setting.beginGroup("MK3-rez");// [MK3-rez] в ини файле
@@ -133,6 +153,10 @@ void MainWindow::LoadSettings()
         ListOfBSWVData[5].name = "MK3-rez";
         ListOfBSWVt[5].namePort = name6;
         ListOfBSWVt[5].name = "MK3-rez";
+        ListOfBSWVprov[5].namePort = name6;
+        ListOfBSWVprov[5].name = "MK3-rez";
+        ListOfBSWVnomer[5].namePort = name6;
+        ListOfBSWVnomer[5].name = "MK3-rez";
         emit con6();
     }
     setting.endGroup();
@@ -146,6 +170,22 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    QPixmap pix("D:/GitHub/KPA_BSWV/redbtn.png");//указание расположения картинки и создание объекта класса
+    QPixmap pix1("D:/GitHub/KPA_BSWV/greenbtn.png");
+    ui->greenMK1o->setPixmap(pix1.scaled(35,35,Qt::KeepAspectRatio));
+    ui->redMK1o->setPixmap(pix.scaled(35,35,Qt::KeepAspectRatio));//присвоение лейблу этой картинки с уменьшением ее размеров
+    ui->greenMK2o->setPixmap(pix1.scaled(35,35,Qt::KeepAspectRatio));
+    ui->redMK2o->setPixmap(pix.scaled(35,35,Qt::KeepAspectRatio));//присвоение лейблу этой картинки с уменьшением ее размеров
+    ui->greenMK3o->setPixmap(pix1.scaled(35,35,Qt::KeepAspectRatio));
+    ui->redMK3o->setPixmap(pix.scaled(35,35,Qt::KeepAspectRatio));//присвоение лейблу этой картинки с уменьшением ее размеров
+    ui->greenMK1r->setPixmap(pix1.scaled(35,35,Qt::KeepAspectRatio));
+    ui->redMK1r->setPixmap(pix.scaled(35,35,Qt::KeepAspectRatio));//присвоение лейблу этой картинки с уменьшением ее размеров
+    ui->greenMK2r->setPixmap(pix1.scaled(35,35,Qt::KeepAspectRatio));
+    ui->redMK2r->setPixmap(pix.scaled(35,35,Qt::KeepAspectRatio));//присвоение лейблу этой картинки с уменьшением ее размеров
+    ui->greenMK3r->setPixmap(pix1.scaled(35,35,Qt::KeepAspectRatio));
+    ui->redMK3r->setPixmap(pix.scaled(35,35,Qt::KeepAspectRatio));//присвоение лейблу этой картинки с уменьшением ее размеров
+
 
     BSWV.name = "MK1-osn"; BSWV.namePort = "Com";BSWV.icap2=0; BSWV.icap1 = 0; BSWV.u2 = 0; BSWV.u1 = 0;BSWV.tcorp2 = 0; BSWV.tcorp1=0;
     ListOfBSWVData.append(BSWV);
@@ -173,7 +213,39 @@ MainWindow::MainWindow(QWidget *parent)
     BSWVt.name = "MK3-rez"; BSWVt.namePort = "Com";BSWVt.icap2=0; BSWVt.icap1 = 0; BSWVt.u2 = 0; BSWVt.u1 = 0;BSWVt.tcorp2 = 0; BSWVt.tcorp1=0;BSWVt.uref=0;
     ListOfBSWVt.append(BSWVt);
 
+    BSWVp.name = "MK1-osn"; BSWVp.namePort = "Com"; BSWVp.otvetPoluchen=0;
+    ListOfBSWVprov.append(BSWVp);
+    BSWVp.name = "MK1-rez"; BSWVp.namePort = "Com";BSWVp.otvetPoluchen=0;
+    ListOfBSWVprov.append(BSWVp);
+    BSWVp.name = "MK2-osn"; BSWVp.namePort = "Com";BSWVp.otvetPoluchen=0;
+    ListOfBSWVprov.append(BSWVp);
+    BSWVp.name = "MK2-rez"; BSWVp.namePort = "Com";BSWVp.otvetPoluchen=0;
+    ListOfBSWVprov.append(BSWVp);
+    BSWVp.name = "MK3-osn"; BSWVp.namePort = "Com";BSWVp.otvetPoluchen=0;
+    ListOfBSWVprov.append(BSWVp);
+    BSWVp.name = "MK3-rez"; BSWVp.namePort = "Com";BSWVp.otvetPoluchen=0;
+    ListOfBSWVprov.append(BSWVp);
 
+    BSWVnomer.name = "MK1-osn"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0;
+    ListOfBSWVnomer.append(BSWVnomer);
+    BSWVnomer.name = "MK1-rez"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0;
+    ListOfBSWVnomer.append(BSWVnomer);
+    BSWVnomer.name = "MK2-osn"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0;
+    ListOfBSWVnomer.append(BSWVnomer);
+    BSWVnomer.name = "MK2-rez"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0;
+    ListOfBSWVnomer.append(BSWVnomer);
+    BSWVnomer.name = "MK3-osn"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0;
+    ListOfBSWVnomer.append(BSWVnomer);
+    BSWVnomer.name = "MK3-rez"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0;
+    ListOfBSWVnomer.append(BSWVnomer);
+
+
+
+
+    ui->tblNomer->setRowCount(2);
+    ui->tblNomer->setColumnCount(3);
+    ui->tblNomer->setHorizontalHeaderLabels(QStringList()<<"МК1"<<"МК2"<<"МК3"); //заполнение заголовков столбцов
+    ui->tblNomer->setVerticalHeaderLabels(QStringList()<<"Основной"<<"Резервный");
     ui->tblBSWV->setRowCount(6); //задание количества строк таблицы
     ui->tblBSWV->setColumnCount(6); //задание количества колонок таблицы
     ui->tblBSWV->setHorizontalHeaderLabels(QStringList()<<"МК1-осн"<<"МК1-рез"<<"МК2-осн"<<"МК2-рез"<<"МК3-осн"<<"МК3-рез"); //заполнение заголовков столбцов
@@ -225,8 +297,8 @@ MainWindow::MainWindow(QWidget *parent)
     dataProv[1] = outAdr;
     dataProv[2] = inAdr;
     dataProv[3] = messType255;
-    unsigned char upperProv = Crc16(dataT,len)>>8; //получение старшего байта контрольной суммы
-    unsigned char lowerProv = Crc16(dataT,len);
+    unsigned char upperProv = Crc16(dataProv,len)>>8; //получение старшего байта контрольной суммы
+    unsigned char lowerProv = Crc16(dataProv,len);
     dataProv[4] = upperProv;
     dataProv[5] = lowerProv;
 //-----------Конец формирования исходящего сообщения для БСШ-В (тип 255 - проверка связи)-----------
@@ -243,14 +315,15 @@ MainWindow::MainWindow(QWidget *parent)
     timerVivod = new QTimer();
     timerZaprosaTelem = new QTimer();
     timerZaprosaTarir = new QTimer();
-    timerIn = new QTimer();
-    timerZaprosaTelem->start(300);
-//  QTimer::singleShot(50,this,SLOT(TimerInStart()));
-    QTimer::singleShot(120,this,SLOT(TimerTarirStart()));
-    QTimer::singleShot(200,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 50 мс после их получения
-    ui->tblAcp->setVisible(false);
+    timerZaprosaProv = new QTimer();
+    timerZaprosaTelem->start(5000);
+    QTimer::singleShot(1500,this,SLOT(TimerTarirStart()));
+    QTimer::singleShot(2500,this,SLOT(TimerProvStart()));
+    QTimer::singleShot(3500,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 50 мс после их получения
     connect(timerZaprosaTelem, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTelem()));
     connect(timerZaprosaTarir, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTarir()));
+    connect(timerZaprosaProv,SIGNAL(timeout()), this,SLOT(OtpravkaZaprosaProv()));
+    connect(timerZaprosaTelem,SIGNAL(timeout()),this, SLOT(ChangeColor()));
     connect(this, SIGNAL(savesettings1(QString,int,int,int,int,int)),PortMK1osn,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
     connect(this, SIGNAL(savesettings2(QString,int,int,int,int,int)),PortMK1rez,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
     connect(this, SIGNAL(savesettings3(QString,int,int,int,int,int)),PortMK2osn,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
@@ -287,32 +360,54 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK2rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
     connect(PortMK3rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
     connect(PortMK3osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
-    connect(timerVivod, SIGNAL(timeout()), this, SLOT(Vivod()));
-    connect(ui->cbAcp, SIGNAL(clicked()), this, SLOT(AcpVisible()));
+    connect(timerVivod, SIGNAL(timeout()), this, SLOT(Vivod()));    
     connect(this, SIGNAL(readyToAnalize(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
+    connect(ui->checkBox, SIGNAL(clicked()), this, SLOT(Knopka()));
+    connect(this, SIGNAL(errorMessage(QString)), this,SLOT(Print(QString)));
 
+   }
+
+void MainWindow::TimerVivodStart()
+{
+    timerVivod->start(5000);
 }
 
+void MainWindow::TimerProvStart()
+{
+    timerZaprosaProv->start(5000);
+}
+
+void MainWindow::TimerTarirStart()
+{
+    timerZaprosaTarir->start(5000);
+}
 void MainWindow:: OtpravkaZaprosaTelem()
 {
     QByteArray dataQ = QByteArray::fromRawData((char*)data,sizeof(data));
     //dataQ[0] = reinterpret_cast<QByteArray>(data[0].data());
-    emit writeData (dataQ);    
-//    QByteArray dataQProv = QByteArray::fromRawData((char*)dataProv,sizeof(dataProv));
-//    emit writeData (dataQProv);
-//    QByteArray dataQNomer = QByteArray::fromRawData((char*)dataNomer,sizeof(dataProv));
-//    emit writeData (dataQNomer);
+    emit writeData (dataQ);
 }
 
 void MainWindow:: OtpravkaZaprosaTarir()
 {
     QByteArray dataQt = QByteArray::fromRawData((char*)dataT,sizeof(dataT));
     emit writeData (dataQt);
-//    QByteArray dataQProv = QByteArray::fromRawData((char*)dataProv,sizeof(dataProv));
-//    emit writeData (dataQProv);
-//    QByteArray dataQNomer = QByteArray::fromRawData((char*)dataNomer,sizeof(dataProv));
-//    emit writeData (dataQNomer);
 }
+
+void MainWindow::OtpravkaZaprosaNomer()
+{
+    QByteArray dataQNomer = QByteArray::fromRawData((char*)dataNomer,sizeof(dataNomer));
+    emit writeData (dataQNomer);
+
+}
+
+void MainWindow::OtpravkaZaprosaProv()
+{
+    QByteArray dataQProv = QByteArray::fromRawData((char*)dataProv,sizeof(dataProv));
+    emit writeData (dataQProv);
+}
+
+
 void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
 {
 //    unsigned char buffer [22];
@@ -359,19 +454,6 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
 
 void MainWindow::Analize(QByteArray otvet,QString comName)
 {
-//    int otvetLenght;
-//    unsigned short len;
-//    switch (MessageType) {
-//          case 1: {
-//                otvetLenght=12;
-//          break;
-//          }
-//          case 2:
-//                otvetLenght=22;
-//          break;
-//          case 3:
-//                otvetLenght=22;
-//          break;
     unsigned char buffer [otvet.size()];
     memcpy( buffer, otvet.data(), otvet.size());
     unsigned char upperCRC = buffer[otvet.size()-2];
@@ -399,6 +481,8 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                   ListOfBSWVData[i].tcorp1 = float(buffer[9])*0.36+0;//"Температура 1 корпуса прибора"
                                   ListOfBSWVData[i].otvetPoluchen=1;
                             }
+                            else {ListOfBSWVData[i].otvetPoluchen=0;
+                            }
                         }
                      }
                  break;
@@ -415,8 +499,10 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                 ListOfBSWVt[i].u1 = float((unsigned short) (buffer[14]<<8) | buffer[15]);//"Напряжение на силовых шинах 1"
                                 ListOfBSWVt[i].tcorp2 =float((unsigned short) (buffer[16]<<8) | buffer[17]); //"Температура 2 корпуса прибора"
                                 ListOfBSWVt[i].tcorp1 = float((unsigned short) (buffer[18]<<8) | buffer[19]);//"Температура 1 корпуса прибора"
+                                ListOfBSWVt[i].otvetPoluchen=1;
                             }
-                            ListOfBSWVt[i].otvetPoluchen=1;
+                            else {ListOfBSWVt[i].otvetPoluchen=0;
+                            }
                         }
                     }
                  break;
@@ -427,9 +513,26 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                               lowerCRCR = Crc16(buffer,le);
                               if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
                                    unsigned char nMK = buffer[4]<<4;
-                                   ListOfBSWVnomer[i].nMK=nMK>>4; //номер МУКа, 1 - 1 МК, 2- 2 МК
-                                   ListOfBSWVnomer[i].nChan=buffer[4]>>4;
-                                   ListOfBSWVnomer[i].otvetPoluchen=1;
+                                   switch (nMK>>4){
+                                          case 0b0001://номер МУКа, 0b0001 - 1 МК, 0b0010- 2 МК, 0b0011 - 3 МК
+                                          ListOfBSWVnomer[i].nMK = "MK1";
+                                          break;
+                                          case 0b0010:
+                                          ListOfBSWVnomer[i].nMK = "MK2";
+                                          break;
+                                          case 0b0011:
+                                          ListOfBSWVnomer[i].nMK = "MK3";
+                                          break;
+                                    }
+                                    if ((buffer[4]>>4)==0b0000){ //номер канала 0b0000 - основной, 0b0001 -резервный;
+                                        ListOfBSWVnomer[i].nChan = "-основной";
+                                    }
+                                    if ((buffer[4]>>4)==0b0001){
+                                        ListOfBSWVnomer[i].nChan = "-резервный";
+                                    }
+                                    ListOfBSWVnomer[i].otvetPoluchen=1;
+                              }
+                              else {ListOfBSWVnomer[i].otvetPoluchen=0;
                               }
                           }
                       }
@@ -437,7 +540,13 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                  case 255:
                       for (int i=0;i<ListOfBSWVprov.size();i++){
                           if (ListOfBSWVprov.at(i).namePort == comName){
+                              upperCRCR = Crc16(buffer,le)>>8;
+                              lowerCRCR = Crc16(buffer,le);
+                              if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
                               ListOfBSWVprov[i].otvetPoluchen=1;
+                              }
+                              else {ListOfBSWVprov[i].otvetPoluchen=0;
+                              }
                           }
                       }
                  break;
@@ -449,55 +558,98 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
 
 }
 
-QString MainWindow::getPortName(QString dis, QString serial)
+void MainWindow::Knopka()
 {
-    QString namePort;
-    QList<QSerialPortInfo> serialPortInfo = QSerialPortInfo::availablePorts();
-    for (int i=0;i<serialPortInfo.count();i++) {
-        if ((dis==serialPortInfo.at(i).description())&&(serial==serialPortInfo.at(i).serialNumber())){
-           namePort = serialPortInfo.at(i).portName();
-        }
+
+    if (ui->checkBox->isChecked()){
+        ui->greenMK1o->setVisible(true);
+        ui->redMK1o->setVisible(false);
+        ui->greenMK2o->setVisible(true);
+        ui->redMK2o->setVisible(false);
+        ui->greenMK3o->setVisible(true);
+        ui->redMK3o->setVisible(false);
+        ui->greenMK1r->setVisible(true);
+        ui->redMK1r->setVisible(false);
+        ui->greenMK2r->setVisible(true);
+        ui->redMK2r->setVisible(false);
+        ui->greenMK3r->setVisible(true);
+        ui->redMK3r->setVisible(false);
+
     }
-    return namePort;
-}
-
-void MainWindow::AcpVisible()
-{
-    if (ui->cbAcp->isChecked()){
-        ui->tblAcp->setVisible(true);
-        setMinimumSize(972,613);
-        resize(972,613);
+    else{
+        ui->greenMK1o->setVisible(false);
+        ui->redMK1o->setVisible(true);
+        ui->greenMK2o->setVisible(false);
+        ui->redMK2o->setVisible(true);
+        ui->greenMK3o->setVisible(false);
+        ui->redMK3o->setVisible(true);
+        ui->greenMK1r->setVisible(false);
+        ui->redMK1r->setVisible(true);
+        ui->greenMK2r->setVisible(false);
+        ui->redMK2r->setVisible(true);
+        ui->greenMK3r->setVisible(false);
+        ui->redMK3r->setVisible(true);
     }
-    else {
-        ui->tblAcp->setVisible(false);
-        setMinimumSize(972,321);
-        resize(972,321);
-    }
+
 }
 
-void MainWindow::TimerVivodStart()
+void MainWindow::ChangeColor()
 {
-    timerVivod->start(300);
-}
-
-void MainWindow::TimerInStart()
-{
-    timerIn->start(300);
-}
-
-void MainWindow::TimerTarirStart()
-{
-    timerZaprosaTarir->start(300);
+    ui->tabWidget->tabBar()->setTabTextColor(1,Qt::black);
 }
 
 void MainWindow::Print(QString dat)
 {
-//    ui->consol->textCursor().insertText(dat+'\r'); // Вывод текста в консоль
-//    ui->consol->moveCursor(QTextCursor::End);//Scroll
-    //ui->label->setText(dat);
+    ui->consol->textCursor().insertText(dat+'\r'); // Вывод текста в консоль
+    ui->consol->moveCursor(QTextCursor::End);//Scroll
+    ui->tabWidget->tabBar()->setTabTextColor(1,Qt::red);
+
 }
+
+void MainWindow::ProverkaNomera(){
+
+    for (int f=0;f<ListOfBSWVnomer.size();f++){
+        if (ListOfBSWVnomer.at(f).otvetPoluchen==1){
+            QString nomer = ListOfBSWVnomer.at(f).nMK+ListOfBSWVnomer.at(f).nChan;
+            if (ListOfBSWVprov.at(f).name=="MK1-osn"){
+                QTableWidgetItem *itm0_0 = new QTableWidgetItem(tr("%1").arg(nomer));
+                ui->tblNomer->setItem(0,0,itm0_0);
+            }
+            if (ListOfBSWVprov.at(f).name=="MK1-rez"){
+                QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(nomer));
+                ui->tblNomer->setItem(1,0,itm1_0);
+            }
+            if (ListOfBSWVprov.at(f).name=="MK2-osn"){
+                QTableWidgetItem *itm0_1 = new QTableWidgetItem(tr("%1").arg(nomer));
+                ui->tblNomer->setItem(0,1,itm0_1);
+            }
+            if (ListOfBSWVprov.at(f).name=="MK2-rez"){
+                QTableWidgetItem *itm1_1 = new QTableWidgetItem(tr("%1").arg(nomer));
+                ui->tblNomer->setItem(1,1,itm1_1);
+            }
+            if (ListOfBSWVprov.at(f).name=="MK3-osn"){
+                QTableWidgetItem *itm0_2 = new QTableWidgetItem(tr("%1").arg(nomer));
+                ui->tblNomer->setItem(0,2,itm0_2);
+            }
+            if (ListOfBSWVprov.at(f).name=="MK3-rez"){
+                QTableWidgetItem *itm1_2 = new QTableWidgetItem(tr("%1").arg(nomer));
+                ui->tblNomer->setItem(1,2,itm1_2);
+            }
+
+        }
+        else {
+            error = "Ответ на сообщение 34 от "+ ListOfBSWVprov.at(f).name +" не получен";
+            emit errorMessage (error);
+        }
+        ListOfBSWVnomer[f].otvetPoluchen=0;
+    }
+
+}
+
+
 void MainWindow::Vivod(){
 for (int i=0;i<ListOfBSWVData.size();i++){
+    if (ListOfBSWVData.at(i).otvetPoluchen==1){
     QTableWidgetItem *itm0_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVData.at(i).icap2)); //создание итема таблицы для заполнения
     ui->tblBSWV->setItem(0,i,itm0_0); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
     QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVData.at(i).icap1));
@@ -509,13 +661,20 @@ for (int i=0;i<ListOfBSWVData.size();i++){
     QTableWidgetItem *itm4_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVData.at(i).tcorp2));
     ui->tblBSWV->setItem(4,i,itm4_0);
     QTableWidgetItem *itm5_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVData.at(i).tcorp1));
-    ui->tblBSWV->setItem(5,i,itm5_0);
+    ui->tblBSWV->setItem(5,i,itm5_0);    
+    ListOfBSWVData[i].otvetPoluchen=0;
+    }
+    else {
+        error = "Ответ на сообщение 1 от "+ListOfBSWVData.at(i).name+" не получен";
+        emit errorMessage (error);
+    }
 //  itm1_2->setTextColor(Qt::red); //задание цвета у текста определенной ячейки таблицы
 //  itm1_2->setBackgroundColor(Qt::black); //задание цвета самой определенной ячейки таблицы
 //  QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(pcB[5]*0.2+0)); //перевод в QString данных из unsigned char
 
 }
 for (int j=0;j<ListOfBSWVt.size();j++){
+    if (ListOfBSWVt.at(j).otvetPoluchen==1){
     QTableWidgetItem *itm0_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).icap2)); //создание итема таблицы для заполнения
     ui->tblAcp->setItem(0,j,itm0_0); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
     QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).icap1));
@@ -530,11 +689,96 @@ for (int j=0;j<ListOfBSWVt.size();j++){
     ui->tblAcp->setItem(5,j,itm5_0);
     QTableWidgetItem *itm6_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).uref));
     ui->tblAcp->setItem(6,j,itm6_0);
+
+    }
+    else {
+        error = "Ответ на сообщение 17 от "+ ListOfBSWVt.at(j).name +" не получен";
+        emit errorMessage (error);
+    }
 }
+
+for (int k=0;k<ListOfBSWVprov.size();k++){
+    if (ListOfBSWVprov.at(k).otvetPoluchen==0){
+        if (ListOfBSWVprov.at(k).name=="MK1-osn"){
+            ui->greenMK1o->setVisible(false);
+            ui->redMK1o->setVisible(true);
+        }
+        if (ListOfBSWVprov.at(k).name=="MK1-rez"){
+            ui->greenMK1r->setVisible(false);
+            ui->redMK1r->setVisible(true);
+        }
+        if (ListOfBSWVprov.at(k).name=="MK2-osn"){
+            ui->greenMK2o->setVisible(false);
+            ui->redMK2o->setVisible(true);
+        }
+        if (ListOfBSWVprov.at(k).name=="MK2-rez"){
+            ui->greenMK2r->setVisible(false);
+            ui->redMK2r->setVisible(true);
+        }
+        if (ListOfBSWVprov.at(k).name=="MK3-osn"){
+            ui->greenMK3o->setVisible(false);
+            ui->redMK3o->setVisible(true);
+        }
+        if (ListOfBSWVprov.at(k).name=="MK3-rez"){
+            ui->greenMK3r->setVisible(false);
+            ui->redMK3r->setVisible(true);
+        }
+        error = "Ответ на сообщение 255 от "+ListOfBSWVprov.at(k).name + " не получен";
+        emit errorMessage (error);
+    }
+    if (ListOfBSWVprov.at(k).otvetPoluchen==1){
+        if (ListOfBSWVprov.at(k).name=="MK1-osn"){
+            ui->greenMK1o->setVisible(true);
+            ui->redMK1o->setVisible(false);
+        }
+        if (ListOfBSWVprov.at(k).name=="MK1-rez"){
+            ui->greenMK1r->setVisible(true);
+            ui->redMK1r->setVisible(false);
+        }
+        if (ListOfBSWVprov.at(k).name=="MK2-osn"){
+            ui->greenMK2o->setVisible(true);
+            ui->redMK2o->setVisible(false);
+        }
+        if (ListOfBSWVprov.at(k).name=="MK2-rez"){
+            ui->greenMK2r->setVisible(true);
+            ui->redMK2r->setVisible(false);
+        }
+        if (ListOfBSWVprov.at(k).name=="MK3-osn"){
+            ui->greenMK3o->setVisible(true);
+            ui->redMK3o->setVisible(false);
+        }
+        if (ListOfBSWVprov.at(k).name=="MK3-rez"){
+            ui->greenMK3r->setVisible(true);
+            ui->redMK3r->setVisible(false);
+        }
+        ListOfBSWVprov[k].otvetPoluchen=0;
+    }
+
+}
+}
+
+QString MainWindow::getPortName(QString dis, QString serial)
+{
+    QString namePort;
+    QList<QSerialPortInfo> serialPortInfo = QSerialPortInfo::availablePorts();
+    for (int i=0;i<serialPortInfo.count();i++) {
+        if ((dis==serialPortInfo.at(i).description())&&(serial==serialPortInfo.at(i).serialNumber())){
+           namePort = serialPortInfo.at(i).portName();
+        }
+    }
+    return namePort;
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+
+void MainWindow::on_btnNomer_clicked()
+{
+    OtpravkaZaprosaNomer();
+    QTimer::singleShot(200,this,SLOT(ProverkaNomera()));
+
 }
 
