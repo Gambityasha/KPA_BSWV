@@ -11,6 +11,9 @@
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QPixmap>
+#include <QDate>
+#include <QTime>
+
 //размеры пакетов данных (первые четыре байта всегда содержат начальный, адрес отправителя, адрес получателя и код сообщения, последние два байта - контрольная сумма)
 //тип сообщения 1 - 6 байт, 17 - 16 байт, 34 - 1 байт, 255 - 0 байт
 //итого весь пакет ответа: 1 - 12 байт, 17 - 22 байт, 34 - 7 байт, 255 - 6 байт
@@ -114,6 +117,8 @@ public:
     QList <BSWVprov>ListOfBSWVprov;
     BSWVnomerMK BSWVnomer;
     QList <BSWVnomerMK>ListOfBSWVnomer;
+    QFile file;
+    QTime time;
 
 private:
    void LoadSettings();
@@ -134,6 +139,7 @@ public slots:
    void Knopka();
    void ChangeColor();
    void ProverkaNomera();
+   void WriteInFile();
 
 signals:
     //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);

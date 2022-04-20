@@ -264,8 +264,6 @@ MainWindow::MainWindow(QWidget *parent)
     port *PortMK3osn = new port();
     port *PortMK3rez = new port();
 
-
-
     //-----------------Формирование исходящего сообщения для БСШ-В (тип 1 - обычный обмен)---------------------
     data[0] = startByte;
     data[1] = outAdr;
@@ -316,10 +314,14 @@ MainWindow::MainWindow(QWidget *parent)
     timerZaprosaTelem = new QTimer();
     timerZaprosaTarir = new QTimer();
     timerZaprosaProv = new QTimer();
-    timerZaprosaTelem->start(5000);
-    QTimer::singleShot(1500,this,SLOT(TimerTarirStart()));
-    QTimer::singleShot(2500,this,SLOT(TimerProvStart()));
-    QTimer::singleShot(3500,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 50 мс после их получения
+    timerZaprosaTelem->start(1000);
+    QString fname = QDate::currentDate().toString("dd.MM.yyyy")+".txt";
+    file.setFileName(fname);
+
+
+    QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
+    QTimer::singleShot(300,this,SLOT(TimerProvStart()));
+    QTimer::singleShot(500,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 50 мс после их получения
     connect(timerZaprosaTelem, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTelem()));
     connect(timerZaprosaTarir, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTarir()));
     connect(timerZaprosaProv,SIGNAL(timeout()), this,SLOT(OtpravkaZaprosaProv()));
@@ -364,22 +366,29 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(readyToAnalize(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
     connect(ui->checkBox, SIGNAL(clicked()), this, SLOT(Knopka()));
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(Print(QString)));
-
+    LoadSettings();
    }
 
 void MainWindow::TimerVivodStart()
 {
-    timerVivod->start(5000);
+    timerVivod->start(1000);
 }
 
 void MainWindow::TimerProvStart()
 {
-    timerZaprosaProv->start(5000);
+    timerZaprosaProv->start(1000);
 }
 
 void MainWindow::TimerTarirStart()
 {
-    timerZaprosaTarir->start(5000);
+    timerZaprosaTarir->start(1000);
+}
+
+void MainWindow::on_btnNomer_clicked()
+{
+    OtpravkaZaprosaNomer();
+    QTimer::singleShot(500,this,SLOT(ProverkaNomera()));
+
 }
 void MainWindow:: OtpravkaZaprosaTelem()
 {
@@ -410,44 +419,44 @@ void MainWindow::OtpravkaZaprosaProv()
 
 void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
 {
-//    unsigned char buffer [22];
-//    memcpy( buffer, dataRead.data(), dataRead.size() );
-    //unsigned char c1 = buffer[10];
-    //unsigned char c2 = buffer[11];
-
     for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData.at(i).namePort == comName){
                 otvet.append(dataRead);
                 for (int j = 0; otvet[j]!=char(0xAA);j++) {
                     otvet.remove(0,1);
                 }
+                if (otvet.size()>3){
                 switch (otvet[3]){
-                case char(1):
+                case char (1):
                    if (otvet.size() == otvetTelemSize){
                        ListOfBSWVData[i].otvet = otvet;
                        emit readyToAnalize(ListOfBSWVData.at(i).otvet, ListOfBSWVData.at(i).namePort);
+                       otvet.clear();
                     }
                     break;
-                case char(17):
+                case char (17):
                    if (otvet.size() == otvetTarirSize){
                        ListOfBSWVt[i].otvet = otvet;
                        emit readyToAnalize(ListOfBSWVt.at(i).otvet, ListOfBSWVt.at(i).namePort);
+                       otvet.clear();
                    }
                 break;
-                case char(34):
+                case char (34):
                    if (otvet.size() == otvetMKSize){
                        ListOfBSWVnomer[i].otvet = otvet;
                        emit readyToAnalize(ListOfBSWVnomer.at(i).otvet, ListOfBSWVnomer.at(i).namePort);
+                       otvet.clear();
                    }
                 break;
                 case char(255):
                     if (otvet.size() == otvetProvSize){
                         ListOfBSWVprov[i].otvet = otvet;
                         emit readyToAnalize(ListOfBSWVprov.at(i).otvet, ListOfBSWVprov.at(i).namePort);
+                        otvet.clear();
                     }
                 break;
                 }
-                otvet.clear();
+                }
             }
     }
 }
@@ -604,6 +613,7 @@ void MainWindow::Print(QString dat)
     ui->consol->moveCursor(QTextCursor::End);//Scroll
     ui->tabWidget->tabBar()->setTabTextColor(1,Qt::red);
 
+
 }
 
 void MainWindow::ProverkaNomera(){
@@ -645,6 +655,28 @@ void MainWindow::ProverkaNomera(){
     }
 
 }
+
+void MainWindow::WriteInFile()
+{
+    if (file.exists()){//Проверка - существует ли файл
+            if (file.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла
+                for (int i=0;i<ListOfBSWVData.size();i++){
+                    QString data =QTime::currentTime().toString("H:m:s a") +'\t'+ ListOfBSWVData[i].name+'\t'+QString::number(ListOfBSWVData[i].icap2)+'\t'+
+                            QString::number(ListOfBSWVData[i].icap1)+'\t'+QString::number(ListOfBSWVData[i].u2)+'\t'+QString::number(ListOfBSWVData[i].u1)
+                            +'\t'+ QString::number(ListOfBSWVData[i].tcorp2)+'\t'+ QString::number(ListOfBSWVData[i].tcorp1)+'\r'+'\n';
+                    file.write(data);
+
+                }
+                file.close();
+            }
+    }
+    else {
+            if (file.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
+                file.write("Время "+'\t'+"Канал"+'\t'+"Суммарный ток нагрузки 2"+'\t'+"Суммарный ток нагрузки 1"+'\t'+"Напряжение на силовых шинах 2"
+                           +'\t'+"Напряжение на силовых шинах 1"+'\t'+"Температура 2 корпуса прибора"+'\t'+"Температура 1 корпуса прибора"+'\n');
+
+
+            }
 
 
 void MainWindow::Vivod(){
@@ -775,10 +807,5 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::on_btnNomer_clicked()
-{
-    OtpravkaZaprosaNomer();
-    QTimer::singleShot(200,this,SLOT(ProverkaNomera()));
 
-}
 

@@ -55,9 +55,6 @@ public:
      void handleError(QSerialPort::SerialPortError error);//Слот обработки ощибок
 
 
-
-signals:
-
 };
 
 #endif // PORT_H
