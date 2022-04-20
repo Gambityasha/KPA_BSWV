@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QByteArray>
 
-unsigned short Crc16(unsigned char *pcBlock, unsigned short len)
+unsigned short Crc16(unsigned char *pcBlock, unsigned short len)//проба отката
 {
     const unsigned short Crc16Table[256] = {
         0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
