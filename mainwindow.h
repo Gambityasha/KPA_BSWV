@@ -13,6 +13,7 @@
 #include <QPixmap>
 #include <QDate>
 #include <QTime>
+#include <QTextStream>
 
 //размеры пакетов данных (первые четыре байта всегда содержат начальный, адрес отправителя, адрес получателя и код сообщения, последние два байта - контрольная сумма)
 //тип сообщения 1 - 6 байт, 17 - 16 байт, 34 - 1 байт, 255 - 0 байт
@@ -119,6 +120,8 @@ public:
     QList <BSWVnomerMK>ListOfBSWVnomer;
     QFile file;
     QTime time;
+    QFile fileError;
+
 
 private:
    void LoadSettings();
@@ -140,6 +143,7 @@ public slots:
    void ChangeColor();
    void ProverkaNomera();
    void WriteInFile();
+   void WriteInFileError(QString error);
 
 signals:
     //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);

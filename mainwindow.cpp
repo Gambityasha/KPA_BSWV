@@ -171,8 +171,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QPixmap pix("D:/GitHub/KPA_BSWV/redbtn.png");//указание расположения картинки и создание объекта класса
-    QPixmap pix1("D:/GitHub/KPA_BSWV/greenbtn.png");
+    QPixmap pix("redbtn.png");//указание расположения картинки и создание объекта класса
+    QPixmap pix1("greenbtn.png");
     ui->greenMK1o->setPixmap(pix1.scaled(35,35,Qt::KeepAspectRatio));
     ui->redMK1o->setPixmap(pix.scaled(35,35,Qt::KeepAspectRatio));//присвоение лейблу этой картинки с уменьшением ее размеров
     ui->greenMK2o->setPixmap(pix1.scaled(35,35,Qt::KeepAspectRatio));
@@ -238,9 +238,6 @@ MainWindow::MainWindow(QWidget *parent)
     ListOfBSWVnomer.append(BSWVnomer);
     BSWVnomer.name = "MK3-rez"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0;
     ListOfBSWVnomer.append(BSWVnomer);
-
-
-
 
     ui->tblNomer->setRowCount(2);
     ui->tblNomer->setColumnCount(3);
@@ -317,6 +314,8 @@ MainWindow::MainWindow(QWidget *parent)
     timerZaprosaTelem->start(1000);
     QString fname = QDate::currentDate().toString("dd.MM.yyyy")+".txt";
     file.setFileName(fname);
+    QString fEname = QDate::currentDate().toString("dd.MM.yyyy")+"_Errors.txt";
+    fileError.setFileName(fEname);
 
 
     QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
@@ -366,6 +365,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(readyToAnalize(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
     connect(ui->checkBox, SIGNAL(clicked()), this, SLOT(Knopka()));
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(Print(QString)));
+    connect(this, SIGNAL(errorMessage(QString)), this,SLOT(WriteInFileError(QString)));
+    connect(timerVivod, SIGNAL(timeout()), this, SLOT(WriteInFile()));
     LoadSettings();
    }
 
@@ -661,23 +662,55 @@ void MainWindow::WriteInFile()
     if (file.exists()){//Проверка - существует ли файл
             if (file.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла
                 for (int i=0;i<ListOfBSWVData.size();i++){
-                    QString data =QTime::currentTime().toString("H:m:s a") +'\t'+ ListOfBSWVData[i].name+'\t'+QString::number(ListOfBSWVData[i].icap2)+'\t'+
-                            QString::number(ListOfBSWVData[i].icap1)+'\t'+QString::number(ListOfBSWVData[i].u2)+'\t'+QString::number(ListOfBSWVData[i].u1)
-                            +'\t'+ QString::number(ListOfBSWVData[i].tcorp2)+'\t'+ QString::number(ListOfBSWVData[i].tcorp1)+'\r'+'\n';
-                    file.write(data);
-
-                }
-                file.close();
+                    QString log =QTime::currentTime().toString("H:m:s") +" "+ ListOfBSWVData[i].name+"\t"+QString::number(ListOfBSWVData[i].icap2)+"\t\t"+
+                            QString::number(ListOfBSWVData[i].icap1)+"\t\t"+QString::number(ListOfBSWVData[i].u2)+"\t\t"+QString::number(ListOfBSWVData[i].u1)
+                            +"\t\t"+ QString::number(ListOfBSWVData[i].tcorp2)+"\t\t"+ QString::number(ListOfBSWVData[i].tcorp1)+"\r\n";
+                    QTextStream stream(&file);
+                    stream<<log;
+//                    file.write(log);
+                }                
             }
     }
     else {
-            if (file.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
-                file.write("Время "+'\t'+"Канал"+'\t'+"Суммарный ток нагрузки 2"+'\t'+"Суммарный ток нагрузки 1"+'\t'+"Напряжение на силовых шинах 2"
-                           +'\t'+"Напряжение на силовых шинах 1"+'\t'+"Температура 2 корпуса прибора"+'\t'+"Температура 1 корпуса прибора"+'\n');
+           if (file.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
 
-
+//             file.write("Время  \t  Канал \t  Суммарный ток нагрузки 2 \t Суммарный ток нагрузки 1 \t Напряжение на силовых шинах 2 "
+//                        "\t  Напряжение на силовых шинах 1 \t  Температура 2 корпуса прибора \t Температура 1 корпуса прибора \r\n");
+             file.write("Время\t Канал\t Суммарный \t Суммарный \t Напряжение \t Напряжение \t Температура 2 \t Температура 1 \n"
+              "\t\t ток \t\t ток \t\t на силовых \t на силовых   \t корпуса \t корпуса \n\t\t нагрузки 2 \t нагрузки 1 \t шинах 2 \t шинах 1 \t прибора \t прибора \n");
+               for (int i=0;i<ListOfBSWVData.size();i++){
+                    QString log =QTime::currentTime().toString("H:m:s") +" "+ ListOfBSWVData[i].name+" "+"\t"+QString::number(ListOfBSWVData[i].icap2)+"\t\t"+
+                            QString::number(ListOfBSWVData[i].icap1)+"\t\t"+QString::number(ListOfBSWVData[i].u2)+"\t\t"+QString::number(ListOfBSWVData[i].u1)
+                            +"\t\t"+ QString::number(ListOfBSWVData[i].tcorp2)+"\t\t"+ QString::number(ListOfBSWVData[i].tcorp1)+"\r\n";
+                    QTextStream stream(&file);
+                    stream<<log;
+               }
             }
+    }
+    file.close();
+}
 
+void MainWindow::WriteInFileError(QString error)
+{
+    if (fileError.exists()){//Проверка - существует ли файл
+            if (fileError.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла
+                QString log =QTime::currentTime().toString("H:m:s") +"\t"+error+"\r\n";
+                QTextStream stream(&fileError);
+                stream<<log;
+            }
+    }
+    else {
+           if (fileError.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
+           // QString errorTitle = QString::fromLocal8Bit();
+          // fileError.write(errorTitle);
+           fileError.write(" Ошибки Errors \r\n");
+           QString log =QTime::currentTime().toString("H:m:s") +"\t"+error+"\r\n";
+           QTextStream stream(&fileError);
+           stream<<log;
+           }
+    }
+    fileError.close();
+}
 
 void MainWindow::Vivod(){
 for (int i=0;i<ListOfBSWVData.size();i++){
