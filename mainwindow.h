@@ -119,6 +119,7 @@ public:
     BSWVnomerMK BSWVnomer;
     QList <BSWVnomerMK>ListOfBSWVnomer;
     QFile file;
+    QFile fileACP;
     QTime time;
     QFile fileError;
 
