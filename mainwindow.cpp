@@ -248,12 +248,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tblBSWV->setHorizontalHeaderLabels(QStringList()<<"МК1-осн"<<"МК1-рез"<<"МК2-осн"<<"МК2-рез"<<"МК3-осн"<<"МК3-рез"); //заполнение заголовков столбцов
     ui->tblBSWV->setVerticalHeaderLabels(QStringList()<<"Суммарный ток нагрузки 2"<<"Суммарный ток нагрузки 1"<<"Напряжение на силовых шинах 2" //заполнение заголовков строк
         <<"Напряжение на силовых шинах 1"<<"Температура 2 корпуса прибора"<<"Температура 1 корпуса прибора");
+    ui->tblBSWV->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tblBSWV->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
     ui->tblAcp->setRowCount(7); //задание количества строк таблицы
     ui->tblAcp->setColumnCount(6); //задание количества колонок таблицы
     ui->tblAcp->setHorizontalHeaderLabels(QStringList()<<"МК1-осн"<<"МК1-рез"<<"МК2-осн"<<"МК2-рез"<<"МК3-осн"<<"МК3-рез"); //заполнение заголовков столбцов
     ui->tblAcp->setVerticalHeaderLabels(QStringList()<<"Суммарный ток нагрузки 2"<<"Суммарный ток нагрузки 1"<<"Напряжение на силовых шинах 2" //заполнение заголовков строк
         <<"Напряжение на силовых шинах 1"<<"Температура 2 корпуса прибора"<<"Температура 1 корпуса прибора"<<"Опорное напряжение Uref ");
-
+    ui->tblAcp->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tblAcp->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    //ui->tabWidget->setSizePolicy(QSizePolicy::Stretch);
     port *PortMK1osn = new port();
     port *PortMK1rez = new port();
     port *PortMK2osn = new port();
