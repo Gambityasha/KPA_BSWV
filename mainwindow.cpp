@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QByteArray>
+
 
 unsigned short Crc16(unsigned char *pcBlock, unsigned short len)
 {
@@ -226,17 +226,17 @@ MainWindow::MainWindow(QWidget *parent)
     BSWVp.name = "MK3-rez"; BSWVp.namePort = "Com";BSWVp.otvetPoluchen=0;
     ListOfBSWVprov.append(BSWVp);
 
-    BSWVnomer.name = "MK1-osn"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0;
+    BSWVnomer.name = "MK1-osn"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0; BSWVnomer.nMK = "MK1";BSWVnomer.nChan = "-резервный";
     ListOfBSWVnomer.append(BSWVnomer);
-    BSWVnomer.name = "MK1-rez"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0;
+    BSWVnomer.name = "MK1-rez"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0; BSWVnomer.nMK = "MK1";BSWVnomer.nChan = "-резервный";
     ListOfBSWVnomer.append(BSWVnomer);
-    BSWVnomer.name = "MK2-osn"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0;
+    BSWVnomer.name = "MK2-osn"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0; BSWVnomer.nMK = "MK1";BSWVnomer.nChan = "-резервный";
     ListOfBSWVnomer.append(BSWVnomer);
-    BSWVnomer.name = "MK2-rez"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0;
+    BSWVnomer.name = "MK2-rez"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0; BSWVnomer.nMK = "MK1";BSWVnomer.nChan = "-резервный";
     ListOfBSWVnomer.append(BSWVnomer);
-    BSWVnomer.name = "MK3-osn"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0;
+    BSWVnomer.name = "MK3-osn"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0; BSWVnomer.nMK = "MK1";BSWVnomer.nChan = "-резервный";
     ListOfBSWVnomer.append(BSWVnomer);
-    BSWVnomer.name = "MK3-rez"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0;
+    BSWVnomer.name = "MK3-rez"; BSWVnomer.namePort = "Com";BSWVnomer.otvetPoluchen=0; BSWVnomer.nMK = "MK1";BSWVnomer.nChan = "-резервный";
     ListOfBSWVnomer.append(BSWVnomer);
 
     ui->tblNomer->setRowCount(2);
@@ -279,7 +279,7 @@ MainWindow::MainWindow(QWidget *parent)
     data[4] = upper;
     data[5] = lower;
 //  unsigned short full = (upper*256)+lower; // получение общего значения контрольной суммы из старшего и младшего байтов
-//  unsigned short full = (unsigned short) (upper<<8) | lower; // получение общего значения контрольной суммы из старшего и младшего байтов с помощью побитового сложения
+// unsigned short full = (unsigned short) (upper<<8) | lower; // получение общего значения контрольной суммы из старшего и младшего байтов с помощью побитового сложения
 
 //-----------Конец формирования исходящего сообщения для БСШ-В (тип 1 - телеметрия)-----------
 //-----------Формирование исходящего сообщения для БСШ-В (тип 17 - данные АЦП для калибровки БСШ-В)--------
@@ -396,7 +396,7 @@ void MainWindow::TimerTarirStart()
 void MainWindow::on_btnNomer_clicked()
 {
     OtpravkaZaprosaNomer();
-    QTimer::singleShot(500,this,SLOT(ProverkaNomera()));
+    QTimer::singleShot(5000,this,SLOT(ProverkaNomera()));
 
 }
 void MainWindow:: OtpravkaZaprosaTelem()
@@ -530,22 +530,29 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                               upperCRCR = Crc16(buffer,le)>>8;
                               lowerCRCR = Crc16(buffer,le);
                               if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
-                                   unsigned char nMK = buffer[4]<<4;
-                                   switch (nMK>>4){
-                                          case 0b0001://номер МУКа, 0b0001 - 1 МК, 0b0010- 2 МК, 0b0011 - 3 МК
+                                    unsigned char nMK = buffer[4]<<4;
+                                    switch (nMK>>4){
+                                          //case 0b0001://номер МУКа, 0b0001 - 1 МК, 0b0010- 2 МК, 0b0011 - 3 МК
+                                    case 1:
                                           ListOfBSWVnomer[i].nMK = "MK1";
-                                          break;
-                                          case 0b0010:
+                                    break;
+                                          //case 0b0010:
+                                    case 2:
                                           ListOfBSWVnomer[i].nMK = "MK2";
-                                          break;
-                                          case 0b0011:
+                                    break;
+                                          //case 0b0011:
+                                    case 3:
                                           ListOfBSWVnomer[i].nMK = "MK3";
-                                          break;
+                                    break;
                                     }
-                                    if ((buffer[4]>>4)==0b0000){ //номер канала 0b0000 - основной, 0b0001 -резервный;
-                                        ListOfBSWVnomer[i].nChan = "-основной";
+                                    unsigned char bufferChan =buffer[4]>>4;
+                                   // if ((buffer[4]>>4)==0){ //номер канала 0b0000 - основной, 0b0001 -резервный;
+                                       if (bufferChan==0){ //номер канала 0b0000 - основной, 0b0001 -резервный;
+                                       ListOfBSWVnomer[i].nChan = "-основной";
                                     }
-                                    if ((buffer[4]>>4)==0b0001){
+                                    //if ((buffer[4]>>4)==1)
+                                      if (bufferChan==1)
+                                       {
                                         ListOfBSWVnomer[i].nChan = "-резервный";
                                     }
                                     ListOfBSWVnomer[i].otvetPoluchen=1;
