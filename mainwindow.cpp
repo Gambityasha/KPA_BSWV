@@ -680,9 +680,9 @@ void MainWindow::WriteInFile()
     }
     else {
            if (file.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
-               file.write("Время\t     Канал\t    Суммарный \t   Суммарный \t Напряжение \t Напряжение \t Температура 2 \t Температура 1 \n"
-                   "\t\t\t    ток \t   ток \t         на силовых \t на силовых \t корпуса \t корпуса \n"
-                   "\t\t\t    нагрузки 2 \t   нагрузки 1 \t шинах 2 \t шинах 1 \t прибора \t прибора \n");
+               file.write("Время\t     Канал\t    Суммарный \t   Суммарный \t Напряжение \t Напряжение \t Температура 2 \t Температура 1 \r\n"
+                   "\t\t\t    ток \t   ток \t         на силовых \t на силовых \t корпуса \t корпуса \r\n"
+                   "\t\t\t    нагрузки 2 \t   нагрузки 1 \t шинах 2 \t шинах 1 \t прибора \t прибора \r\n");
 
             for (int i=0;i<ListOfBSWVData.size();i++){
                     QString log =QTime::currentTime().toString("H:m:s") +"    "+ ListOfBSWVData[i].name+" "+"\t    "+QString::number(ListOfBSWVData[i].icap2)+"\t\t   "+
@@ -709,9 +709,9 @@ void MainWindow::WriteInFile()
     }
     else {
            if (fileACP.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
-               fileACP.write("Время\t     Канал\t    Суммарный \t   Суммарный \t Напряжение \t Напряжение \t Температура 2 \t Температура 1 \t Опорное \n"
-                   "\t\t\t    ток \t   ток \t         на силовых \t на силовых \t корпуса \t корпуса \t напряжение \n"
-                   "\t\t\t    нагрузки 2 \t   нагрузки 1 \t шинах 2 \t шинах 1 \t прибора \t прибора \n");
+               fileACP.write("Время\t     Канал\t    Суммарный \t   Суммарный \t Напряжение \t Напряжение \t Температура 2 \t Температура 1 \t Опорное \r\n"
+                   "\t\t\t    ток \t   ток \t         на силовых \t на силовых \t корпуса \t корпуса \t напряжение \r\n"
+                   "\t\t\t    нагрузки 2 \t   нагрузки 1 \t шинах 2 \t шинах 1 \t прибора \t прибора \r\n");
 
             for (int i=0;i<ListOfBSWVt.size();i++){
                     QString logACP =QTime::currentTime().toString("H:m:s") +"    "+ ListOfBSWVt[i].name+" "+"\t    "+QString::number(ListOfBSWVt[i].icap2)+"\t\t   "+
@@ -738,7 +738,8 @@ void MainWindow::WriteInFileError(QString error)
            if (fileError.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
            // QString errorTitle = QString::fromLocal8Bit();
           // fileError.write(errorTitle);
-           fileError.write(" Time      Discption \r\n");
+          fileError.write(" Time      Discption \r\n");
+
            QString log =QTime::currentTime().toString("H:m:s") +"\t"+error+"\r\n";
            QTextStream stream(&fileError);
            stream<<log;
