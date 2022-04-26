@@ -794,7 +794,6 @@ for (int i=0;i<ListOfBSWVData.size();i++){
 //  itm1_2->setTextColor(Qt::red); //задание цвета у текста определенной ячейки таблицы
 //  itm1_2->setBackgroundColor(Qt::black); //задание цвета самой определенной ячейки таблицы
 //  QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(pcB[5]*0.2+0)); //перевод в QString данных из unsigned char
-
 }
 for (int j=0;j<ListOfBSWVt.size();j++){
     if (ListOfBSWVt.at(j).otvetPoluchen==1){
@@ -897,12 +896,4 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
-
-
-
-void MainWindow::on_pushButton_clicked()
-{
-    ui->pushButton->setText(QString::number(ListOfBSWVnomer[2].otvetPoluchen));
-}
 

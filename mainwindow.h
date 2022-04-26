@@ -162,6 +162,5 @@ signals:
 
 private slots:
    void on_btnNomer_clicked();
-   void on_pushButton_clicked();
 };
 #endif // MAINWINDOW_H
