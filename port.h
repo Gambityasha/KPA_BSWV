@@ -5,7 +5,7 @@
 #include <QObject>
 #include "mainwindow.h"
 #include "stdint.h"
-#include <QTimer>
+
 
 
 struct Settings

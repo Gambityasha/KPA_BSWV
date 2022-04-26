@@ -731,9 +731,13 @@ void MainWindow::WriteInFile()
     }
     else {
            if (fileACP.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
-               fileACP.write("Время\t     Канал\t    Суммарный \t   Суммарный \t Напряжение \t Напряжение \t Температура 2 \t Температура 1 \t Опорное \r\n"
-                   "\t\t\t    ток \t   ток \t         на силовых \t на силовых \t корпуса \t корпуса \t напряжение \r\n"
-                   "\t\t\t    нагрузки 2 \t   нагрузки 1 \t шинах 2 \t шинах 1 \t прибора \t прибора \r\n");
+//               fileACP.write("Время\t     Канал\t    Суммарный \t   Суммарный \t Напряжение \t Напряжение \t Температура 2 \t Температура 1 \t Опорное \r\n"
+//                   "\t\t\t    ток \t   ток \t         на силовых \t на силовых \t корпуса \t корпуса \t напряжение \r\n"
+//                   "\t\t\t    нагрузки 2 \t   нагрузки 1 \t шинах 2 \t шинах 1 \t прибора \t прибора \r\n");
+
+
+               fileACP.write("Время   \t|\t Канал\t|\t Суммарный ток нагрузки 2\t|\t Суммарный ток нагрузки 1\t|\t Напряжение на силовых шинах 2\t|\t "
+                             "Напряжение на силовых шинах 1\t|\t Температура 2 корпуса прибора\t|\t Температура 1 корпуса прибора\t|\t Опорное напряжение\r\n");
 
             for (int i=0;i<ListOfBSWVt.size();i++){
                     QString logACP =QTime::currentTime().toString("H:m:s") +"    "+ ListOfBSWVt[i].name+" "+"\t    "+QString::number(ListOfBSWVt[i].icap2)+"\t\t   "+
@@ -751,7 +755,7 @@ void MainWindow::WriteInFileError(QString error)
 {
     if (fileError.exists()){//Проверка - существует ли файл
             if (fileError.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла
-                QString log =QTime::currentTime().toString("H:m:s") +"\t"+error+"\r\n";
+                QString log =QTime::currentTime().toString("H:m:s") +"|"+error+"\r\n";
                 QTextStream stream(&fileError);
                 stream<<log;
             }
@@ -760,7 +764,7 @@ void MainWindow::WriteInFileError(QString error)
            if (fileError.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
            // QString errorTitle = QString::fromLocal8Bit();
           // fileError.write(errorTitle);
-          fileError.write(" Time      Discption \r\n");
+          fileError.write(" Time      Discription \r\n");
 
            QString log =QTime::currentTime().toString("H:m:s") +"\t"+error+"\r\n";
            QTextStream stream(&fileError);
