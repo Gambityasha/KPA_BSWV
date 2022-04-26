@@ -376,11 +376,22 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(WriteInFileError(QString)));
     connect(timerVivod, SIGNAL(timeout()), this, SLOT(WriteInFile()));
     LoadSettings();
+
+
+//    connect(PortMK1osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(PrintN(QByteArray,QString)));
+//    connect(PortMK1rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(PrintN(QByteArray,QString)));
+//    connect(PortMK2osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(PrintN(QByteArray,QString)));
+//    connect(PortMK2rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(PrintN(QByteArray,QString)));
+//    connect(PortMK3rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(PrintN(QByteArray,QString)));
+//    connect(PortMK3osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(PrintN(QByteArray,QString)));
    }
 
 void MainWindow::TimerVivodStart()
 {
     timerVivod->start(1000);
+
+        //QString DataAsString = QString(ListOfBSWVData.at(2).otvet);
+       // ui->lbl->setText(DataAsString);
 }
 
 void MainWindow::TimerProvStart()
@@ -397,7 +408,6 @@ void MainWindow::on_btnNomer_clicked()
 {
     OtpravkaZaprosaNomer();
     QTimer::singleShot(5000,this,SLOT(ProverkaNomera()));
-
 }
 void MainWindow:: OtpravkaZaprosaTelem()
 {
@@ -434,6 +444,7 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
                 for (int j = 0; otvet[j]!=char(0xAA);j++) {
                     otvet.remove(0,1);
                 }
+
                 if (otvet.size()>3){
                 switch (otvet[3]){
                 case char (1):
@@ -476,8 +487,7 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
     memcpy( buffer, otvet.data(), otvet.size());
     unsigned char upperCRC = buffer[otvet.size()-2];
     unsigned char lowerCRC = buffer[otvet.size()-1];
-    unsigned char upperCRCR;
-    unsigned char lowerCRCR;
+
     unsigned short le = otvet.size()-2;
     switch (buffer[1]){
     case 2:
@@ -488,8 +498,8 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                     for (int i=0;i<ListOfBSWVData.size();i++){
                         if (ListOfBSWVData.at(i).namePort == comName){
                             // unsigned short fullCRC = (unsigned short) (upperCRC<<8) | lowerCRC;
-                            upperCRCR = Crc16(buffer,le)>>8;
-                            lowerCRCR = Crc16(buffer,le);
+                           unsigned char upperCRCR = Crc16(buffer,le)>>8;
+                            unsigned char lowerCRCR = Crc16(buffer,le);
                             if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
                                   ListOfBSWVData[i].icap2 = float(buffer[4])*1+0; //"Суммарный ток нагрузки 2"
                                   ListOfBSWVData[i].icap1 = float(buffer[5])*1+0;//"Суммарный ток нагрузки 1"
@@ -507,8 +517,8 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                  case 17:
                     for (int i=0;i<ListOfBSWVt.size();i++){
                         if (ListOfBSWVt.at(i).namePort == comName){
-                            upperCRCR = Crc16(buffer,le)>>8;
-                            lowerCRCR = Crc16(buffer,le);
+                            unsigned char upperCRCR = Crc16(buffer,le)>>8;
+                            unsigned char lowerCRCR = Crc16(buffer,le);
                             if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
                                 ListOfBSWVt[i].uref = float((unsigned short) (buffer[4]<<8) | buffer[5]);
                                 ListOfBSWVt[i].icap2 =  float((unsigned short) (buffer[8]<<8) | buffer[9]);//"Суммарный ток нагрузки 2"
@@ -527,11 +537,11 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                  case 34:
                       for (int i=0;i<ListOfBSWVnomer.size();i++){
                           if (ListOfBSWVnomer.at(i).namePort == comName){
-                              upperCRCR = Crc16(buffer,le)>>8;
-                              lowerCRCR = Crc16(buffer,le);
+                             unsigned char upperCRCR = Crc16(buffer,le)>>8;
+                             unsigned char lowerCRCR = Crc16(buffer,le);
                               if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
-                                    unsigned char nMK = buffer[4]<<4;
-                                    switch (nMK>>4){
+                                    unsigned char nMK = buffer[4]>>4;
+                                    switch (nMK){
                                           //case 0b0001://номер МУКа, 0b0001 - 1 МК, 0b0010- 2 МК, 0b0011 - 3 МК
                                     case 1:
                                           ListOfBSWVnomer[i].nMK = "MK1";
@@ -545,16 +555,17 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                           ListOfBSWVnomer[i].nMK = "MK3";
                                     break;
                                     }
-                                    unsigned char bufferChan =buffer[4]>>4;
+                                    unsigned char bufferChan = buffer[4]<<4;
+                                    unsigned char nChan = bufferChan>>4;
                                    // if ((buffer[4]>>4)==0){ //номер канала 0b0000 - основной, 0b0001 -резервный;
-                                       if (bufferChan==0){ //номер канала 0b0000 - основной, 0b0001 -резервный;
+                                       if (nChan==0){ //номер канала 0b0000 - основной, 0b0001 -резервный;
                                        ListOfBSWVnomer[i].nChan = "-основной";
                                     }
                                     //if ((buffer[4]>>4)==1)
-                                      if (bufferChan==1)
+                                      if (nChan==1)
                                        {
                                         ListOfBSWVnomer[i].nChan = "-резервный";
-                                    }
+                                       }
                                     ListOfBSWVnomer[i].otvetPoluchen=1;
                               }
                               else {ListOfBSWVnomer[i].otvetPoluchen=0;
@@ -565,8 +576,8 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                  case 255:
                       for (int i=0;i<ListOfBSWVprov.size();i++){
                           if (ListOfBSWVprov.at(i).namePort == comName){
-                              upperCRCR = Crc16(buffer,le)>>8;
-                              lowerCRCR = Crc16(buffer,le);
+                             unsigned char upperCRCR = Crc16(buffer,le)>>8;
+                             unsigned char lowerCRCR = Crc16(buffer,le);
                               if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
                               ListOfBSWVprov[i].otvetPoluchen=1;
                               }
@@ -578,7 +589,7 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                  }
              break;
              }
-    break;
+   break;
     }
 
 }
@@ -637,39 +648,43 @@ void MainWindow::ProverkaNomera(){
     for (int f=0;f<ListOfBSWVnomer.size();f++){
         if (ListOfBSWVnomer.at(f).otvetPoluchen==1){
             QString nomer = ListOfBSWVnomer.at(f).nMK+ListOfBSWVnomer.at(f).nChan;
-            if (ListOfBSWVprov.at(f).name=="MK1-osn"){
-                QTableWidgetItem *itm0_0 = new QTableWidgetItem(tr("%1").arg(nomer));
+            if (ListOfBSWVnomer.at(f).name=="MK1-osn"){
+               // QTableWidgetItem *itm0_0 = new QTableWidgetItem(tr("%1").arg(nomer));
+                QTableWidgetItem *itm0_0 = new QTableWidgetItem(nomer);
                 ui->tblNomer->setItem(0,0,itm0_0);
             }
-            if (ListOfBSWVprov.at(f).name=="MK1-rez"){
-                QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(nomer));
+            if (ListOfBSWVnomer.at(f).name=="MK1-rez"){
+               // QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(nomer));
+                QTableWidgetItem *itm1_0 = new QTableWidgetItem(nomer);
                 ui->tblNomer->setItem(1,0,itm1_0);
             }
-            if (ListOfBSWVprov.at(f).name=="MK2-osn"){
-                QTableWidgetItem *itm0_1 = new QTableWidgetItem(tr("%1").arg(nomer));
+            if (ListOfBSWVnomer.at(f).name=="MK2-osn"){
+               // QTableWidgetItem *itm0_1 = new QTableWidgetItem(tr("%1").arg(nomer));
+                QTableWidgetItem *itm0_1 = new QTableWidgetItem(nomer);
                 ui->tblNomer->setItem(0,1,itm0_1);
             }
-            if (ListOfBSWVprov.at(f).name=="MK2-rez"){
-                QTableWidgetItem *itm1_1 = new QTableWidgetItem(tr("%1").arg(nomer));
+            if (ListOfBSWVnomer.at(f).name=="MK2-rez"){
+               // QTableWidgetItem *itm1_1 = new QTableWidgetItem(tr("%1").arg(nomer));
+                QTableWidgetItem *itm1_1 = new QTableWidgetItem(nomer);
                 ui->tblNomer->setItem(1,1,itm1_1);
             }
-            if (ListOfBSWVprov.at(f).name=="MK3-osn"){
-                QTableWidgetItem *itm0_2 = new QTableWidgetItem(tr("%1").arg(nomer));
+            if (ListOfBSWVnomer.at(f).name=="MK3-osn"){
+               // QTableWidgetItem *itm0_2 = new QTableWidgetItem(tr("%1").arg(nomer));
+                QTableWidgetItem *itm0_2 = new QTableWidgetItem(nomer);
                 ui->tblNomer->setItem(0,2,itm0_2);
             }
-            if (ListOfBSWVprov.at(f).name=="MK3-rez"){
-                QTableWidgetItem *itm1_2 = new QTableWidgetItem(tr("%1").arg(nomer));
+            if (ListOfBSWVnomer.at(f).name=="MK3-rez"){
+               // QTableWidgetItem *itm1_2 = new QTableWidgetItem(tr("%1").arg(nomer));
+                QTableWidgetItem *itm1_2 = new QTableWidgetItem(nomer);
                 ui->tblNomer->setItem(1,2,itm1_2);
             }
-
+        //ListOfBSWVnomer[f].otvetPoluchen=0;
         }
         else {
             error = "Ответ на сообщение 34 от "+ ListOfBSWVprov.at(f).name +" не получен";
             emit errorMessage (error);
-        }
-        ListOfBSWVnomer[f].otvetPoluchen=0;
+        }        
     }
-
 }
 
 void MainWindow::WriteInFile()
@@ -884,4 +899,10 @@ MainWindow::~MainWindow()
 
 
 
+
+
+void MainWindow::on_pushButton_clicked()
+{
+    ui->pushButton->setText(QString::number(ListOfBSWVnomer[2].otvetPoluchen));
+}
 

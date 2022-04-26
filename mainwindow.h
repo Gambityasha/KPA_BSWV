@@ -103,6 +103,7 @@ private:
     int otvetMKSize = 7;
     int otvetProvSize = 6;
     QString error;
+    QString a;
 
 public:
     QTimer *timerZaprosaTelem;
@@ -161,5 +162,6 @@ signals:
 
 private slots:
    void on_btnNomer_clicked();
+   void on_pushButton_clicked();
 };
 #endif // MAINWINDOW_H
