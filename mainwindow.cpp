@@ -689,29 +689,35 @@ void MainWindow::ProverkaNomera(){
 
 void MainWindow::WriteInFile()
 {
+    QTextStream streamACP(&fileACP);
+    QTextStream stream(&file);
     if (file.exists()){//Проверка - существует ли файл
             if (file.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла
+                QString str = QTime::currentTime().toString("ss");
+                int time = str.toInt();
+                if (time%5==0){
+                    stream<<QString::fromUtf8("Время    |    Канал      | Суммарный ток нагрузки 2 | Суммарный ток нагрузки 1  | Напряжение на силовых шинах 2 |"
+                   "Напряжение на силовых шинах 1  | Температура 2 корпуса прибора |  Температура 1 корпуса прибора\r\n");
+                }
                 for (int i=0;i<ListOfBSWVData.size();i++){
-                    QString log =QTime::currentTime().toString("H:m:s") +"    "+ ListOfBSWVData[i].name+"\t    "+QString::number(ListOfBSWVData[i].icap2)+"\t\t   "+
-                            QString::number(ListOfBSWVData[i].icap1)+"\t\t "+QString::number(ListOfBSWVData[i].u2)+"\t\t "+QString::number(ListOfBSWVData[i].u1)
-                            +"\t\t "+ QString::number(ListOfBSWVData[i].tcorp2)+"\t\t "+ QString::number(ListOfBSWVData[i].tcorp1)+"\r\n";
-                    QTextStream stream(&file);
+                    QString log =QTime::currentTime().toString("HH:mm:ss") +" |   "+ ListOfBSWVData[i].name+"\t |\t\t"+QString::number(ListOfBSWVData[i].icap2)+"\t    |\t\t"+
+                            QString::number(ListOfBSWVData[i].icap1)+"\t\t|\t\t"+QString::number(ListOfBSWVData[i].u2)+"\t\t|\t\t "+QString::number(ListOfBSWVData[i].u1)
+                            +"\t\t|\t\t "+ QString::number(ListOfBSWVData[i].tcorp2)+"\t\t|\t\t "+ QString::number(ListOfBSWVData[i].tcorp1)+"\r\n";
                     stream<<log;
                 }                
             }
     }
     else {
            if (file.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
-               file.write("Время\t     Канал\t    Суммарный \t   Суммарный \t Напряжение \t Напряжение \t Температура 2 \t Температура 1 \r\n"
-                   "\t\t\t    ток \t   ток \t         на силовых \t на силовых \t корпуса \t корпуса \r\n"
-                   "\t\t\t    нагрузки 2 \t   нагрузки 1 \t шинах 2 \t шинах 1 \t прибора \t прибора \r\n");
 
-            for (int i=0;i<ListOfBSWVData.size();i++){
-                    QString log =QTime::currentTime().toString("H:m:s") +"    "+ ListOfBSWVData[i].name+" "+"\t    "+QString::number(ListOfBSWVData[i].icap2)+"\t\t   "+
-                            QString::number(ListOfBSWVData[i].icap1)+"\t\t "+QString::number(ListOfBSWVData[i].u2)+"\t\t "+QString::number(ListOfBSWVData[i].u1)
-                            +"\t\t "+ QString::number(ListOfBSWVData[i].tcorp2)+"\t\t "+ QString::number(ListOfBSWVData[i].tcorp1)+"\r\n";
-                    QTextStream stream(&file);
-                    stream<<log;
+                  stream<<QString::fromUtf8("Время    |    Канал      | Суммарный ток нагрузки 2 | Суммарный ток нагрузки 1  | Напряжение на силовых шинах 2 |"
+                  "Напряжение на силовых шинах 1  | Температура 2 корпуса прибора |  Температура 1 корпуса прибора\r\n");
+                  for (int i=0;i<ListOfBSWVData.size();i++){
+                      QString log =QTime::currentTime().toString("HH:mm:ss") +" |   "+ ListOfBSWVData[i].name+"\t |\t\t"+QString::number(ListOfBSWVData[i].icap2)+"\t    |\t\t"+
+                              QString::number(ListOfBSWVData[i].icap1)+"\t\t|\t\t"+QString::number(ListOfBSWVData[i].u2)+"\t\t|\t\t "+QString::number(ListOfBSWVData[i].u1)
+                              +"\t\t|\t\t "+ QString::number(ListOfBSWVData[i].tcorp2)+"\t\t|\t\t "+ QString::number(ListOfBSWVData[i].tcorp1)+"\r\n";
+
+                      stream<<log;
                }
             }
     }
@@ -720,30 +726,33 @@ void MainWindow::WriteInFile()
 
     if (fileACP.exists()){//Проверка - существует ли файл
             if (fileACP.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла
+                QString str = QTime::currentTime().toString("ss");
+                int time = str.toInt();
+                if (time%5==0){
+                    streamACP<<QString::fromUtf8("Время    |    Канал      | Суммарный ток нагрузки 2 | Суммарный ток нагрузки 1  | Напряжение на силовых шинах 2 |"
+                               "Напряжение на силовых шинах 1  | Температура 2 корпуса прибора |  Температура 1 корпуса прибора|   Опорное напряжение\r\n");
+                }
                 for (int i=0;i<ListOfBSWVt.size();i++){
-                    QString logACP =QTime::currentTime().toString("H:m:s") +"    "+ ListOfBSWVt[i].name+"\t    "+QString::number(ListOfBSWVt[i].icap2)+"\t\t   "+
-                            QString::number(ListOfBSWVt[i].icap1)+"\t\t "+QString::number(ListOfBSWVt[i].u2)+"\t\t "+QString::number(ListOfBSWVt[i].u1)
-                            +"\t\t "+ QString::number(ListOfBSWVt[i].tcorp2)+"\t\t "+ QString::number(ListOfBSWVt[i].tcorp1)+"\t\t "+ QString::number(ListOfBSWVt[i].uref)+"\r\n";
-                    QTextStream streamACP(&fileACP);
+
+                    QString logACP =QTime::currentTime().toString("HH:mm:ss") +" |   "+ ListOfBSWVt[i].name+"\t |\t\t"+QString::number(ListOfBSWVt[i].icap2)+"\t    |\t\t"+
+                                    QString::number(ListOfBSWVt[i].icap1)+"\t\t|\t\t"+QString::number(ListOfBSWVt[i].u2)+"\t\t|\t\t "+QString::number(ListOfBSWVt[i].u1)
+                                    +"\t\t|\t\t "+ QString::number(ListOfBSWVt[i].tcorp2)+"\t\t|\t\t "+ QString::number(ListOfBSWVt[i].tcorp1)+"\t\t|\t\t "+ QString::number(ListOfBSWVt[i].uref)+"\r\n";
+
+
                     streamACP<<logACP;
                 }
             }
     }
     else {
            if (fileACP.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
-//               fileACP.write("Время\t     Канал\t    Суммарный \t   Суммарный \t Напряжение \t Напряжение \t Температура 2 \t Температура 1 \t Опорное \r\n"
-//                   "\t\t\t    ток \t   ток \t         на силовых \t на силовых \t корпуса \t корпуса \t напряжение \r\n"
-//                   "\t\t\t    нагрузки 2 \t   нагрузки 1 \t шинах 2 \t шинах 1 \t прибора \t прибора \r\n");
 
-
-               fileACP.write("Время   \t|\t Канал\t|\t Суммарный ток нагрузки 2\t|\t Суммарный ток нагрузки 1\t|\t Напряжение на силовых шинах 2\t|\t "
-                             "Напряжение на силовых шинах 1\t|\t Температура 2 корпуса прибора\t|\t Температура 1 корпуса прибора\t|\t Опорное напряжение\r\n");
+            streamACP<<QString::fromUtf8("Время    |    Канал      | Суммарный ток нагрузки 2 | Суммарный ток нагрузки 1  | Напряжение на силовых шинах 2 |"
+                       "Напряжение на силовых шинах 1  | Температура 2 корпуса прибора |  Температура 1 корпуса прибора|   Опорное напряжение\r\n");
 
             for (int i=0;i<ListOfBSWVt.size();i++){
-                    QString logACP =QTime::currentTime().toString("H:m:s") +"    "+ ListOfBSWVt[i].name+" "+"\t    "+QString::number(ListOfBSWVt[i].icap2)+"\t\t   "+
-                            QString::number(ListOfBSWVt[i].icap1)+"\t\t "+QString::number(ListOfBSWVt[i].u2)+"\t\t "+QString::number(ListOfBSWVt[i].u1)
-                            +"\t\t "+ QString::number(ListOfBSWVt[i].tcorp2)+"\t\t "+ QString::number(ListOfBSWVt[i].tcorp1)+"\t\t "+ QString::number(ListOfBSWVt[i].uref)+"\r\n";
-                    QTextStream streamACP(&fileACP);
+                    QString logACP =QTime::currentTime().toString("HH:mm:ss") +" |   "+ ListOfBSWVt[i].name+"\t |\t\t"+QString::number(ListOfBSWVt[i].icap2)+"\t    |\t\t"+
+                            QString::number(ListOfBSWVt[i].icap1)+"\t\t|\t\t"+QString::number(ListOfBSWVt[i].u2)+"\t\t|\t\t "+QString::number(ListOfBSWVt[i].u1)
+                            +"\t\t|\t\t "+ QString::number(ListOfBSWVt[i].tcorp2)+"\t\t|\t\t "+ QString::number(ListOfBSWVt[i].tcorp1)+"\t\t|\t\t "+ QString::number(ListOfBSWVt[i].uref)+"\r\n";
                     streamACP<<logACP;
                }
             }
@@ -753,22 +762,28 @@ void MainWindow::WriteInFile()
 
 void MainWindow::WriteInFileError(QString error)
 {
+    QTextStream stream(&fileError);
+    QTextStream stream1(&fileError);
+    stream.setFieldWidth(16);
+    stream.setFieldAlignment(QTextStream::AlignLeft);
+
     if (fileError.exists()){//Проверка - существует ли файл
             if (fileError.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла
-                QString log =QTime::currentTime().toString("H:m:s") +"|"+error+"\r\n";
-                QTextStream stream(&fileError);
-                stream<<log;
+               // QString log =QTime::currentTime().toString("HH:mm:ss") +"  |  "+error+"\r\n";
+               // stream<<log;
+               QString log1 = QTime::currentTime().toString("HH:mm:ss")+"  | ";
+                QString log2 = error;
+                stream<<log1<<log2+"\r\n";
             }
     }
     else {
-           if (fileError.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
-           // QString errorTitle = QString::fromLocal8Bit();
-          // fileError.write(errorTitle);
-          fileError.write(" Time      Discription \r\n");
-
-           QString log =QTime::currentTime().toString("H:m:s") +"\t"+error+"\r\n";
-           QTextStream stream(&fileError);
-           stream<<log;
+           if (fileError.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра                     
+           //stream<< QString::fromUtf8(" Время             Описание ошибки \r\n");
+          // stream<<QTime::currentTime().toString("HH:mm:ss") +"  |  "+error+"\r\n";
+           stream<<QString::fromUtf8("Время")+"     |"<<QString::fromUtf8("Описание ошибки")+"\r\n";
+           QString log1 = QTime::currentTime().toString("HH:mm:ss")+"  | ";
+           QString log2 = error;
+           stream<<log1<<log2+"\r\n";
            }
     }
     fileError.close();
