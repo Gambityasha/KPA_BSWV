@@ -47,6 +47,11 @@ void port :: ConnectPort(void)//процедура подключения
 }
 void port::handleError(QSerialPort::SerialPortError error)//проверка ошибок при работе
 {
+    if  (thisPort.isOpen()) {
+    emit error_(thisPort.errorString().toLocal8Bit());
+    DisconnectPort();
+    }
+
     if ( (thisPort.isOpen()) && (error == QSerialPort::ResourceError))
     {
         emit error_(thisPort.errorString().toLocal8Bit());

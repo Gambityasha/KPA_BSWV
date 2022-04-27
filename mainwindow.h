@@ -126,7 +126,7 @@ public:
 
 
 private:
-   void LoadSettings();
+
 
 public slots:
    void Vivod(); //Вывод телеметрии в таблицу
@@ -146,7 +146,7 @@ public slots:
    void ProverkaNomera();
    void WriteInFile();
    void WriteInFileError(QString error);
-
+    void LoadSettings();
 signals:
     //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);

@@ -393,6 +393,25 @@
         <string>DisConnect</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="pushButton">
+       <property name="geometry">
+        <rect>
+         <x>230</x>
+         <y>170</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>ReConnect</string>
+       </property>
+      </widget>
       <zorder>redMK3o</zorder>
       <zorder>redMK3r</zorder>
       <zorder>redMK1r</zorder>
@@ -412,6 +431,7 @@
       <zorder>label_2</zorder>
       <zorder>checkBox</zorder>
       <zorder>btnDisconnect</zorder>
+      <zorder>pushButton</zorder>
      </widget>
     </item>
     <item row="0" column="1">

@@ -376,6 +376,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(WriteInFileError(QString)));
     connect(timerVivod, SIGNAL(timeout()), this, SLOT(WriteInFile()));
     LoadSettings();
+    connect(ui->pushButton, SIGNAL(clicked()),this,SLOT(LoadSettings()));
 
 
 //    connect(PortMK1osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(PrintN(QByteArray,QString)));
