@@ -40,6 +40,7 @@ public:
     void error_(QString err);//Сигнал ошибок порта
 
     void outPort (QString data); //Сигнал вывода полученных данных
+    void errorMessage(QSerialPort::SerialPortError error,QString);
  public slots:
      void  DisconnectPort();
 

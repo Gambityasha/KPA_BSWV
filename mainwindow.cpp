@@ -163,6 +163,98 @@ void MainWindow::LoadSettings()
 
 }
 
+void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName)
+{
+    if (error!=0){
+    timerReconnect->start(1000);
+    for (int i=0;i<ListOfBSWVData.size();i++){
+        if (ListOfBSWVData[i].namePort==portName){
+            ListOfBSWVData[i].errorStatus=1;
+        }
+
+
+    }
+
+}
+
+void MainWindow::Reconnect( )
+{
+    QString dis1, serial1, dis2, serial2,dis3, serial3,dis4, serial4,dis5, serial5,dis6, serial6;
+    QSettings setting("ports.ini", QSettings::IniFormat); //ports.ini файл должен быть в одной папке с exe
+    if (portName==ListOfBSWVData[0].namePort) {
+        setting.beginGroup("MK1-osn");// [MK1-osn] в ини файле
+        QString status1 = setting.value("work","0").toString();
+        if ( status1 == "on") {
+             dis1 = setting.value("description","0").toString();
+             serial1 = setting.value("serialNumber","0").toString();
+             QString name1 = getPortName(dis1,serial1);
+             emit savesettings1(name1, baudrate, databits, parity, stopbits, flowcontrol);
+             emit con1();
+        }
+        setting.endGroup();
+    }
+    if (portName==ListOfBSWVData[1].namePort) {
+        setting.beginGroup("MK1-rez");// [MK1-rez] в ини файле
+        QString status2 = setting.value("work","0").toString();
+        if ( status2 == "on"){
+            dis2 = setting.value("description","0").toString();
+            serial2 = setting.value("serialNumber","0").toString();
+            QString name2 = getPortName(dis2,serial2);
+            emit savesettings2(name2, baudrate, databits, parity, stopbits, flowcontrol);
+            emit con2();
+        }
+        setting.endGroup();
+    }
+    if (portName==ListOfBSWVData[2].namePort) {
+        setting.beginGroup("MK2-osn");// [MK2-osn] в ини файле
+        QString status3 = setting.value("work","0").toString();
+        if ( status3 == "on") {
+        dis3 = setting.value("description","0").toString();
+        serial3 = setting.value("serialNumber","0").toString();
+        QString name3 = getPortName(dis3,serial3);
+        emit savesettings3(name3, baudrate, databits, parity, stopbits, flowcontrol);
+        emit con3();
+        }
+        setting.endGroup();
+    }
+    if (portName==ListOfBSWVData[3].namePort) {
+        setting.beginGroup("MK2-rez");// [MK2-rez] в ини файле
+        QString status4 = setting.value("work","0").toString();
+        if ( status4 == "on"){
+            dis4 = setting.value("description","0").toString();
+            serial4 = setting.value("serialNumber","0").toString();
+            QString name4 = getPortName(dis4,serial4);
+            emit savesettings4(name4, baudrate, databits, parity, stopbits, flowcontrol);
+            emit con4();
+        }
+        setting.endGroup();
+    }
+    if (portName==ListOfBSWVData[4].namePort) {
+        setting.beginGroup("MK3-osn");// [MK3-osn] в ини файле
+        QString status5 = setting.value("work","0").toString();
+        if ( status5 == "on") {
+            dis5 = setting.value("description","0").toString();
+            serial5 = setting.value("serialNumber","0").toString();
+            QString name5 = getPortName(dis5,serial5);
+            emit savesettings5(name5, baudrate, databits, parity, stopbits, flowcontrol);
+            emit con5();
+        }
+        setting.endGroup();
+     }
+     if (portName==ListOfBSWVData[5].namePort) {
+         setting.beginGroup("MK3-rez");// [MK3-rez] в ини файле
+         QString status6 = setting.value("work","0").toString();
+         if ( status6 == "on"){
+             dis6 = setting.value("description","0").toString();
+             serial6 = setting.value("serialNumber","0").toString();
+             QString name6 = getPortName(dis6,serial6);
+             emit savesettings6(name6, baudrate, databits, parity, stopbits, flowcontrol);
+             emit con6();
+         }
+         setting.endGroup();
+     }
+}
+
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -313,6 +405,7 @@ MainWindow::MainWindow(QWidget *parent)
     dataNomer[5] = lowerNomer;
     //-----------Конец формирования исходящего сообщения для БСШ-В (тип 34 - проверка номера МУКа)-----------
     timerVivod = new QTimer();
+    timerReconnect = new QTimer();
     timerZaprosaTelem = new QTimer();
     timerZaprosaTarir = new QTimer();
     timerZaprosaProv = new QTimer();
@@ -323,8 +416,6 @@ MainWindow::MainWindow(QWidget *parent)
     fileError.setFileName(fEname);
     QString fACPname = QDate::currentDate().toString("dd.MM.yyyy")+"_ACP.txt";
     fileACP.setFileName(fACPname);
-
-
 
     QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
     QTimer::singleShot(300,this,SLOT(TimerProvStart()));
@@ -351,12 +442,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(con4()),PortMK2rez,SLOT(ConnectPort()));
     connect(this, SIGNAL(con5()),PortMK3osn,SLOT(ConnectPort()));
     connect(this, SIGNAL(con6()),PortMK3rez,SLOT(ConnectPort()));
-    connect(PortMK1osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//Лог ошибок
-    connect(PortMK2osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//Лог ошибок
-    connect(PortMK3osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//Лог ошибок
-    connect(PortMK1rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//Лог ошибок
-    connect(PortMK2rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//Лог ошибок
-    connect(PortMK3rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//Лог ошибок
+    connect(PortMK1osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//Лог ошибок соединения
+    connect(PortMK2osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
+    connect(PortMK3osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
+    connect(PortMK1rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
+    connect(PortMK2rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
+    connect(PortMK3rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
     connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK1osn,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
     connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK2osn,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
     connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK3osn,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
@@ -372,20 +463,20 @@ MainWindow::MainWindow(QWidget *parent)
     connect(timerVivod, SIGNAL(timeout()), this, SLOT(Vivod()));    
     connect(this, SIGNAL(readyToAnalize(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
     connect(ui->checkBox, SIGNAL(clicked()), this, SLOT(Knopka()));
-    connect(this, SIGNAL(errorMessage(QString)), this,SLOT(Print(QString)));
+    connect(this, SIGNAL(errorMessage(QString)), this,SLOT(Print(QString))); //Не тот же эррор месадж, что от порта
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(WriteInFileError(QString)));
-    connect(timerVivod, SIGNAL(timeout()), this, SLOT(WriteInFile()));
-    LoadSettings();
+    connect(timerVivod, SIGNAL(timeout()), this, SLOT(WriteInFile()));    
     connect(ui->pushButton, SIGNAL(clicked()),this,SLOT(LoadSettings()));
+    LoadSettings();
+    connect(PortMK1osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK2osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK3osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK1rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK2rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
 
-
-//    connect(PortMK1osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(PrintN(QByteArray,QString)));
-//    connect(PortMK1rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(PrintN(QByteArray,QString)));
-//    connect(PortMK2osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(PrintN(QByteArray,QString)));
-//    connect(PortMK2rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(PrintN(QByteArray,QString)));
-//    connect(PortMK3rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(PrintN(QByteArray,QString)));
-//    connect(PortMK3osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(PrintN(QByteArray,QString)));
-   }
+    connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect(QString)));
+}
 
 void MainWindow::TimerVivodStart()
 {

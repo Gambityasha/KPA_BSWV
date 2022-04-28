@@ -34,7 +34,8 @@ struct BSWVdata //создание структуры
     float tcorp2;//"Температура 2 корпуса прибора"
     float tcorp1;//"Температура 1 корпуса прибора"
     QByteArray otvet;
-    short otvetPoluchen; //0 - не получен, 1 - получен    
+    short otvetPoluchen; //0 - не получен, 1 - получен
+    short errorStatus;//0 - нет ошибок порта, 1 - есть ошибки порта
 };
 
 struct BSWVtarir //создание структуры
@@ -110,6 +111,7 @@ public:
     QTimer *timerZaprosaTarir;
     QTimer *timerZaprosaProv;
     QTimer *timerVivod;
+    QTimer *timerReconnect;
     QByteArray otvet;
     BSWVdata BSWV;
     QList <BSWVdata>ListOfBSWVData;
@@ -147,6 +149,8 @@ public slots:
    void WriteInFile();
    void WriteInFileError(QString error);
     void LoadSettings();
+    void ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName);
+    void Reconnect( );
 signals:
     //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
@@ -159,6 +163,7 @@ signals:
    void con1();void con2();void con3();void con4();void con5();void con6();
    void readyToAnalize(QByteArray otvet, QString comName);
    void errorMessage(QString);
+   void errorReconnect(QString);
 
 private slots:
    void on_btnNomer_clicked();
