@@ -83,7 +83,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    Ui::ErrorForm *window;
+    ErrorForm *window;
     unsigned char data [6];
     unsigned char dataT [6];
     unsigned char dataProv [6];

@@ -16,5 +16,5 @@ ErrorForm::~ErrorForm()
 
 void ErrorForm::Ignor()
 {
-
+//ui->Hide();
 }

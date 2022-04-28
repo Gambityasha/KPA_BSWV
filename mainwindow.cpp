@@ -166,16 +166,16 @@ void MainWindow::LoadSettings()
 void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName)
 {
     if (error!=0){
-    timerReconnect->start(1000);
-    for (int i=0;i<ListOfBSWVData.size();i++){
-        if (ListOfBSWVData[i].namePort==portName){
-            ListOfBSWVData[i].errorStatus=1;
-        }
-
-
+        for (int i=0;i<ListOfBSWVData.size();i++){
+            if (ListOfBSWVData[i].namePort==portName){
+                ListOfBSWVData[i].errorStatus=1;
+            }
     }
-
-}
+        window->show();
+        window->setModal(true);
+        window->exec();
+        timerReconnect->start(1000);
+    }
 }
 
 void MainWindow::Reconnect( )
@@ -478,8 +478,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK1rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(PortMK2rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
-
-    connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect(QString)));
+    connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
 }
 
 void MainWindow::TimerVivodStart()
@@ -1009,6 +1008,7 @@ QString MainWindow::getPortName(QString dis, QString serial)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete window;
 }
 
 
