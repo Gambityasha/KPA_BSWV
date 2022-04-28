@@ -176,12 +176,13 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
     }
 
 }
+}
 
 void MainWindow::Reconnect( )
 {
     QString dis1, serial1, dis2, serial2,dis3, serial3,dis4, serial4,dis5, serial5,dis6, serial6;
     QSettings setting("ports.ini", QSettings::IniFormat); //ports.ini файл должен быть в одной папке с exe
-    if (portName==ListOfBSWVData[0].namePort) {
+    if (ListOfBSWVData[0].errorStatus==1) {
         setting.beginGroup("MK1-osn");// [MK1-osn] в ини файле
         QString status1 = setting.value("work","0").toString();
         if ( status1 == "on") {
@@ -193,7 +194,7 @@ void MainWindow::Reconnect( )
         }
         setting.endGroup();
     }
-    if (portName==ListOfBSWVData[1].namePort) {
+    if (ListOfBSWVData[1].errorStatus==1) {
         setting.beginGroup("MK1-rez");// [MK1-rez] в ини файле
         QString status2 = setting.value("work","0").toString();
         if ( status2 == "on"){
@@ -205,7 +206,7 @@ void MainWindow::Reconnect( )
         }
         setting.endGroup();
     }
-    if (portName==ListOfBSWVData[2].namePort) {
+    if (ListOfBSWVData[2].errorStatus==1) {
         setting.beginGroup("MK2-osn");// [MK2-osn] в ини файле
         QString status3 = setting.value("work","0").toString();
         if ( status3 == "on") {
@@ -217,7 +218,7 @@ void MainWindow::Reconnect( )
         }
         setting.endGroup();
     }
-    if (portName==ListOfBSWVData[3].namePort) {
+    if (ListOfBSWVData[3].errorStatus==1) {
         setting.beginGroup("MK2-rez");// [MK2-rez] в ини файле
         QString status4 = setting.value("work","0").toString();
         if ( status4 == "on"){
@@ -229,7 +230,7 @@ void MainWindow::Reconnect( )
         }
         setting.endGroup();
     }
-    if (portName==ListOfBSWVData[4].namePort) {
+    if (ListOfBSWVData[4].errorStatus==1) {
         setting.beginGroup("MK3-osn");// [MK3-osn] в ини файле
         QString status5 = setting.value("work","0").toString();
         if ( status5 == "on") {
@@ -241,7 +242,7 @@ void MainWindow::Reconnect( )
         }
         setting.endGroup();
      }
-     if (portName==ListOfBSWVData[5].namePort) {
+     if (ListOfBSWVData[5].errorStatus==1) {
          setting.beginGroup("MK3-rez");// [MK3-rez] в ини файле
          QString status6 = setting.value("work","0").toString();
          if ( status6 == "on"){
@@ -262,6 +263,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+   window = new ErrorForm(this);
+
+
 
     QPixmap pix("redbtn.png");//указание расположения картинки и создание объекта класса
     QPixmap pix1("greenbtn.png");

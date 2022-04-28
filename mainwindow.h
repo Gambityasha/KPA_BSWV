@@ -14,6 +14,7 @@
 #include <QDate>
 #include <QTime>
 #include <QTextStream>
+#include <errorform.h>
 
 //размеры пакетов данных (первые четыре байта всегда содержат начальный, адрес отправителя, адрес получателя и код сообщения, последние два байта - контрольная сумма)
 //тип сообщения 1 - 6 байт, 17 - 16 байт, 34 - 1 байт, 255 - 0 байт
@@ -82,6 +83,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    Ui::ErrorForm *window;
     unsigned char data [6];
     unsigned char dataT [6];
     unsigned char dataProv [6];
