@@ -38,13 +38,9 @@ unsigned short Crc16(unsigned char *pcBlock, unsigned short len)
         0xEF1F, 0xFF3E, 0xCF5D, 0xDF7C, 0xAF9B, 0xBFBA, 0x8FD9, 0x9FF8,
         0x6E17, 0x7E36, 0x4E55, 0x5E74, 0x2E93, 0x3EB2, 0x0ED1, 0x1EF0
     };
-
-
     unsigned short crc = 0xFFFF;
-
     while (len--)
         crc = (crc << 8) ^ Crc16Table[(crc >> 8) ^ *pcBlock++]; //^ - исключающее или
-
     return crc;
 }
 void MainWindow::LoadSettings()
@@ -171,7 +167,6 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
                 ListOfBSWVData[i].errorStatus=1;
             }
     }
-
         window->setModal(true);
         window->exec();
         if (timerReconnect->isActive()){
@@ -532,7 +527,6 @@ void MainWindow::OtpravkaZaprosaNomer()
 {
     QByteArray dataQNomer = QByteArray::fromRawData((char*)dataNomer,sizeof(dataNomer));
     emit writeData (dataQNomer);
-
 }
 
 void MainWindow::OtpravkaZaprosaProv()
@@ -540,7 +534,6 @@ void MainWindow::OtpravkaZaprosaProv()
     QByteArray dataQProv = QByteArray::fromRawData((char*)dataProv,sizeof(dataProv));
     emit writeData (dataQProv);
 }
-
 
 void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
 {
@@ -550,7 +543,6 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
                 for (int j = 0; otvet[j]!=char(0xAA);j++) {
                     otvet.remove(0,1);
                 }
-
                 if (otvet.size()>3){
                 switch (otvet[3]){
                 case char (1):
@@ -593,7 +585,6 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
     memcpy( buffer, otvet.data(), otvet.size());
     unsigned char upperCRC = buffer[otvet.size()-2];
     unsigned char lowerCRC = buffer[otvet.size()-1];
-
     unsigned short le = otvet.size()-2;
     switch (buffer[1]){
     case 2:
@@ -697,12 +688,10 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
              }
    break;
     }
-
 }
 
 void MainWindow::Knopka()
 {
-
     if (ui->checkBox->isChecked()){
         ui->greenMK1o->setVisible(true);
         ui->redMK1o->setVisible(false);
@@ -732,7 +721,6 @@ void MainWindow::Knopka()
         ui->greenMK3r->setVisible(false);
         ui->redMK3r->setVisible(true);
     }
-
 }
 
 void MainWindow::ChangeColor()
@@ -745,8 +733,6 @@ void MainWindow::Print(QString dat)
     ui->consol->textCursor().insertText(dat+'\r'); // Вывод текста в консоль
     ui->consol->moveCursor(QTextCursor::End);//Scroll
     ui->tabWidget->tabBar()->setTabTextColor(1,Qt::red);
-
-
 }
 
 void MainWindow::ProverkaNomera(){
@@ -815,14 +801,12 @@ void MainWindow::WriteInFile()
     }
     else {
            if (file.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
-
                   stream<<QString::fromUtf8("Время    |    Канал      | Суммарный ток нагрузки 2 | Суммарный ток нагрузки 1  | Напряжение на силовых шинах 2 |"
                   "Напряжение на силовых шинах 1  | Температура 2 корпуса прибора |  Температура 1 корпуса прибора\r\n");
                   for (int i=0;i<ListOfBSWVData.size();i++){
                       QString log =QTime::currentTime().toString("HH:mm:ss") +" |   "+ ListOfBSWVData[i].name+"\t |\t\t"+QString::number(ListOfBSWVData[i].icap2)+"\t    |\t\t"+
                               QString::number(ListOfBSWVData[i].icap1)+"\t\t|\t\t"+QString::number(ListOfBSWVData[i].u2)+"\t\t|\t\t "+QString::number(ListOfBSWVData[i].u1)
                               +"\t\t|\t\t "+ QString::number(ListOfBSWVData[i].tcorp2)+"\t\t|\t\t "+ QString::number(ListOfBSWVData[i].tcorp1)+"\r\n";
-
                       stream<<log;
                }
             }
@@ -843,8 +827,6 @@ void MainWindow::WriteInFile()
                     QString logACP =QTime::currentTime().toString("HH:mm:ss") +" |   "+ ListOfBSWVt[i].name+"\t |\t\t"+QString::number(ListOfBSWVt[i].icap2)+"\t    |\t\t"+
                                     QString::number(ListOfBSWVt[i].icap1)+"\t\t|\t\t"+QString::number(ListOfBSWVt[i].u2)+"\t\t|\t\t "+QString::number(ListOfBSWVt[i].u1)
                                     +"\t\t|\t\t "+ QString::number(ListOfBSWVt[i].tcorp2)+"\t\t|\t\t "+ QString::number(ListOfBSWVt[i].tcorp1)+"\t\t|\t\t "+ QString::number(ListOfBSWVt[i].uref)+"\r\n";
-
-
                     streamACP<<logACP;
                 }
             }
@@ -1021,8 +1003,6 @@ MainWindow::~MainWindow()
     delete ui;
     delete window;
 }
-
-
 
 void MainWindow::on_pushButton_2_clicked()
 {
