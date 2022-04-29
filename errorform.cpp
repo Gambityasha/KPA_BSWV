@@ -6,7 +6,11 @@ ErrorForm::ErrorForm(QWidget *parent) :
     ui(new Ui::ErrorForm)
 {
     ui->setupUi(this);
-    connect(ui->btnIgnor,SIGNAL(clicked()),this,SLOT(Ignor));
+
+    timerAnimation = new QTimer();
+    timerAnimation->start(2000);
+   // connect(this,SIGNAL(hideError()),this,SLOT(close()));
+    connect(timerAnimation,SIGNAL(timeout()),this,SLOT(ReconnectAnimation()));
 }
 
 ErrorForm::~ErrorForm()
@@ -14,7 +18,26 @@ ErrorForm::~ErrorForm()
     delete ui;
 }
 
-void ErrorForm::Ignor()
+void ErrorForm::ReconnectAnimation()
 {
-//ui->Hide();
+    ui->label->setText(errMsg);
+    QTimer::singleShot(700,this,SLOT(AnimPlus1()));
+    QTimer::singleShot(1200,this,SLOT(AnimPlus2()));
 }
+
+void ErrorForm::AnimPlus1()
+{
+    ui->label->setText(errMsg+".");
+}
+
+void ErrorForm::AnimPlus2()
+{
+    ui->label->setText(errMsg+"..");
+}
+
+void ErrorForm::on_btnIgnor_clicked()
+{
+    emit hideError();
+    close();
+}
+

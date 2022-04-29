@@ -412,6 +412,38 @@
         <string>ReConnect</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>190</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>form</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblError">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>29</y>
+         <width>291</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Есть проблемы с подключенными устройствами</string>
+       </property>
+      </widget>
       <zorder>redMK3o</zorder>
       <zorder>redMK3r</zorder>
       <zorder>redMK1r</zorder>
@@ -432,6 +464,8 @@
       <zorder>checkBox</zorder>
       <zorder>btnDisconnect</zorder>
       <zorder>pushButton</zorder>
+      <zorder>pushButton_2</zorder>
+      <zorder>lblError</zorder>
      </widget>
     </item>
     <item row="0" column="1">
@@ -499,7 +533,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -555,7 +589,7 @@
          <rect>
           <x>10</x>
           <y>10</y>
-          <width>891</width>
+          <width>671</width>
           <height>261</height>
          </rect>
         </property>

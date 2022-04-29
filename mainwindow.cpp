@@ -171,15 +171,23 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
                 ListOfBSWVData[i].errorStatus=1;
             }
     }
-        window->show();
+
         window->setModal(true);
         window->exec();
-        timerReconnect->start(1000);
+        if (timerReconnect->isActive()){
+
+        }
+        else timerReconnect->start(1000);
+    }
+    else {
+        timerReconnect->stop();
+        window->close();
+        ui->lblError->setVisible(false);
     }
 }
 
 void MainWindow::Reconnect( )
-{
+{    
     QString dis1, serial1, dis2, serial2,dis3, serial3,dis4, serial4,dis5, serial5,dis6, serial6;
     QSettings setting("ports.ini", QSettings::IniFormat); //ports.ini файл должен быть в одной папке с exe
     if (ListOfBSWVData[0].errorStatus==1) {
@@ -256,16 +264,18 @@ void MainWindow::Reconnect( )
      }
 }
 
-
+void MainWindow::ErrorMessage()
+{
+    ui->lblError->setVisible(true);
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-   window = new ErrorForm(this);
-
-
+    window = new ErrorForm(this);
+    ui->lblError->setVisible(false);
 
     QPixmap pix("redbtn.png");//указание расположения картинки и создание объекта класса
     QPixmap pix1("greenbtn.png");
@@ -281,7 +291,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->redMK2r->setPixmap(pix.scaled(35,35,Qt::KeepAspectRatio));//присвоение лейблу этой картинки с уменьшением ее размеров
     ui->greenMK3r->setPixmap(pix1.scaled(35,35,Qt::KeepAspectRatio));
     ui->redMK3r->setPixmap(pix.scaled(35,35,Qt::KeepAspectRatio));//присвоение лейблу этой картинки с уменьшением ее размеров
-
 
     BSWV.name = "MK1-osn"; BSWV.namePort = "Com";BSWV.icap2=0; BSWV.icap1 = 0; BSWV.u2 = 0; BSWV.u1 = 0;BSWV.tcorp2 = 0; BSWV.tcorp1=0;
     ListOfBSWVData.append(BSWV);
@@ -479,6 +488,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK2rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
+    connect(window,SIGNAL(hideError()),this,SLOT(ErrorMessage()));
+    //connect(window, SIGNAL(hideError()), window, SLOT(close()));
 }
 
 void MainWindow::TimerVivodStart()
@@ -1011,4 +1022,12 @@ MainWindow::~MainWindow()
     delete window;
 }
 
+
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    window->setModal(true); //потом убрать - для тестов!
+    window->exec();
+    //потом убрать - для тестов!
+}
 

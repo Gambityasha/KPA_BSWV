@@ -109,6 +109,7 @@ private:
     QString a;
 
 public:
+
     QTimer *timerZaprosaTelem;
     QTimer *timerZaprosaTarir;
     QTimer *timerZaprosaProv;
@@ -153,6 +154,7 @@ public slots:
     void LoadSettings();
     void ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName);
     void Reconnect( );
+    void ErrorMessage();
 signals:
     //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
@@ -169,5 +171,6 @@ signals:
 
 private slots:
    void on_btnNomer_clicked();
+   void on_pushButton_2_clicked();
 };
 #endif // MAINWINDOW_H
