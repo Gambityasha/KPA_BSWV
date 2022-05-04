@@ -161,23 +161,33 @@ void MainWindow::LoadSettings()
 
 void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName)
 {
+    int k;
     if (error!=0){
         for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData[i].namePort==portName){
                 ListOfBSWVData[i].errorStatus=1;
+                k=i;
             }
-    }
-        window->setModal(true);
-        window->exec();
+        }
         if (timerReconnect->isActive()){
 
         }
-        else timerReconnect->start(1000);
+        else {
+            timerReconnect->start();
+            window->setModal(true);
+            window->exec();
+        }
     }
     else {
-        timerReconnect->stop();
-        window->close();
-        ui->lblError->setVisible(false);
+        for (int i=0;i<ListOfBSWVData.size();i++){
+            if (ListOfBSWVData[i].namePort==portName){
+                ListOfBSWVData[i].errorStatus=0;
+                timerReconnect->stop();
+                window->close();
+                ui->lblError->setVisible(false);
+            }
+        }
+
     }
 }
 
@@ -414,6 +424,7 @@ MainWindow::MainWindow(QWidget *parent)
     //-----------Конец формирования исходящего сообщения для БСШ-В (тип 34 - проверка номера МУКа)-----------
     timerVivod = new QTimer();
     timerReconnect = new QTimer();
+    timerReconnect->setInterval(1000);
     timerZaprosaTelem = new QTimer();
     timerZaprosaTarir = new QTimer();
     timerZaprosaProv = new QTimer();
@@ -607,6 +618,13 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                   ListOfBSWVData[i].otvetPoluchen=1;
                             }
                             else {ListOfBSWVData[i].otvetPoluchen=0;
+                                  ListOfBSWVData[i].icap2 = 0.0;
+                                  ListOfBSWVData[i].icap1 = 0.0;
+                                  ListOfBSWVData[i].u2 = 0.0;
+                                  ListOfBSWVData[i].u1 = 0.0;
+                                  ListOfBSWVData[i].tcorp2 = 0.0;
+                                  ListOfBSWVData[i].tcorp1 = 0.0;
+
                             }
                         }
                      }
@@ -627,6 +645,13 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                 ListOfBSWVt[i].otvetPoluchen=1;
                             }
                             else {ListOfBSWVt[i].otvetPoluchen=0;
+                                  ListOfBSWVt[i].uref = 0.0;
+                                  ListOfBSWVt[i].icap2 = 0.0;
+                                  ListOfBSWVt[i].icap1 = 0.0;
+                                  ListOfBSWVt[i].u2 = 0.0;
+                                  ListOfBSWVt[i].u1 = 0.0;
+                                  ListOfBSWVt[i].tcorp2 = 0.0;
+                                  ListOfBSWVt[i].tcorp1 = 0.0;
                             }
                         }
                     }
@@ -666,6 +691,8 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                     ListOfBSWVnomer[i].otvetPoluchen=1;
                               }
                               else {ListOfBSWVnomer[i].otvetPoluchen=0;
+                                    ListOfBSWVnomer[i].nMK = "-";
+                                    ListOfBSWVnomer[i].nChan = "-";
                               }
                           }
                       }
