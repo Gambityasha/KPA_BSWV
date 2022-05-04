@@ -801,7 +801,7 @@ void MainWindow::ProverkaNomera(){
         }
         else {
             error = "Ответ на сообщение 34 от "+ ListOfBSWVprov.at(f).name +" не получен";
-            emit errorMessage (error);
+            emit errorMessage (error);            
         }        
     }
 }
@@ -924,6 +924,19 @@ for (int i=0;i<ListOfBSWVData.size();i++){
     else {
         error = "Ответ на сообщение 1 от "+ListOfBSWVData.at(i).name+" не получен";
         emit errorMessage (error);
+        QTableWidgetItem *itm91_91 = new QTableWidgetItem("-");
+        QTableWidgetItem *itm92_92 = new QTableWidgetItem("-");
+        QTableWidgetItem *itm93_93 = new QTableWidgetItem("-");
+        QTableWidgetItem *itm94_94 = new QTableWidgetItem("-");
+        QTableWidgetItem *itm95_95 = new QTableWidgetItem("-");
+        QTableWidgetItem *itm96_96 = new QTableWidgetItem("-");
+        ui->tblBSWV->setItem(0,i,itm91_91); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
+        ui->tblBSWV->setItem(1,i,itm92_92);
+        ui->tblBSWV->setItem(2,i,itm93_93);
+        ui->tblBSWV->setItem(3,i,itm94_94);
+        ui->tblBSWV->setItem(4,i,itm95_95);
+        ui->tblBSWV->setItem(5,i,itm96_96);
+
     }
 //  itm1_2->setTextColor(Qt::red); //задание цвета у текста определенной ячейки таблицы
 //  itm1_2->setBackgroundColor(Qt::black); //задание цвета самой определенной ячейки таблицы
@@ -950,6 +963,20 @@ for (int j=0;j<ListOfBSWVt.size();j++){
     else {
         error = "Ответ на сообщение 17 от "+ ListOfBSWVt.at(j).name +" не получен";
         emit errorMessage (error);
+        QTableWidgetItem *itm91_91 = new QTableWidgetItem("-");
+        QTableWidgetItem *itm92_92 = new QTableWidgetItem("-");
+        QTableWidgetItem *itm93_93 = new QTableWidgetItem("-");
+        QTableWidgetItem *itm94_94 = new QTableWidgetItem("-");
+        QTableWidgetItem *itm95_95 = new QTableWidgetItem("-");
+        QTableWidgetItem *itm96_96 = new QTableWidgetItem("-");
+        QTableWidgetItem *itm97_97 = new QTableWidgetItem("-");
+        ui->tblAcp->setItem(0,j,itm91_91); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
+        ui->tblAcp->setItem(1,j,itm92_92);
+        ui->tblAcp->setItem(2,j,itm93_93);
+        ui->tblAcp->setItem(3,j,itm94_94);
+        ui->tblAcp->setItem(4,j,itm95_95);
+        ui->tblAcp->setItem(5,j,itm96_96);
+        ui->tblAcp->setItem(6,j,itm97_97);
     }
 }
 
