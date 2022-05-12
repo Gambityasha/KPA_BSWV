@@ -1056,6 +1056,11 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete window;
+    delete timerVivod;
+    delete timerReconnect;
+    delete timerZaprosaTelem;
+    delete timerZaprosaTarir;
+    delete timerZaprosaProv;
 }
 
 void MainWindow::on_pushButton_2_clicked()
