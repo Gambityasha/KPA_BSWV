@@ -156,21 +156,20 @@ void MainWindow::LoadSettings()
         emit con6();
     }
     setting.endGroup();
-
 }
 
 void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName)
 {
-    int k;
+    //int k;
     if (error!=0){
         for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData[i].namePort==portName){
                 ListOfBSWVData[i].errorStatus=1;
-                k=i;
+               // k=i;
             }
         }
         if (timerReconnect->isActive()){
-
+//ничего не делать
         }
         else {
             timerReconnect->start();
@@ -187,7 +186,6 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
                 ui->lblError->setVisible(false);
             }
         }
-
     }
 }
 
@@ -198,7 +196,7 @@ void MainWindow::Reconnect( )
     if (ListOfBSWVData[0].errorStatus==1) {
         setting.beginGroup("MK1-osn");// [MK1-osn] в ини файле
         QString status1 = setting.value("work","0").toString();
-        if ( status1 == "on") {
+        if (status1 == "on") {
              dis1 = setting.value("description","0").toString();
              serial1 = setting.value("serialNumber","0").toString();
              QString name1 = getPortName(dis1,serial1);
@@ -1051,7 +1049,12 @@ QString MainWindow::getPortName(QString dis, QString serial)
     }
     return namePort;
 }
-
+void MainWindow::on_pushButton_2_clicked()
+{
+    window->setModal(true); //потом убрать - для тестов!
+    window->exec();
+    //потом убрать - для тестов!
+}
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -1063,10 +1066,5 @@ MainWindow::~MainWindow()
     delete timerZaprosaProv;
 }
 
-void MainWindow::on_pushButton_2_clicked()
-{
-    window->setModal(true); //потом убрать - для тестов!
-    window->exec();
-    //потом убрать - для тестов!
-}
+
 

@@ -129,10 +129,6 @@ public:
     QTime time;
     QFile fileError;
 
-
-private:
-
-
 public slots:
    void Vivod(); //Вывод телеметрии в таблицу
    void OtpravkaZaprosaTelem ();
