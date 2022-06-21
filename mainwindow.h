@@ -83,7 +83,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    ErrorForm *window;
+    ErrorForm *window = new ErrorForm(this);
     unsigned char data [6];
     unsigned char dataT [6];
     unsigned char dataProv [6];
@@ -129,6 +129,7 @@ public:
     QTime time;
     QFile fileError;
 
+//window = new ErrorForm(this);
 public slots:
    void Vivod(); //Вывод телеметрии в таблицу
    void OtpravkaZaprosaTelem ();
@@ -167,6 +168,5 @@ signals:
 
 private slots:
    void on_btnNomer_clicked();
-   void on_pushButton_2_clicked();
 };
 #endif // MAINWINDOW_H
