@@ -182,7 +182,8 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
             if (ListOfBSWVData[i].namePort==portName){
                 ListOfBSWVData[i].errorStatus=0;
                 timerReconnect->stop();
-                window->close();
+                QTimer::singleShot(2000,window,SLOT(close()));
+                //window->close();
                 ui->lblError->setVisible(false);
             }
         }
@@ -431,17 +432,13 @@ MainWindow::MainWindow(QWidget *parent)
     timerZaprosaTelem = new QTimer();
     timerZaprosaTarir = new QTimer();
     timerZaprosaProv = new QTimer();
-    timerZaprosaTelem->start(1000);
+
     QString fname = QDate::currentDate().toString("dd.MM.yyyy")+".txt";
     file.setFileName(fname);
     QString fEname = QDate::currentDate().toString("dd.MM.yyyy")+"_Errors.txt";
     fileError.setFileName(fEname);
     QString fACPname = QDate::currentDate().toString("dd.MM.yyyy")+"_ACP.txt";
-    fileACP.setFileName(fACPname);
-
-    QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
-    QTimer::singleShot(300,this,SLOT(TimerProvStart()));
-    QTimer::singleShot(500,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 50 мс после их получения
+    fileACP.setFileName(fACPname);   
     connect(timerZaprosaTelem, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTelem()));
     connect(timerZaprosaTarir, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTarir()));
     connect(timerZaprosaProv,SIGNAL(timeout()), this,SLOT(OtpravkaZaprosaProv()));
@@ -498,7 +495,17 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
     connect(window,SIGNAL(hideError()),this,SLOT(ErrorMessage()));
-    //connect(window, SIGNAL(hideError()), window, SLOT(close()));
+    timerZaprosaTelem->start(1000);
+    QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
+    QTimer::singleShot(300,this,SLOT(TimerProvStart()));
+    QTimer::singleShot(400,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса
+}
+
+void MainWindow:: OtpravkaZaprosaTelem()
+{
+    QByteArray dataQ = QByteArray::fromRawData((char*)data,sizeof(data));
+    //dataQ[0] = reinterpret_cast<QByteArray>(data[0].data());
+    emit writeData (dataQ);
 }
 
 void MainWindow::TimerVivodStart()
@@ -522,14 +529,9 @@ void MainWindow::TimerTarirStart()
 void MainWindow::on_btnNomer_clicked()
 {
     OtpravkaZaprosaNomer();
-    QTimer::singleShot(5000,this,SLOT(ProverkaNomera()));
+    QTimer::singleShot(2000,this,SLOT(ProverkaNomera()));
 }
-void MainWindow:: OtpravkaZaprosaTelem()
-{
-    QByteArray dataQ = QByteArray::fromRawData((char*)data,sizeof(data));
-    //dataQ[0] = reinterpret_cast<QByteArray>(data[0].data());
-    emit writeData (dataQ);
-}
+
 
 void MainWindow:: OtpravkaZaprosaTarir()
 {
@@ -551,44 +553,90 @@ void MainWindow::OtpravkaZaprosaProv()
 
 void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
 {
+//    for (int i=0;i<ListOfBSWVData.size();i++){
+//            if (ListOfBSWVData.at(i).namePort == comName){
+//                ListOfBSWVData[i].otvetBuffer.append(dataRead);//new
+//                //otvet.append(dataRead);
+//                //for (int j = 0; otvet[j]!=char(0xAA);j++) {
+//                for (int j = 0; ListOfBSWVData[i].otvetBuffer[j]!=char(0xAA);j++) {//new
+//                    ListOfBSWVData[i].otvetBuffer.remove(0,1);
+//                    //otvet.remove(0,1);
+//                }
+//                //if (otvet.size()>3){
+//                if (ListOfBSWVData[i].otvetBuffer.size()>3){//new
+//                switch (otvet[3]){
+//                case char (1):
+//                   if (otvet.size() == otvetTelemSize){
+//                       ListOfBSWVData[i].otvet = otvet;
+//                       emit readyToAnalize(ListOfBSWVData.at(i).otvet, ListOfBSWVData.at(i).namePort);
+//                       otvet.clear();
+//                    }
+//                    break;
+//                case char (17):
+//                   if (otvet.size() == otvetTarirSize){
+//                       ListOfBSWVt[i].otvet = otvet;
+//                       emit readyToAnalize(ListOfBSWVt.at(i).otvet, ListOfBSWVt.at(i).namePort);
+//                       otvet.clear();
+//                   }
+//                break;
+//                case char (34):
+//                   if (otvet.size() == otvetMKSize){
+//                       ListOfBSWVnomer[i].otvet = otvet;
+//                       emit readyToAnalize(ListOfBSWVnomer.at(i).otvet, ListOfBSWVnomer.at(i).namePort);
+//                       otvet.clear();
+//                   }
+//                break;
+//                case char(255):
+//                    if (otvet.size() == otvetProvSize){
+//                        ListOfBSWVprov[i].otvet = otvet;
+//                        emit readyToAnalize(ListOfBSWVprov.at(i).otvet, ListOfBSWVprov.at(i).namePort);
+//                        otvet.clear();
+//                    }
+//                break;
+//                }
+//                }
+//            }
+//    }
+
     for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData.at(i).namePort == comName){
-                otvet.append(dataRead);
-                for (int j = 0; otvet[j]!=char(0xAA);j++) {
-                    otvet.remove(0,1);
+                ListOfBSWVData[i].otvetBuffer.append(dataRead);//new
+                for (int j = 0; ListOfBSWVData[i].otvetBuffer[j]!=char(0xAA);j++) {//new
+                    ListOfBSWVData[i].otvetBuffer.remove(0,1);
                 }
-                if (otvet.size()>3){
-                switch (otvet[3]){
+                if (ListOfBSWVData[i].otvetBuffer.size()>3){//new
+                switch (ListOfBSWVData[i].otvetBuffer[3]){
                 case char (1):
-                   if (otvet.size() == otvetTelemSize){
-                       ListOfBSWVData[i].otvet = otvet;
+                   if (ListOfBSWVData[i].otvetBuffer.size() == otvetTelemSize){
+                       ListOfBSWVData[i].otvet = ListOfBSWVData[i].otvetBuffer;
                        emit readyToAnalize(ListOfBSWVData.at(i).otvet, ListOfBSWVData.at(i).namePort);
-                       otvet.clear();
+                       ListOfBSWVData[i].otvetBuffer.clear();
                     }
                     break;
                 case char (17):
-                   if (otvet.size() == otvetTarirSize){
-                       ListOfBSWVt[i].otvet = otvet;
+                   if (ListOfBSWVData[i].otvetBuffer.size() == otvetTarirSize){
+                       ListOfBSWVt[i].otvet = ListOfBSWVData[i].otvetBuffer;
                        emit readyToAnalize(ListOfBSWVt.at(i).otvet, ListOfBSWVt.at(i).namePort);
-                       otvet.clear();
+                       ListOfBSWVData[i].otvetBuffer.clear();
                    }
                 break;
                 case char (34):
-                   if (otvet.size() == otvetMKSize){
-                       ListOfBSWVnomer[i].otvet = otvet;
+                   if (ListOfBSWVData[i].otvetBuffer.size() == otvetMKSize){
+                       ListOfBSWVnomer[i].otvet = ListOfBSWVData[i].otvetBuffer;
                        emit readyToAnalize(ListOfBSWVnomer.at(i).otvet, ListOfBSWVnomer.at(i).namePort);
-                       otvet.clear();
+                       ListOfBSWVData[i].otvetBuffer.clear();
                    }
                 break;
                 case char(255):
-                    if (otvet.size() == otvetProvSize){
-                        ListOfBSWVprov[i].otvet = otvet;
+                    if (ListOfBSWVData[i].otvetBuffer.size() == otvetProvSize){
+                        ListOfBSWVprov[i].otvet = ListOfBSWVData[i].otvetBuffer;
                         emit readyToAnalize(ListOfBSWVprov.at(i).otvet, ListOfBSWVprov.at(i).namePort);
-                        otvet.clear();
+                        ListOfBSWVData[i].otvetBuffer.clear();
                     }
                 break;
                 }
                 }
+
             }
     }
 }
@@ -1094,6 +1142,9 @@ MainWindow::~MainWindow()
 //    delete PortMK3osn;
 //    delete PortMK3rez;
 }
+
+
+
 
 
 

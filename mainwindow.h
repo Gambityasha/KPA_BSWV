@@ -35,6 +35,7 @@ struct BSWVdata //создание структуры
     float tcorp2;//"Температура 2 корпуса прибора"
     float tcorp1;//"Температура 1 корпуса прибора"
     QByteArray otvet;
+    QByteArray otvetBuffer;
     short otvetPoluchen; //0 - не получен, 1 - получен
     short errorStatus;//0 - нет ошибок порта, 1 - есть ошибки порта
 };
