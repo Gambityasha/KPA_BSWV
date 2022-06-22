@@ -355,31 +355,12 @@
         <string>TextLabel</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox">
+      <widget class="QPushButton" name="btnStart">
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>10</x>
          <y>170</y>
-         <width>91</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-         <pointsize>9</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Есть связь</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="btnDisconnect">
-       <property name="geometry">
-        <rect>
-         <x>120</x>
-         <y>170</y>
-         <width>91</width>
+         <width>111</width>
          <height>23</height>
         </rect>
        </property>
@@ -390,13 +371,13 @@
         </font>
        </property>
        <property name="text">
-        <string>DisConnect</string>
+        <string>Начать обмен</string>
        </property>
       </widget>
       <widget class="QPushButton" name="pushButton">
        <property name="geometry">
         <rect>
-         <x>230</x>
+         <x>130</x>
          <y>170</y>
          <width>75</width>
          <height>23</height>
@@ -448,8 +429,7 @@
       <zorder>greenMK1o</zorder>
       <zorder>greenMK2r</zorder>
       <zorder>label_2</zorder>
-      <zorder>checkBox</zorder>
-      <zorder>btnDisconnect</zorder>
+      <zorder>btnStart</zorder>
       <zorder>pushButton</zorder>
       <zorder>lblError</zorder>
      </widget>
@@ -519,7 +499,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -624,6 +604,151 @@
         <column/>
         <column/>
         <column/>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_4">
+       <attribute name="title">
+        <string>Проверка конвертеров</string>
+       </attribute>
+       <widget class="QRadioButton" name="rbMK1o_r">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>131</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>МК1 Осн. - МК1 - Рез.</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pbTestRS485">
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>70</y>
+          <width>141</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Отправить сообщение</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="lineEdit">
+        <property name="geometry">
+         <rect>
+          <x>290</x>
+          <y>20</y>
+          <width>91</width>
+          <height>20</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="rbMK1r_o">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>131</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>МК1 Рез. - МК1 - Осн.</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="rbMK2o_r">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>60</y>
+          <width>131</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>МК2 Осн. - МК2 - Рез.</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="rbMK2r_o">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>80</y>
+          <width>131</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>МК2 Рез. - МК2 - Осн.</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="rbMK3r_o">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>120</y>
+          <width>141</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>МК3 Рез. - МК3 - Осн.</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="rbMK3o_r">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>131</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>МК3 Осн. - МК3 - Рез.</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>20</y>
+          <width>121</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Число для отправки=</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_7">
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>50</y>
+          <width>47</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Ответ:</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_8">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>50</y>
+          <width>111</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>получен/не получен</string>
+        </property>
        </widget>
       </widget>
      </widget>

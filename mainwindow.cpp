@@ -426,6 +426,7 @@ MainWindow::MainWindow(QWidget *parent)
     dataNomer[4] = upperNomer;
     dataNomer[5] = lowerNomer;
     //-----------Конец формирования исходящего сообщения для БСШ-В (тип 34 - проверка номера МУКа)-----------
+
     timerVivod = new QTimer();
     timerReconnect = new QTimer();
     timerReconnect->setInterval(1000);
@@ -467,12 +468,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK1rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
     connect(PortMK2rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
     connect(PortMK3rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
-    connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK1osn,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
-    connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK2osn,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
-    connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK3osn,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
-    connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK1rez,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
-    connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK2rez,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
-    connect(ui->btnDisconnect, SIGNAL(clicked()),PortMK3rez,SLOT(DisconnectPort()));//по нажатию кнопки отключить порт
     connect(PortMK1osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
     connect(PortMK1rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
     connect(PortMK2osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
@@ -481,7 +476,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK3osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
     connect(timerVivod, SIGNAL(timeout()), this, SLOT(Vivod()));    
     connect(this, SIGNAL(readyToAnalize(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
-    connect(ui->checkBox, SIGNAL(clicked()), this, SLOT(Knopka()));
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(Print(QString))); //Не тот же эррор месадж, что от порта
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(WriteInFileError(QString)));
     connect(timerVivod, SIGNAL(timeout()), this, SLOT(WriteInFile()));    
@@ -495,10 +489,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
     connect(window,SIGNAL(hideError()),this,SLOT(ErrorMessage()));
-    timerZaprosaTelem->start(1000);
-    QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
-    QTimer::singleShot(300,this,SLOT(TimerProvStart()));
-    QTimer::singleShot(400,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса
+//    timerZaprosaTelem->start(1000);
+//    QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
+//    QTimer::singleShot(300,this,SLOT(TimerProvStart()));
+//    QTimer::singleShot(400,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса
 }
 
 void MainWindow:: OtpravkaZaprosaTelem()
@@ -605,38 +599,44 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
                     ListOfBSWVData[i].otvetBuffer.remove(0,1);
                 }
                 if (ListOfBSWVData[i].otvetBuffer.size()>3){//new
-                switch (ListOfBSWVData[i].otvetBuffer[3]){
-                case char (1):
-                   if (ListOfBSWVData[i].otvetBuffer.size() == otvetTelemSize){
-                       ListOfBSWVData[i].otvet = ListOfBSWVData[i].otvetBuffer;
-                       emit readyToAnalize(ListOfBSWVData.at(i).otvet, ListOfBSWVData.at(i).namePort);
-                       ListOfBSWVData[i].otvetBuffer.clear();
-                    }
+                    switch (ListOfBSWVData[i].otvetBuffer[3]){
+                    case char (1):
+                         if (ListOfBSWVData[i].otvetBuffer.size() == otvetTelemSize){
+                             ListOfBSWVData[i].otvet = ListOfBSWVData[i].otvetBuffer;
+                             emit readyToAnalize(ListOfBSWVData.at(i).otvet, ListOfBSWVData.at(i).namePort);
+                             ListOfBSWVData[i].otvetBuffer.clear();
+                         }
                     break;
-                case char (17):
-                   if (ListOfBSWVData[i].otvetBuffer.size() == otvetTarirSize){
-                       ListOfBSWVt[i].otvet = ListOfBSWVData[i].otvetBuffer;
-                       emit readyToAnalize(ListOfBSWVt.at(i).otvet, ListOfBSWVt.at(i).namePort);
-                       ListOfBSWVData[i].otvetBuffer.clear();
-                   }
-                break;
-                case char (34):
-                   if (ListOfBSWVData[i].otvetBuffer.size() == otvetMKSize){
-                       ListOfBSWVnomer[i].otvet = ListOfBSWVData[i].otvetBuffer;
-                       emit readyToAnalize(ListOfBSWVnomer.at(i).otvet, ListOfBSWVnomer.at(i).namePort);
-                       ListOfBSWVData[i].otvetBuffer.clear();
-                   }
-                break;
-                case char(255):
-                    if (ListOfBSWVData[i].otvetBuffer.size() == otvetProvSize){
-                        ListOfBSWVprov[i].otvet = ListOfBSWVData[i].otvetBuffer;
-                        emit readyToAnalize(ListOfBSWVprov.at(i).otvet, ListOfBSWVprov.at(i).namePort);
-                        ListOfBSWVData[i].otvetBuffer.clear();
-                    }
-                break;
-                }
-                }
+                    case char (17):
+                         if (ListOfBSWVData[i].otvetBuffer.size() == otvetTarirSize){
+                             ListOfBSWVt[i].otvet = ListOfBSWVData[i].otvetBuffer;
+                             emit readyToAnalize(ListOfBSWVt.at(i).otvet, ListOfBSWVt.at(i).namePort);
+                             ListOfBSWVData[i].otvetBuffer.clear();
+                         }
+                    break;
+                    case char (34):
+                         if (ListOfBSWVData[i].otvetBuffer.size() == otvetMKSize){
+                             ListOfBSWVnomer[i].otvet = ListOfBSWVData[i].otvetBuffer;
+                             emit readyToAnalize(ListOfBSWVnomer.at(i).otvet, ListOfBSWVnomer.at(i).namePort);
+                             ListOfBSWVData[i].otvetBuffer.clear();
+                         }
+                    break;
+                    case char(255):
+                         if (ListOfBSWVData[i].otvetBuffer.size() == otvetProvSize){
+                             ListOfBSWVprov[i].otvet = ListOfBSWVData[i].otvetBuffer;
+                             emit readyToAnalize(ListOfBSWVprov.at(i).otvet, ListOfBSWVprov.at(i).namePort);
+                             ListOfBSWVData[i].otvetBuffer.clear();
+                        }
+                    break;
+                    case char(99):
+                         if (ListOfBSWVData[i].otvetBuffer.size() == otvetTestRS485Size){
+                             emit msgTestRS485(ListOfBSWVData[i].otvetBuffer);
+                             ListOfBSWVData[i].otvetBuffer.clear();
+                         }
 
+                    break;
+                    }
+                }
             }
     }
 }
@@ -765,39 +765,6 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
              break;
              }
    break;
-    }
-}
-
-void MainWindow::Knopka()
-{
-    if (ui->checkBox->isChecked()){
-        ui->greenMK1o->setVisible(true);
-        ui->redMK1o->setVisible(false);
-        ui->greenMK2o->setVisible(true);
-        ui->redMK2o->setVisible(false);
-        ui->greenMK3o->setVisible(true);
-        ui->redMK3o->setVisible(false);
-        ui->greenMK1r->setVisible(true);
-        ui->redMK1r->setVisible(false);
-        ui->greenMK2r->setVisible(true);
-        ui->redMK2r->setVisible(false);
-        ui->greenMK3r->setVisible(true);
-        ui->redMK3r->setVisible(false);
-
-    }
-    else{
-        ui->greenMK1o->setVisible(false);
-        ui->redMK1o->setVisible(true);
-        ui->greenMK2o->setVisible(false);
-        ui->redMK2o->setVisible(true);
-        ui->greenMK3o->setVisible(false);
-        ui->redMK3o->setVisible(true);
-        ui->greenMK1r->setVisible(false);
-        ui->redMK1r->setVisible(true);
-        ui->greenMK2r->setVisible(false);
-        ui->redMK2r->setVisible(true);
-        ui->greenMK3r->setVisible(false);
-        ui->redMK3r->setVisible(true);
     }
 }
 
@@ -1143,8 +1110,64 @@ MainWindow::~MainWindow()
 //    delete PortMK3rez;
 }
 
+void MainWindow::on_btnStart_clicked()
+{
+    if (timerZaprosaTelem->isActive()){
+        ui->btnStart->setText("Начать обмен");
+        timerZaprosaTelem->stop();
+        timerVivod->stop();
+        timerZaprosaTarir->stop();
+        timerZaprosaProv->stop();
+    }
+    else {
+        ui->btnStart->setText("Закончить обмен");
+        timerZaprosaTelem->start(1000);
+        QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
+        QTimer::singleShot(300,this,SLOT(TimerProvStart()));
+        QTimer::singleShot(400,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса
+    }
+}
 
+void MainWindow::on_pbTestRS485_clicked()
+{
+    //---------Формирование исходящего сообщения для проверки конвертеров РС(тип99)----------
 
+    dataTestRS485 [0] = startByte;
+    unsigned short len = 6;
 
+//  unsigned short lower1 = Crc16(pcBlock,len)<<8;
+//  unsigned char lower = lower1>>8; //получение младшего байта контрольной суммы
 
+    if (ui->rbMK1o_r->isChecked()) {
+
+    }
+    if (ui->rbMK1r_o->isChecked()){
+
+    }
+    if (ui->rbMK2o_r->isChecked()){
+
+    }
+    if (ui->rbMK2r_o->isChecked()){
+
+    }
+    if (ui->rbMK3o_r->isChecked()){
+
+    }
+    if (ui->rbMK3r_o->isChecked()){
+
+    }
+    unsigned char upper = Crc16(dataTestRS485,len)>>8; //получение старшего байта контрольной суммы
+    unsigned char lower = Crc16(dataTestRS485,len);
+    dataTestRS485[3] = messType99;
+    dataTestRS485[4] = 0;
+    dataTestRS485[5] = 0;
+    dataTestRS485[6] = upper;
+    dataTestRS485[7] = lower;
+
+    QByteArray dataQ = QByteArray::fromRawData((char*)dataTestRS485,sizeof(dataTestRS485));
+    //dataQ[0] = reinterpret_cast<QByteArray>(data[0].data());
+    emit writeData (dataQ);
+
+    //-----------Конец формирования исходящего сообщения для проверки конвертеров РС(тип99)
+}
 

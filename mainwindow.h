@@ -24,6 +24,10 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+enum MKvse{
+    MK1o = 1, MK1r = 2, MK2o=3, MK2r=4, MK3o = 5, MK3r = 6
+};
+
 struct BSWVdata //создание структуры
 {
     QString name; //шифр канала
@@ -89,6 +93,7 @@ private:
     unsigned char dataT [6];
     unsigned char dataProv [6];
     unsigned char dataNomer [6];
+    unsigned char dataTestRS485 [8];
     QString name;
     int baudrate = 115200;
     int databits = 8;
@@ -102,10 +107,12 @@ private:
     unsigned char messType17 = 17; // Тип сообщения, 17 - данные АЦП для тарировки
     unsigned char messType34 = 34;//Тип сообщения, 34 - данные о номере мука и номере канала
     unsigned char messType255 = 255;//Тип сообщения, 255 - проверка связи
+    unsigned char messType99 = 99;//Тип сообщения, 99 - проверка RS485
     int otvetTelemSize = 12;
     int otvetTarirSize = 22;
     int otvetMKSize = 7;
     int otvetProvSize = 6;
+    int otvetTestRS485Size = 8;
     QString error;
     QString a;
 
@@ -144,7 +151,6 @@ public slots:
    void TimerVivodStart();
    void TimerProvStart();
    void TimerTarirStart();
-   void Knopka();
    void ChangeColor();
    void ProverkaNomera();
    void WriteInFile();
@@ -166,8 +172,11 @@ signals:
    void readyToAnalize(QByteArray otvet, QString comName);
    void errorMessage(QString);
    void errorReconnect(QString);
+   void msgTestRS485(QByteArray);
 
 private slots:
    void on_btnNomer_clicked();
+   void on_btnStart_clicked();
+   void on_pbTestRS485_clicked();
 };
 #endif // MAINWINDOW_H
