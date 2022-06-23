@@ -513,13 +513,13 @@
          <rect>
           <x>10</x>
           <y>10</y>
-          <width>891</width>
+          <width>881</width>
           <height>251</height>
          </rect>
         </property>
         <property name="minimumSize">
          <size>
-          <width>827</width>
+          <width>881</width>
           <height>251</height>
          </size>
         </property>
@@ -529,6 +529,9 @@
         <property name="columnCount">
          <number>3</number>
         </property>
+        <attribute name="verticalHeaderStretchLastSection">
+         <bool>true</bool>
+        </attribute>
         <row/>
         <row/>
         <row/>
@@ -583,14 +586,14 @@
          <rect>
           <x>40</x>
           <y>30</y>
-          <width>391</width>
-          <height>111</height>
+          <width>321</width>
+          <height>91</height>
          </rect>
         </property>
         <property name="minimumSize">
          <size>
-          <width>391</width>
-          <height>111</height>
+          <width>321</width>
+          <height>91</height>
          </size>
         </property>
         <property name="rowCount">
@@ -599,6 +602,9 @@
         <property name="columnCount">
          <number>3</number>
         </property>
+        <attribute name="verticalHeaderStretchLastSection">
+         <bool>true</bool>
+        </attribute>
         <row/>
         <row/>
         <column/>
@@ -622,28 +628,21 @@
         <property name="text">
          <string>МК1 Осн. - МК1 - Рез.</string>
         </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
        </widget>
        <widget class="QPushButton" name="pbTestRS485">
         <property name="geometry">
          <rect>
-          <x>170</x>
-          <y>70</y>
+          <x>10</x>
+          <y>140</y>
           <width>141</width>
           <height>23</height>
          </rect>
         </property>
         <property name="text">
          <string>Отправить сообщение</string>
-        </property>
-       </widget>
-       <widget class="QLineEdit" name="lineEdit">
-        <property name="geometry">
-         <rect>
-          <x>290</x>
-          <y>20</y>
-          <width>91</width>
-          <height>20</height>
-         </rect>
         </property>
        </widget>
        <widget class="QRadioButton" name="rbMK1r_o">
@@ -711,44 +710,93 @@
          <string>МК3 Осн. - МК3 - Рез.</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label">
-        <property name="geometry">
-         <rect>
-          <x>170</x>
-          <y>20</y>
-          <width>121</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Число для отправки=</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_7">
         <property name="geometry">
          <rect>
-          <x>170</x>
-          <y>50</y>
+          <x>180</x>
+          <y>90</y>
           <width>47</width>
-          <height>16</height>
+          <height>21</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+         </font>
         </property>
         <property name="text">
          <string>Ответ:</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_8">
+       <widget class="QLabel" name="lblTest485">
         <property name="geometry">
          <rect>
-          <x>220</x>
-          <y>50</y>
-          <width>111</width>
-          <height>16</height>
+          <x>240</x>
+          <y>90</y>
+          <width>151</width>
+          <height>21</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+         </font>
         </property>
         <property name="text">
          <string>получен/не получен</string>
         </property>
+       </widget>
+       <widget class="QTableWidget" name="tblTest485">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>30</y>
+          <width>531</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <attribute name="horizontalHeaderMinimumSectionSize">
+         <number>30</number>
+        </attribute>
+        <attribute name="horizontalHeaderDefaultSectionSize">
+         <number>130</number>
+        </attribute>
+        <attribute name="horizontalHeaderStretchLastSection">
+         <bool>true</bool>
+        </attribute>
+        <attribute name="verticalHeaderDefaultSectionSize">
+         <number>30</number>
+        </attribute>
+        <attribute name="verticalHeaderStretchLastSection">
+         <bool>true</bool>
+        </attribute>
+        <row>
+         <property name="text">
+          <string/>
+         </property>
+        </row>
+        <column>
+         <property name="text">
+          <string>Отправитель</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>COM отправителя</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Получатель</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>COM получателя</string>
+         </property>
+        </column>
        </widget>
       </widget>
      </widget>

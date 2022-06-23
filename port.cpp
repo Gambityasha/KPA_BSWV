@@ -70,6 +70,13 @@ void port :: WriteToPort(QByteArray data){//Запись данных в пор�
     }
 }
 
+void port::WriteToPortTestRS(QByteArray data)
+{
+    if(thisPort.isOpen()){
+    thisPort.write(data,8);
+    }
+}
+
 void port :: ReadInPort(){//Чтение данных из порта
     QByteArray dataRead;
     dataRead.append(thisPort.readAll());

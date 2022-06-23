@@ -280,12 +280,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     ui->lblError->setVisible(false);
-    port *PortMK1osn = new port();
-    port *PortMK1rez = new port();
-    port *PortMK2osn = new port();
-    port *PortMK2rez = new port();
-    port *PortMK3osn = new port();
-    port *PortMK3rez = new port();
+
     QPixmap pix("redbtn.png");//указание расположения картинки и создание объекта класса
     QPixmap pix1("greenbtn.png");
     ui->greenMK1o->setPixmap(pix1.scaled(35,35,Qt::KeepAspectRatio));
@@ -373,12 +368,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tblAcp->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tblAcp->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     //ui->tabWidget->setSizePolicy(QSizePolicy::Stretch);
-//    port *PortMK1osn = new port();
-//    port *PortMK1rez = new port();
-//    port *PortMK2osn = new port();
-//    port *PortMK2rez = new port();
-//    port *PortMK3osn = new port();
-//    port *PortMK3rez = new port();
+    port *PortMK1osn = new port();
+    port *PortMK1rez = new port();
+    port *PortMK2osn = new port();
+    port *PortMK2rez = new port();
+    port *PortMK3osn = new port();
+    port *PortMK3rez = new port();
 
     //-----------------Формирование исходящего сообщения для БСШ-В (тип 1 - обычный обмен)---------------------
     data[0] = startByte;
@@ -456,6 +451,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(writeData(QByteArray)),PortMK1rez,SLOT(WriteToPort(QByteArray)));
     connect(this, SIGNAL(writeData(QByteArray)),PortMK2rez,SLOT(WriteToPort(QByteArray)));
     connect(this, SIGNAL(writeData(QByteArray)),PortMK3rez,SLOT(WriteToPort(QByteArray)));
+    connect(this, SIGNAL(testRSMK1o(QByteArray)),PortMK1osn,SLOT(WriteToPortTestRS(QByteArray)));
+    connect(this, SIGNAL(testRSMK2o(QByteArray)),PortMK2osn,SLOT(WriteToPortTestRS(QByteArray)));
+    connect(this, SIGNAL(testRSMK3o(QByteArray)),PortMK3osn,SLOT(WriteToPortTestRS(QByteArray)));
+    connect(this, SIGNAL(testRSMK1r(QByteArray)),PortMK1rez,SLOT(WriteToPortTestRS(QByteArray)));
+    connect(this, SIGNAL(testRSMK2r(QByteArray)),PortMK2rez,SLOT(WriteToPortTestRS(QByteArray)));
+    connect(this, SIGNAL(testRSMK3r(QByteArray)),PortMK3rez,SLOT(WriteToPortTestRS(QByteArray)));
+    connect(this, SIGNAL(msgTestRS485(QByteArray,QString)),this,SLOT(AnalizeRS485(QByteArray,QString)));
     connect(this, SIGNAL(con1()),PortMK1osn,SLOT(ConnectPort()));
     connect(this, SIGNAL(con2()),PortMK1rez,SLOT(ConnectPort()));
     connect(this, SIGNAL(con3()),PortMK2osn,SLOT(ConnectPort()));
@@ -630,10 +632,11 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
                     break;
                     case char(99):
                          if (ListOfBSWVData[i].otvetBuffer.size() == otvetTestRS485Size){
-                             emit msgTestRS485(ListOfBSWVData[i].otvetBuffer);
+                             otvet485data=ListOfBSWVData[i].otvetBuffer;
+                             otvet485name=comName;
+                             QTimer::singleShot(1000,this,SLOT(AnalizeRS485()));
                              ListOfBSWVData[i].otvetBuffer.clear();
                          }
-
                     break;
                     }
                 }
@@ -1131,43 +1134,162 @@ void MainWindow::on_btnStart_clicked()
 void MainWindow::on_pbTestRS485_clicked()
 {
     //---------Формирование исходящего сообщения для проверки конвертеров РС(тип99)----------
-
+    dataTestRS485[6] = 0;
+    dataTestRS485[7] = 0;
+    otvet485data.clear();
+    otvet485name.clear();
     dataTestRS485 [0] = startByte;
     unsigned short len = 6;
-
-//  unsigned short lower1 = Crc16(pcBlock,len)<<8;
-//  unsigned char lower = lower1>>8; //получение младшего байта контрольной суммы
-
     if (ui->rbMK1o_r->isChecked()) {
-
+        dataTestRS485[1] = MK1o;//2 байт - адресс отправителя
+        dataTestRS485[2] = MK1r;//3 байт - адресс получателя
     }
     if (ui->rbMK1r_o->isChecked()){
-
+        dataTestRS485[1] = MK1r;
+        dataTestRS485[2] = MK1o;
     }
     if (ui->rbMK2o_r->isChecked()){
-
+        dataTestRS485[1] = MK2o;
+        dataTestRS485[2] = MK2r;
     }
     if (ui->rbMK2r_o->isChecked()){
-
+        dataTestRS485[1] = MK2r;
+        dataTestRS485[2] = MK2o;
     }
     if (ui->rbMK3o_r->isChecked()){
-
+        dataTestRS485[1] = MK3o;
+        dataTestRS485[2] = MK3r;
     }
     if (ui->rbMK3r_o->isChecked()){
-
+        dataTestRS485[1] = MK3r;
+        dataTestRS485[2] = MK3o;
     }
-    unsigned char upper = Crc16(dataTestRS485,len)>>8; //получение старшего байта контрольной суммы
-    unsigned char lower = Crc16(dataTestRS485,len);
     dataTestRS485[3] = messType99;
-    dataTestRS485[4] = 0;
-    dataTestRS485[5] = 0;
+    QString bufferOtpr = ListOfBSWVData.at(dataTestRS485[1]-1).namePort;
+    bufferOtpr.remove(QString("com"),Qt::CaseInsensitive);
+    QString bufferPol = ListOfBSWVData.at(dataTestRS485[2]-1).namePort;
+    bufferPol.remove(QString("com"),Qt::CaseInsensitive);
+    dataTestRS485[4] = bufferOtpr.toInt();//Com-port отправителя
+
+    dataTestRS485[5] = bufferPol.toInt();//Com-port получателя
+
+    unsigned char upper = Crc16(dataTestRS485,len)>>8; //получение старшего байта контрольной суммы
+    unsigned char lower = Crc16(dataTestRS485,len);    
     dataTestRS485[6] = upper;
     dataTestRS485[7] = lower;
-
-    QByteArray dataQ = QByteArray::fromRawData((char*)dataTestRS485,sizeof(dataTestRS485));
-    //dataQ[0] = reinterpret_cast<QByteArray>(data[0].data());
-    emit writeData (dataQ);
-
     //-----------Конец формирования исходящего сообщения для проверки конвертеров РС(тип99)
+    QByteArray dataQ = QByteArray::fromRawData((char*)dataTestRS485,sizeof(dataTestRS485));
+    switch (dataTestRS485[1]){
+    case (MK1o):
+         emit testRSMK1o (dataQ);
+    break;
+    case (MK1r):
+         emit testRSMK1r (dataQ);
+    break;
+    case (MK2o):
+         emit testRSMK2o (dataQ);
+    break;
+    case (MK2r):
+         emit testRSMK2r (dataQ);
+    break;
+    case (MK3o):
+         emit testRSMK3o (dataQ);
+    break;
+    case (MK3r):
+         emit testRSMK3r (dataQ);
+    break;
+    }
+    QTimer::singleShot(1000,this,SLOT(AnalizeRS485()));
+
 }
 
+void MainWindow::AnalizeRS485()
+{
+    QString Otpravitel;
+    QString Poluchatel;
+    QString ComOtpravitel;
+    QString ComPoluchatel;
+    QTableWidgetItem *itmDefault1 = new QTableWidgetItem("-");
+    QTableWidgetItem *itmDefault2 = new QTableWidgetItem("-");
+    QTableWidgetItem *itmDefault3 = new QTableWidgetItem("-");
+    QTableWidgetItem *itmDefault4 = new QTableWidgetItem("-");
+
+
+    ui->tblTest485->setItem(0,0,itmDefault1); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
+    ui->tblTest485->setItem(0,1,itmDefault2);
+    ui->tblTest485->setItem(0,2,itmDefault3);
+    ui->tblTest485->setItem(0,3,itmDefault4);
+    unsigned char buffer [otvet485data.size()];
+    memcpy(buffer, otvet485data.data(), otvet485data.size());
+    unsigned char upperCRC = buffer[6];
+    unsigned char lowerCRC = buffer[7];
+    unsigned short le = 6;
+    for (int i=0;i<ListOfBSWVData.size();i++){
+         if (ListOfBSWVData.at(i).namePort == otvet485name){
+             // unsigned short fullCRC = (unsigned short) (upperCRC<<8) | lowerCRC;
+             unsigned char upperCRCR = Crc16(buffer,le)>>8;
+             unsigned char lowerCRCR = Crc16(buffer,le);
+             if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
+                  ui->lblTest485->setText("получен");
+                  switch (buffer[1]){
+                  case 1:
+                       Otpravitel="MK1-O";
+                  break;
+                  case 2:
+                       Otpravitel="MK1-R";
+                  break;
+                  case 3:
+                       Otpravitel="MK2-O";
+                  break;
+                  case 4:
+                       Otpravitel="MK2-R";
+                  break;
+                  case 5:
+                       Otpravitel="MK3-O";
+                  break;
+                  case 6:
+                       Otpravitel="MK3-R";
+                  break;
+                  }
+                  switch (buffer[2]){
+                  case 1:
+                       Poluchatel="MK1-O";
+                  break;
+                  case 2:
+                       Poluchatel="MK1-R";
+                  break;
+                  case 3:
+                       Poluchatel="MK2-O";
+                  break;
+                  case 4:
+                       Poluchatel="MK2-R";
+                  break;
+                  case 5:
+                       Poluchatel="MK3-O";
+                  break;
+                  case 6:
+                       Poluchatel="MK3-R";
+                  break;
+                  }
+                  ComOtpravitel="COM"+tr("%1").arg(buffer[4]);
+                  ComPoluchatel = "COM"+tr("%1").arg(buffer[5]);
+                  QTableWidgetItem *itm1 = new QTableWidgetItem(Otpravitel);
+                  QTableWidgetItem *itm2 = new QTableWidgetItem(ComOtpravitel);
+                  QTableWidgetItem *itm3 = new QTableWidgetItem(Poluchatel);
+                  QTableWidgetItem *itm4 = new QTableWidgetItem(ComPoluchatel);
+                  ui->tblTest485->setItem(0,0,itm1); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
+                  ui->tblTest485->setItem(0,1,itm2);
+                  ui->tblTest485->setItem(0,2,itm3);
+                  ui->tblTest485->setItem(0,3,itm4);
+              }else {
+                  ui->lblTest485->setText("не получен");
+                  ui->tblTest485->setItem(0,0,itmDefault1); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
+                  ui->tblTest485->setItem(0,1,itmDefault2);
+                  ui->tblTest485->setItem(0,2,itmDefault3);
+                  ui->tblTest485->setItem(0,3,itmDefault4);
+                }
+            }
+        }
+
+
+}

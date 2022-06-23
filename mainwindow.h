@@ -112,9 +112,11 @@ private:
     int otvetTarirSize = 22;
     int otvetMKSize = 7;
     int otvetProvSize = 6;
-    int otvetTestRS485Size = 8;
+    int otvetTestRS485Size = 8;    
     QString error;
     QString a;
+    QByteArray otvet485data;
+    QString otvet485name;
 
 public:
 
@@ -136,6 +138,7 @@ public:
     QFile fileACP;
     QTime time;
     QFile fileError;
+
 
 //window = new ErrorForm(this);
 public slots:
@@ -159,6 +162,7 @@ public slots:
     void ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName);
     void Reconnect( );
     void ErrorMessage();
+    void AnalizeRS485();
 signals:
     //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
@@ -172,7 +176,11 @@ signals:
    void readyToAnalize(QByteArray otvet, QString comName);
    void errorMessage(QString);
    void errorReconnect(QString);
-   void msgTestRS485(QByteArray);
+   void msgTestRS485(QByteArray data, QString comName);
+   void testRSMK1o(QByteArray);void testRSMK1r(QByteArray);void testRSMK2o(QByteArray);
+   void testRSMK2r(QByteArray);void testRSMK3o(QByteArray);void testRSMK3r(QByteArray);
+
+
 
 private slots:
    void on_btnNomer_clicked();

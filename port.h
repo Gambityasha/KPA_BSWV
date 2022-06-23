@@ -49,6 +49,7 @@ public:
      void Write_Settings_Port(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
 
      void WriteToPort(QByteArray data);
+     void WriteToPortTestRS(QByteArray data);
      void ReadInPort(); //Слот чтения из порта по ReadyRead
 
 
