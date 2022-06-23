@@ -499,7 +499,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -635,8 +635,8 @@
        <widget class="QPushButton" name="pbTestRS485">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>140</y>
+          <x>160</x>
+          <y>80</y>
           <width>141</width>
           <height>23</height>
          </rect>
@@ -713,16 +713,16 @@
        <widget class="QLabel" name="label_7">
         <property name="geometry">
          <rect>
-          <x>180</x>
-          <y>90</y>
+          <x>160</x>
+          <y>110</y>
           <width>47</width>
-          <height>21</height>
+          <height>16</height>
          </rect>
         </property>
         <property name="font">
          <font>
           <family>Arial</family>
-          <pointsize>12</pointsize>
+          <pointsize>10</pointsize>
          </font>
         </property>
         <property name="text">
@@ -732,16 +732,16 @@
        <widget class="QLabel" name="lblTest485">
         <property name="geometry">
          <rect>
-          <x>240</x>
-          <y>90</y>
-          <width>151</width>
-          <height>21</height>
+          <x>200</x>
+          <y>110</y>
+          <width>131</width>
+          <height>16</height>
          </rect>
         </property>
         <property name="font">
          <font>
           <family>Arial</family>
-          <pointsize>12</pointsize>
+          <pointsize>10</pointsize>
          </font>
         </property>
         <property name="text">
@@ -751,9 +751,9 @@
        <widget class="QTableWidget" name="tblTest485">
         <property name="geometry">
          <rect>
-          <x>180</x>
-          <y>30</y>
-          <width>531</width>
+          <x>160</x>
+          <y>20</y>
+          <width>741</width>
           <height>51</height>
          </rect>
         </property>
@@ -795,6 +795,11 @@
         <column>
          <property name="text">
           <string>COM получателя</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>COM получателя (факт)</string>
          </property>
         </column>
        </widget>

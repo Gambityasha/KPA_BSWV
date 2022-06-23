@@ -1213,12 +1213,13 @@ void MainWindow::AnalizeRS485()
     QTableWidgetItem *itmDefault2 = new QTableWidgetItem("-");
     QTableWidgetItem *itmDefault3 = new QTableWidgetItem("-");
     QTableWidgetItem *itmDefault4 = new QTableWidgetItem("-");
-
+    QTableWidgetItem *itmDefault5 = new QTableWidgetItem("-");
 
     ui->tblTest485->setItem(0,0,itmDefault1); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
     ui->tblTest485->setItem(0,1,itmDefault2);
     ui->tblTest485->setItem(0,2,itmDefault3);
     ui->tblTest485->setItem(0,3,itmDefault4);
+    ui->tblTest485->setItem(0,4,itmDefault5);
     unsigned char buffer [otvet485data.size()];
     memcpy(buffer, otvet485data.data(), otvet485data.size());
     unsigned char upperCRC = buffer[6];
@@ -1277,16 +1278,19 @@ void MainWindow::AnalizeRS485()
                   QTableWidgetItem *itm2 = new QTableWidgetItem(ComOtpravitel);
                   QTableWidgetItem *itm3 = new QTableWidgetItem(Poluchatel);
                   QTableWidgetItem *itm4 = new QTableWidgetItem(ComPoluchatel);
+                  QTableWidgetItem *itm5 = new QTableWidgetItem(otvet485name);
                   ui->tblTest485->setItem(0,0,itm1); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
                   ui->tblTest485->setItem(0,1,itm2);
                   ui->tblTest485->setItem(0,2,itm3);
                   ui->tblTest485->setItem(0,3,itm4);
+                  ui->tblTest485->setItem(0,4,itm5);
               }else {
                   ui->lblTest485->setText("не получен");
                   ui->tblTest485->setItem(0,0,itmDefault1); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
                   ui->tblTest485->setItem(0,1,itmDefault2);
                   ui->tblTest485->setItem(0,2,itmDefault3);
                   ui->tblTest485->setItem(0,3,itmDefault4);
+                  ui->tblTest485->setItem(0,4,itmDefault5);
                 }
             }
         }
