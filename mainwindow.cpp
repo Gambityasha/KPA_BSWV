@@ -276,11 +276,12 @@ void MainWindow::ErrorMessage()
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-{
+{    
     ui->setupUi(this);
 
+    ui->tabWidget->setTabEnabled(0,false);
     ui->lblError->setVisible(false);
-
+    ui->tblBSWV->setEnabled(false);
     QPixmap pix("redbtn.png");//указание расположения картинки и создание объекта класса
     QPixmap pix1("greenbtn.png");
     ui->greenMK1o->setPixmap(pix1.scaled(35,35,Qt::KeepAspectRatio));
@@ -295,7 +296,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui->redMK2r->setPixmap(pix.scaled(35,35,Qt::KeepAspectRatio));//присвоение лейблу этой картинки с уменьшением ее размеров
     ui->greenMK3r->setPixmap(pix1.scaled(35,35,Qt::KeepAspectRatio));
     ui->redMK3r->setPixmap(pix.scaled(35,35,Qt::KeepAspectRatio));//присвоение лейблу этой картинки с уменьшением ее размеров
-
+    ui->greenMK1o->setVisible(false);
+    ui->redMK1o->setVisible(true);
+    ui->greenMK1r->setVisible(false);
+    ui->redMK1r->setVisible(true);
+    ui->greenMK2o->setVisible(false);
+    ui->redMK2o->setVisible(true);
+    ui->greenMK2r->setVisible(false);
+    ui->redMK2r->setVisible(true);
+    ui->greenMK3o->setVisible(false);
+    ui->redMK3o->setVisible(true);
+    ui->greenMK3r->setVisible(false);
+    ui->redMK3r->setVisible(true);
     BSWV.name = "MK1-osn"; BSWV.namePort = "Com";BSWV.icap2=0; BSWV.icap1 = 0; BSWV.u2 = 0; BSWV.u1 = 0;BSWV.tcorp2 = 0; BSWV.tcorp1=0;
     ListOfBSWVData.append(BSWV);
     BSWV.name = "MK1-rez"; BSWV.namePort = "Com";BSWV.icap2=0; BSWV.icap1 = 0; BSWV.u2 = 0; BSWV.u1 = 0;BSWV.tcorp2 = 0; BSWV.tcorp1=0;
@@ -424,7 +436,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     timerVivod = new QTimer();
     timerReconnect = new QTimer();
-    timerReconnect->setInterval(1000);
+    timerReconnect->setInterval(500);
     timerZaprosaTelem = new QTimer();
     timerZaprosaTarir = new QTimer();
     timerZaprosaProv = new QTimer();
@@ -1115,19 +1127,42 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_btnStart_clicked()
 {
+
+    for (int i=0;i<ListOfBSWVData.size();i++) ListOfBSWVData[i].otvetBuffer.clear();
     if (timerZaprosaTelem->isActive()){
+        ui->tblBSWV->setEnabled(false);
+        ui->tabWidget->setTabEnabled(0,false);
+        ui->tabWidget->setTabEnabled(3,true);
+        ui->tabWidget->setTabEnabled(2,true);
         ui->btnStart->setText("Начать обмен");
         timerZaprosaTelem->stop();
         timerVivod->stop();
         timerZaprosaTarir->stop();
         timerZaprosaProv->stop();
+
+        ui->greenMK1o->setVisible(false);
+        ui->redMK1o->setVisible(true);
+        ui->greenMK1r->setVisible(false);
+        ui->redMK1r->setVisible(true);
+        ui->greenMK2o->setVisible(false);
+        ui->redMK2o->setVisible(true);
+        ui->greenMK2r->setVisible(false);
+        ui->redMK2r->setVisible(true);
+        ui->greenMK3o->setVisible(false);
+        ui->redMK3o->setVisible(true);
+        ui->greenMK3r->setVisible(false);
+        ui->redMK3r->setVisible(true);
     }
     else {
+        ui->tblBSWV->setEnabled(true);
+        ui->tabWidget->setTabEnabled(0,true);
+        ui->tabWidget->setTabEnabled(3,false);
+        ui->tabWidget->setTabEnabled(2,false);
         ui->btnStart->setText("Закончить обмен");
         timerZaprosaTelem->start(1000);
         QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
         QTimer::singleShot(300,this,SLOT(TimerProvStart()));
-        QTimer::singleShot(400,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса
+        QTimer::singleShot(400,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса        
     }
 }
 
@@ -1214,6 +1249,7 @@ void MainWindow::AnalizeRS485()
     QTableWidgetItem *itmDefault3 = new QTableWidgetItem("-");
     QTableWidgetItem *itmDefault4 = new QTableWidgetItem("-");
     QTableWidgetItem *itmDefault5 = new QTableWidgetItem("-");
+    ui->lblTest485->setText("не получен");
 
     ui->tblTest485->setItem(0,0,itmDefault1); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
     ui->tblTest485->setItem(0,1,itmDefault2);

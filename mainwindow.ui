@@ -499,7 +499,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -563,6 +563,71 @@
          </rect>
         </property>
        </widget>
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="geometry">
+         <rect>
+          <x>690</x>
+          <y>20</y>
+          <width>221</width>
+          <height>111</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Коды сообщений</string>
+        </property>
+        <widget class="QLabel" name="label_8">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>91</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>1      - Телеметрия</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>40</y>
+           <width>191</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>17    - Данные АЦП для калибровки</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_9">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>60</y>
+           <width>191</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>34    - Данные о номере МУК и канала</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_10">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>80</y>
+           <width>191</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>255 -  Проверка связи</string>
+         </property>
+        </widget>
+       </widget>
       </widget>
       <widget class="QWidget" name="tab_3">
        <attribute name="title">
@@ -586,7 +651,7 @@
          <rect>
           <x>40</x>
           <y>30</y>
-          <width>321</width>
+          <width>391</width>
           <height>91</height>
          </rect>
         </property>
