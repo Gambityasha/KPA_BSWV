@@ -809,8 +809,14 @@ void MainWindow::WriteInFile()
                 stream.setFieldWidth(32);
             }
             for (int i=0;i<ListOfBSWVData.size();i++){
-                stream<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVData[i].name<<" | "+QString::number(ListOfBSWVData[i].icap2)<<" | "+QString::number(ListOfBSWVData[i].icap1);
-                stream<<" | "+QString::number(ListOfBSWVData[i].u2)<<" | "+QString::number(ListOfBSWVData[i].u1)<<" | "+QString::number(ListOfBSWVData[i].tcorp2)<<" | "+QString::number(ListOfBSWVData[i].tcorp1);
+                stream<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVData[i].name;
+                if (ListOfBSWVData[i].otvetPoluchen==1){
+                    stream<<" | "+QString::number(ListOfBSWVData[i].icap2)<<" | "+QString::number(ListOfBSWVData[i].icap1);
+                    stream<<" | "+QString::number(ListOfBSWVData[i].u2)<<" | "+QString::number(ListOfBSWVData[i].u1)<<" | "+QString::number(ListOfBSWVData[i].tcorp2)<<" | "+QString::number(ListOfBSWVData[i].tcorp1);
+                } else {
+                    stream<<" | -"<<" | -";
+                    stream<<" | -"<<" | -"<<" | -"<<" | -";
+                }
                 stream.setFieldWidth(0);
                 stream<<endl;
                 stream.setFieldWidth(32);
@@ -827,8 +833,14 @@ void MainWindow::WriteInFile()
                stream<<endl;
                stream.setFieldWidth(32);
                for (int i=0;i<ListOfBSWVData.size();i++){
-                   stream<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVData[i].name<<" | "+QString::number(ListOfBSWVData[i].icap2)<<" | "+QString::number(ListOfBSWVData[i].icap1);
-                   stream<<" | "+QString::number(ListOfBSWVData[i].u2)<<" | "+QString::number(ListOfBSWVData[i].u1)<<" | "+QString::number(ListOfBSWVData[i].tcorp2)<<" | "+QString::number(ListOfBSWVData[i].tcorp1);
+                   stream<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVData[i].name;
+                   if (ListOfBSWVData[i].otvetPoluchen==1){
+                        stream<<" | "+QString::number(ListOfBSWVData[i].icap2)<<" | "+QString::number(ListOfBSWVData[i].icap1);
+                        stream<<" | "+QString::number(ListOfBSWVData[i].u2)<<" | "+QString::number(ListOfBSWVData[i].u1)<<" | "+QString::number(ListOfBSWVData[i].tcorp2)<<" | "+QString::number(ListOfBSWVData[i].tcorp1);
+                   } else {
+                       stream<<" | -"<<" | -";
+                       stream<<" | -"<<" | -"<<" | -"<<" | -";
+                   }
                    stream.setFieldWidth(0);
                    stream<<endl;
                    stream.setFieldWidth(32);
@@ -851,9 +863,15 @@ void MainWindow::WriteInFile()
                streamACP.setFieldWidth(32);
             }
             for (int i=0;i<ListOfBSWVt.size();i++){
-                 streamACP<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVt[i].name<<" | "+QString::number(ListOfBSWVt[i].icap2)<<" | "+QString::number(ListOfBSWVt[i].icap1);
-                 streamACP<<" | "+QString::number(ListOfBSWVt[i].u2)<<" | "+QString::number(ListOfBSWVt[i].u1)<<" | "+QString::number(ListOfBSWVt[i].tcorp2)<<" | "+QString::number(ListOfBSWVt[i].tcorp1);
-                 streamACP<<" | "+QString::number(ListOfBSWVt[i].uref);
+                 streamACP<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVt[i].name;
+                 if (ListOfBSWVt[i].otvetPoluchen==1){
+                    streamACP<<" | "+QString::number(ListOfBSWVt[i].icap2)<<" | "+QString::number(ListOfBSWVt[i].icap1);
+                    streamACP<<" | "+QString::number(ListOfBSWVt[i].u2)<<" | "+QString::number(ListOfBSWVt[i].u1)<<" | "+QString::number(ListOfBSWVt[i].tcorp2)<<" | "+QString::number(ListOfBSWVt[i].tcorp1);
+                    streamACP<<" | "+QString::number(ListOfBSWVt[i].uref);
+                 }else{
+                    stream<<" | -"<<" | -";
+                    stream<<" | -"<<" | -"<<" | -"<<" | -" <<" | -";
+                 }
                  streamACP.setFieldWidth(0);
                  streamACP<<endl;
                  streamACP.setFieldWidth(32);
@@ -870,9 +888,15 @@ void MainWindow::WriteInFile()
              streamACP<<endl;
              streamACP.setFieldWidth(32);
              for (int i=0;i<ListOfBSWVt.size();i++){
-                 streamACP<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVt[i].name<<" | "+QString::number(ListOfBSWVt[i].icap2)<<" | "+QString::number(ListOfBSWVt[i].icap1);
-                 streamACP<<" | "+QString::number(ListOfBSWVt[i].u2)<<" | "+QString::number(ListOfBSWVt[i].u1)<<" | "+QString::number(ListOfBSWVt[i].tcorp2)<<" | "+QString::number(ListOfBSWVt[i].tcorp1);
-                 streamACP<<" | "+QString::number(ListOfBSWVt[i].uref);
+                 streamACP<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVt[i].name;
+                 if (ListOfBSWVt[i].otvetPoluchen==1){
+                    streamACP<<" | "+QString::number(ListOfBSWVt[i].icap2)<<" | "+QString::number(ListOfBSWVt[i].icap1);
+                    streamACP<<" | "+QString::number(ListOfBSWVt[i].u2)<<" | "+QString::number(ListOfBSWVt[i].u1)<<" | "+QString::number(ListOfBSWVt[i].tcorp2)<<" | "+QString::number(ListOfBSWVt[i].tcorp1);
+                    streamACP<<" | "+QString::number(ListOfBSWVt[i].uref);
+                 }else{
+                    stream<<" | -"<<" | -";
+                    stream<<" | -"<<" | -"<<" | -"<<" | -" <<" | -";
+                 }
                  streamACP.setFieldWidth(0);
                  streamACP<<endl;
                  streamACP.setFieldWidth(32);
