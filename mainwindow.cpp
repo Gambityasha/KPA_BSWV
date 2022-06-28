@@ -454,18 +454,23 @@ MainWindow::MainWindow(QWidget *parent)
     //timerZaprosaTarir = new QTimer();
     timerZaprosaProv = new QTimer();
     timerWriteInFile = new QTimer();
-    QString fname = QDate::currentDate().toString("dd.MM.yyyy")+".txt";
-    QString logYear = QDate::currentDate().toString("yyyy");
-    QString logMonth = QDate::currentDate().toString("MM");
-    QString dirName = "../logs/"+logYear+"/"+logMonth+"/";
+
+
+//    file.setFileName("123.txt");
+//    qint64 size = file.size();
+//    ui->lblSize->setText(QString::number(size));
+
+
+    //fname = QDate::currentDate().toString("dd.MM.yyyy")+".txt";
+    logYear = QDate::currentDate().toString("yyyy");
+    logMonth = QDate::currentDate().toString("MM");
+    dirName = "../logs/"+logYear+"/"+logMonth+"/";
     dir.mkdir("../logs");
     dir.mkdir("../logs/"+logYear);
     dir.mkdir("../logs/"+logYear+"/"+logMonth);
-    file.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fname);
+    //file.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fname);
     QString fEname = QDate::currentDate().toString("dd.MM.yyyy")+"_Errors.txt";
-    fileError.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fEname);
-    QString fACPname = QDate::currentDate().toString("dd.MM.yyyy")+"_ACP.txt";
-    fileACP.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fACPname);
+    fileError.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fEname);    
     connect(timerZaprosaTelem, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTelem()));
     //connect(timerZaprosaTarir, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTarir()));
     connect(timerZaprosaProv,SIGNAL(timeout()), this,SLOT(OtpravkaZaprosaProv()));
@@ -523,10 +528,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
     connect(window,SIGNAL(hideError()),this,SLOT(ErrorMessage()));
-//    timerZaprosaTelem->start(1000);
-//    QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
-//    QTimer::singleShot(300,this,SLOT(TimerProvStart()));
-//    QTimer::singleShot(400,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса
 }
 
 void MainWindow:: OtpravkaZaprosaTelem()
@@ -539,8 +540,6 @@ void MainWindow:: OtpravkaZaprosaTelem()
 void MainWindow::TimerVivodStart()
 {
     timerVivod->start(1000);
-        //QString DataAsString = QString(ListOfBSWVData.at(2).otvet);
-       // ui->lbl->setText(DataAsString);
 }
 
 void MainWindow::TimerProvStart()
@@ -553,7 +552,7 @@ void MainWindow::TimerWriteInFileStart()
 }
 void MainWindow::TimerTarirStart()
 {
-    //timerZaprosaTarir->start(1000);
+    //timerZaprosaTarir->start(1000);//пока поменял принцип вывода таблицы для тарировки
 }
 
 void MainWindow::on_btnNomer_clicked()
@@ -585,11 +584,11 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
 {
     for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData.at(i).namePort == comName){
-                ListOfBSWVData[i].otvetBuffer.append(dataRead);//new
-                for (int j = 0; ListOfBSWVData[i].otvetBuffer[j]!=char(0xAA);j++) {//new
+                ListOfBSWVData[i].otvetBuffer.append(dataRead);
+                for (int j = 0; ListOfBSWVData[i].otvetBuffer[j]!=char(0xAA);j++) {
                     ListOfBSWVData[i].otvetBuffer.remove(0,1);
                 }
-                if (ListOfBSWVData[i].otvetBuffer.size()>3){//new
+                if (ListOfBSWVData[i].otvetBuffer.size()>3){
                     switch (ListOfBSWVData[i].otvetBuffer[3]){
                     case char (1):
                          if (ListOfBSWVData[i].otvetBuffer.size() == otvetTelemSize){
@@ -817,6 +816,8 @@ void MainWindow::ProverkaNomera(){
 
 void MainWindow::WriteInFile()
 {   
+    fname=QDateTime::currentDateTime().toLocalTime().toString("dd.MM.yyyy.hh")+".txt";
+    file.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fname);
     QTextStream stream(&file);
     stream.setFieldAlignment(QTextStream::AlignLeft);
 
@@ -1004,6 +1005,8 @@ for (int k=0;k<ListOfBSWVprov.size();k++){
 
 void MainWindow::VivodACP()
 {
+    fACPname = QDate::currentDate().toString("dd.MM.yyyy")+"_ACP.txt";
+    fileACP.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fACPname);
     QString ACPType;
     if (ui->rbTarirTypeI->isChecked()){
         ACPType=QString::fromUtf8("Ток");
@@ -1050,7 +1053,7 @@ void MainWindow::VivodACP()
                 for (int i=0;i<ListOfBSWVt.size();i++){
                      streamACP<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVt[i].name;
                      if (ListOfBSWVt[i].otvetPoluchen==1){
-                        streamACP<<ui->leTarirValue->text().toLatin1();
+                        streamACP<<ui->leTarirValue->text();
                         streamACP<<" | "+QString::number(ListOfBSWVt[i].icap2)<<" | "+QString::number(ListOfBSWVt[i].icap1);
                         streamACP<<" | "+QString::number(ListOfBSWVt[i].u2)<<" | "+QString::number(ListOfBSWVt[i].u1)<<" | "+QString::number(ListOfBSWVt[i].tcorp2)<<" | "+QString::number(ListOfBSWVt[i].tcorp1);
                         streamACP<<" | "+QString::number(ListOfBSWVt[i].uref);
@@ -1077,7 +1080,7 @@ void MainWindow::VivodACP()
                  for (int i=0;i<ListOfBSWVt.size();i++){
                      streamACP<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVt[i].name;
                      if (ListOfBSWVt[i].otvetPoluchen==1){
-                        streamACP<<ui->leTarirValue->text().toLatin1();
+                        streamACP<<ui->leTarirValue->text();
                         streamACP<<" | "+QString::number(ListOfBSWVt[i].icap2)<<" | "+QString::number(ListOfBSWVt[i].icap1);
                         streamACP<<" | "+QString::number(ListOfBSWVt[i].u2)<<" | "+QString::number(ListOfBSWVt[i].u1)<<" | "+QString::number(ListOfBSWVt[i].tcorp2)<<" | "+QString::number(ListOfBSWVt[i].tcorp1);
                         streamACP<<" | "+QString::number(ListOfBSWVt[i].uref);
@@ -1339,10 +1342,9 @@ void MainWindow::on_pbGetACPKalibr_clicked()
     if ((ui->leTarirValue->text().toFloat())) {
         OtpravkaZaprosaTarir();
         QTimer::singleShot(500,this,SLOT(VivodACP()));
-    }else {
+    }else{
         QMessageBox::information(this, trUtf8("Внимание!"),trUtf8("Введите корректное значение параметра для получения калибровочных данных"));
     }
-
 }
 
 MainWindow::~MainWindow()

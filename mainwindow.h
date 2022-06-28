@@ -12,6 +12,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QPixmap>
 #include <QDate>
+#include <QDateTime>
 #include <QTime>
 #include <QTextStream>
 #include <errorform.h>
@@ -97,6 +98,11 @@ private:
     unsigned char dataNomer [6];
     unsigned char dataTestRS485 [8];
     QString name;
+    QString fname;
+    QString fACPname;
+    QString logYear;
+    QString logMonth;
+    QString dirName;
     int baudrate = 115200;
     int databits = 8;
     int parity = 2;              //DataToInt (QSerialPort::EvenParity)
