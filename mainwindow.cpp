@@ -44,6 +44,16 @@ unsigned short Crc16(unsigned char *pcBlock, unsigned short len)
     return crc;
 }
 
+void  MainWindow::delay(int millisecondsToWait)
+{
+    QTime dieTime = QTime::currentTime().addMSecs(millisecondsToWait);
+    while ((QTime::currentTime() < dieTime))
+    {
+        //	QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+        QCoreApplication::processEvents();
+    }
+}
+
 void MainWindow::LoadSettings()
 {
     QString dis1, serial1, dis2, serial2,dis3, serial3,dis4, serial4,dis5, serial5,dis6, serial6;
@@ -164,26 +174,31 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
     if (error!=0){
         for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData[i].namePort==portName){
-                ListOfBSWVData[i].errorStatus=1;
-               // k=i;
+                ListOfBSWVData[i].errorStatus=1;               
             }
         }
         if (timerReconnect->isActive()){
-//ничего не делать
+        //ничего не делать
         }
         else {
             timerReconnect->start();
-            window->setModal(true);
-            window->exec();
+
+            //window->setModal(true);
+            //window->exec();
+            if (ui->lblError->isVisible()){
+//                delay(100);
+            }else{
+                window->open();
+            }
         }
-    }
-    else {
+    }else {
         for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData[i].namePort==portName){
                 ListOfBSWVData[i].errorStatus=0;
                 timerReconnect->stop();
-                QTimer::singleShot(2000,window,SLOT(close()));
-                //window->close();
+                //QTimer::singleShot(2000,window,SLOT(close()));
+                delay(100);
+                window->close();
                 ui->lblError->setVisible(false);
             }
         }
@@ -279,7 +294,7 @@ MainWindow::MainWindow(QWidget *parent)
 {    
     ui->setupUi(this);
 
-    ui->tabWidget->setTabEnabled(0,false);
+    ui->tabWidget->setTabEnabled(0,true);
     ui->lblError->setVisible(false);
     ui->tblBSWV->setEnabled(false);
     QPixmap pix("redbtn.png");//указание расположения картинки и создание объекта класса
@@ -434,10 +449,11 @@ MainWindow::MainWindow(QWidget *parent)
     //-----------Конец формирования исходящего сообщения для БСШ-В (тип 34 - проверка номера МУКа)-----------
     timerVivod = new QTimer();
     timerReconnect = new QTimer();
-    timerReconnect->setInterval(500);
+    timerReconnect->setInterval(2000);
     timerZaprosaTelem = new QTimer();
-    timerZaprosaTarir = new QTimer();
+    //timerZaprosaTarir = new QTimer();
     timerZaprosaProv = new QTimer();
+    timerWriteInFile = new QTimer();
     QString fname = QDate::currentDate().toString("dd.MM.yyyy")+".txt";
     QString logYear = QDate::currentDate().toString("yyyy");
     QString logMonth = QDate::currentDate().toString("MM");
@@ -451,7 +467,7 @@ MainWindow::MainWindow(QWidget *parent)
     QString fACPname = QDate::currentDate().toString("dd.MM.yyyy")+"_ACP.txt";
     fileACP.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fACPname);
     connect(timerZaprosaTelem, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTelem()));
-    connect(timerZaprosaTarir, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTarir()));
+    //connect(timerZaprosaTarir, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTarir()));
     connect(timerZaprosaProv,SIGNAL(timeout()), this,SLOT(OtpravkaZaprosaProv()));
     connect(timerZaprosaTelem,SIGNAL(timeout()),this, SLOT(ChangeColor()));
     connect(this, SIGNAL(savesettings1(QString,int,int,int,int,int)),PortMK1osn,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
@@ -495,7 +511,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(readyToAnalize(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(Print(QString))); //Не тот же эррор месадж, что от порта
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(WriteInFileError(QString)));
-    connect(timerVivod, SIGNAL(timeout()), this, SLOT(WriteInFile()));    
+    //connect(timerVivod, SIGNAL(timeout()), this, SLOT(WriteInFile()));
+    connect(timerWriteInFile, SIGNAL(timeout()), this, SLOT(WriteInFile()));
     connect(ui->pushButton, SIGNAL(clicked()),this,SLOT(LoadSettings()));
     LoadSettings();
     connect(PortMK1osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
@@ -530,10 +547,13 @@ void MainWindow::TimerProvStart()
 {
     timerZaprosaProv->start(1000);
 }
-
+void MainWindow::TimerWriteInFileStart()
+{
+    timerWriteInFile->start(1000);
+}
 void MainWindow::TimerTarirStart()
 {
-    timerZaprosaTarir->start(1000);
+    //timerZaprosaTarir->start(1000);
 }
 
 void MainWindow::on_btnNomer_clicked()
@@ -629,16 +649,16 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                     for (int i=0;i<ListOfBSWVData.size();i++){
                         if (ListOfBSWVData.at(i).namePort == comName){
                             // unsigned short fullCRC = (unsigned short) (upperCRC<<8) | lowerCRC;
-                           unsigned char upperCRCR = Crc16(buffer,le)>>8;
+                            unsigned char upperCRCR = Crc16(buffer,le)>>8;
                             unsigned char lowerCRCR = Crc16(buffer,le);
                             if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
-                                  ListOfBSWVData[i].icap2 = float(buffer[4])*1+0; //"Суммарный ток нагрузки 2"
-                                  ListOfBSWVData[i].icap1 = float(buffer[5])*1+0;//"Суммарный ток нагрузки 1"
-                                  ListOfBSWVData[i].u2 = float(buffer[6])*0.2+85;//"Напряжение на силовых шинах 2"
-                                  ListOfBSWVData[i].u1 = float(buffer[7])*0.2+85;//"Напряжение на силовых шинах 1"
-                                  ListOfBSWVData[i].tcorp2 = float(buffer[8])*0.36+0;//"Температура 2 корпуса прибора"
-                                  ListOfBSWVData[i].tcorp1 = float(buffer[9])*0.36+0;//"Температура 1 корпуса прибора"
-                                  ListOfBSWVData[i].otvetPoluchen=1;
+                                 ListOfBSWVData[i].icap2 = float(buffer[4])*1+0; //"Суммарный ток нагрузки 2"
+                                 ListOfBSWVData[i].icap1 = float(buffer[5])*1+0;//"Суммарный ток нагрузки 1"
+                                 ListOfBSWVData[i].u2 = float(buffer[6])*0.2+85;//"Напряжение на силовых шинах 2"
+                                 ListOfBSWVData[i].u1 = float(buffer[7])*0.2+85;//"Напряжение на силовых шинах 1"
+                                 ListOfBSWVData[i].tcorp2 = float(buffer[8])*0.36+0;//"Температура 2 корпуса прибора"
+                                 ListOfBSWVData[i].tcorp1 = float(buffer[9])*0.36+0;//"Температура 1 корпуса прибора"
+                                 ListOfBSWVData[i].otvetPoluchen=1;
                             }
                             else {ListOfBSWVData[i].otvetPoluchen=0;
                                   ListOfBSWVData[i].icap2 = 0.0;
@@ -796,11 +816,10 @@ void MainWindow::ProverkaNomera(){
 }
 
 void MainWindow::WriteInFile()
-{
-    QTextStream streamACP(&fileACP);
+{   
     QTextStream stream(&file);
     stream.setFieldAlignment(QTextStream::AlignLeft);
-    streamACP.setFieldAlignment(QTextStream::AlignLeft);
+
     if (file.exists()){//Проверка - существует ли файл
         if (file.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла
             QString str = QTime::currentTime().toString("ss");
@@ -855,61 +874,6 @@ void MainWindow::WriteInFile()
     }
     file.close();
 
-    if (fileACP.exists()){//Проверка - существует ли файл
-       if (fileACP.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла
-           QString str = QTime::currentTime().toString("ss");
-           int time = str.toInt();
-           streamACP.setFieldWidth(32);
-           if (time%5==0){
-               streamACP<<QString::fromUtf8("Время")<<QString::fromUtf8(" | Канал")<<QString::fromUtf8(" | Суммарный ток нагрузки 2")<<QString::fromUtf8(" | Суммарный ток нагрузки 1");
-               streamACP<<QString::fromUtf8(" | Напряжение на силовых шинах 2")<<QString::fromUtf8(" | Напряжение на силовых шинах 1");
-               streamACP<<QString::fromUtf8(" | Температура 2 корпуса прибора")<<QString::fromUtf8(" | Температура 1 корпуса прибора")<<QString::fromUtf8(" | Опорное напряжение");
-               streamACP.setFieldWidth(0);
-               streamACP<<endl;
-               streamACP.setFieldWidth(32);
-            }
-            for (int i=0;i<ListOfBSWVt.size();i++){
-                 streamACP<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVt[i].name;
-                 if (ListOfBSWVt[i].otvetPoluchen==1){
-                    streamACP<<" | "+QString::number(ListOfBSWVt[i].icap2)<<" | "+QString::number(ListOfBSWVt[i].icap1);
-                    streamACP<<" | "+QString::number(ListOfBSWVt[i].u2)<<" | "+QString::number(ListOfBSWVt[i].u1)<<" | "+QString::number(ListOfBSWVt[i].tcorp2)<<" | "+QString::number(ListOfBSWVt[i].tcorp1);
-                    streamACP<<" | "+QString::number(ListOfBSWVt[i].uref);
-                 }else{
-                    stream<<" | -"<<" | -";
-                    stream<<" | -"<<" | -"<<" | -"<<" | -" <<" | -";
-                 }
-                 streamACP.setFieldWidth(0);
-                 streamACP<<endl;
-                 streamACP.setFieldWidth(32);
-                }
-            }
-    }
-    else {
-         if (fileACP.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
-             streamACP.setFieldWidth(32);
-             streamACP<<QString::fromUtf8("Время")<<QString::fromUtf8(" | Канал")<<QString::fromUtf8(" | Суммарный ток нагрузки 2")<<QString::fromUtf8(" | Суммарный ток нагрузки 1");
-             streamACP<<QString::fromUtf8(" | Напряжение на силовых шинах 2")<<QString::fromUtf8(" | Напряжение на силовых шинах 1");
-             streamACP<<QString::fromUtf8(" | Температура 2 корпуса прибора")<<QString::fromUtf8(" | Температура 1 корпуса прибора")<<QString::fromUtf8(" | Опорное напряжение");
-             streamACP.setFieldWidth(0);
-             streamACP<<endl;
-             streamACP.setFieldWidth(32);
-             for (int i=0;i<ListOfBSWVt.size();i++){
-                 streamACP<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVt[i].name;
-                 if (ListOfBSWVt[i].otvetPoluchen==1){
-                    streamACP<<" | "+QString::number(ListOfBSWVt[i].icap2)<<" | "+QString::number(ListOfBSWVt[i].icap1);
-                    streamACP<<" | "+QString::number(ListOfBSWVt[i].u2)<<" | "+QString::number(ListOfBSWVt[i].u1)<<" | "+QString::number(ListOfBSWVt[i].tcorp2)<<" | "+QString::number(ListOfBSWVt[i].tcorp1);
-                    streamACP<<" | "+QString::number(ListOfBSWVt[i].uref);
-                 }else{
-                    stream<<" | -"<<" | -";
-                    stream<<" | -"<<" | -"<<" | -"<<" | -" <<" | -";
-                 }
-                 streamACP.setFieldWidth(0);
-                 streamACP<<endl;
-                 streamACP.setFieldWidth(32);
-               }
-            }
-    }
-    fileACP.close();
 }
 
 void MainWindow::WriteInFileError(QString error)
@@ -978,42 +942,6 @@ for (int i=0;i<ListOfBSWVData.size();i++){
 //  itm1_2->setBackgroundColor(Qt::black); //задание цвета самой определенной ячейки таблицы
 //  QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(pcB[5]*0.2+0)); //перевод в QString данных из unsigned char
 }
-for (int j=0;j<ListOfBSWVt.size();j++){
-    if (ListOfBSWVt.at(j).otvetPoluchen==1){
-    QTableWidgetItem *itm0_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).icap2)); //создание итема таблицы для заполнения
-    ui->tblAcp->setItem(0,j,itm0_0); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
-    QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).icap1));
-    ui->tblAcp->setItem(1,j,itm1_0);
-    QTableWidgetItem *itm2_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).u2));
-    ui->tblAcp->setItem(2,j,itm2_0);
-    QTableWidgetItem *itm3_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).u1));
-    ui->tblAcp->setItem(3,j,itm3_0);
-    QTableWidgetItem *itm4_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).tcorp2));
-    ui->tblAcp->setItem(4,j,itm4_0);
-    QTableWidgetItem *itm5_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).tcorp1));
-    ui->tblAcp->setItem(5,j,itm5_0);
-    QTableWidgetItem *itm6_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).uref));
-    ui->tblAcp->setItem(6,j,itm6_0);
-    }
-    else {
-        error = "Ответ на сообщение 17 от "+ ListOfBSWVt.at(j).name +" не получен";
-        emit errorMessage (error);
-        QTableWidgetItem *itm91_91 = new QTableWidgetItem("-");
-        QTableWidgetItem *itm92_92 = new QTableWidgetItem("-");
-        QTableWidgetItem *itm93_93 = new QTableWidgetItem("-");
-        QTableWidgetItem *itm94_94 = new QTableWidgetItem("-");
-        QTableWidgetItem *itm95_95 = new QTableWidgetItem("-");
-        QTableWidgetItem *itm96_96 = new QTableWidgetItem("-");
-        QTableWidgetItem *itm97_97 = new QTableWidgetItem("-");
-        ui->tblAcp->setItem(0,j,itm91_91); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
-        ui->tblAcp->setItem(1,j,itm92_92);
-        ui->tblAcp->setItem(2,j,itm93_93);
-        ui->tblAcp->setItem(3,j,itm94_94);
-        ui->tblAcp->setItem(4,j,itm95_95);
-        ui->tblAcp->setItem(5,j,itm96_96);
-        ui->tblAcp->setItem(6,j,itm97_97);
-    }
-}
 
 for (int k=0;k<ListOfBSWVprov.size();k++){
     if (ListOfBSWVprov.at(k).otvetPoluchen==0){
@@ -1074,6 +1002,120 @@ for (int k=0;k<ListOfBSWVprov.size();k++){
 }
 }
 
+void MainWindow::VivodACP()
+{
+    QString ACPType;
+    if (ui->rbTarirTypeI->isChecked()){
+        ACPType=QString::fromUtf8("Ток");
+    }
+    if (ui->rbTarirTypeU->isChecked()){
+        ACPType=QString::fromUtf8("Напряжение");
+    }
+    if (ui->rbTarirTypeT->isChecked()){
+        ACPType=QString::fromUtf8("Температура");
+    }
+    QTextStream streamACP(&fileACP);
+    streamACP.setFieldAlignment(QTextStream::AlignLeft);
+    for (int j=0;j<ListOfBSWVt.size();j++){
+        if (ListOfBSWVt.at(j).otvetPoluchen==1){
+        QTableWidgetItem *itm0_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).icap2)); //создание итема таблицы для заполнения
+        ui->tblAcp->setItem(0,j,itm0_0); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
+        QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).icap1));
+        ui->tblAcp->setItem(1,j,itm1_0);
+        QTableWidgetItem *itm2_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).u2));
+        ui->tblAcp->setItem(2,j,itm2_0);
+        QTableWidgetItem *itm3_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).u1));
+        ui->tblAcp->setItem(3,j,itm3_0);
+        QTableWidgetItem *itm4_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).tcorp2));
+        ui->tblAcp->setItem(4,j,itm4_0);
+        QTableWidgetItem *itm5_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).tcorp1));
+        ui->tblAcp->setItem(5,j,itm5_0);
+        QTableWidgetItem *itm6_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).uref));
+        ui->tblAcp->setItem(6,j,itm6_0);
+
+        if (fileACP.exists()){//Проверка - существует ли файл
+           if (fileACP.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла
+               QString str = QTime::currentTime().toString("ss");
+               int time = str.toInt();
+               streamACP.setFieldWidth(32);
+               if (time%5==0){
+                   streamACP<<QString::fromUtf8("Время")<<QString::fromUtf8(" | Канал")<<ACPType;
+                   streamACP<<QString::fromUtf8(" | Суммарный ток нагрузки 2")<<QString::fromUtf8(" | Суммарный ток нагрузки 1");
+                   streamACP<<QString::fromUtf8(" | Напряжение на силовых шинах 2")<<QString::fromUtf8(" | Напряжение на силовых шинах 1");
+                   streamACP<<QString::fromUtf8(" | Температура 2 корпуса прибора")<<QString::fromUtf8(" | Температура 1 корпуса прибора")<<QString::fromUtf8(" | Опорное напряжение");
+                   streamACP.setFieldWidth(0);
+                   streamACP<<endl;
+                   streamACP.setFieldWidth(32);
+                }
+                for (int i=0;i<ListOfBSWVt.size();i++){
+                     streamACP<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVt[i].name;
+                     if (ListOfBSWVt[i].otvetPoluchen==1){
+                        streamACP<<ui->leTarirValue->text().toLatin1();
+                        streamACP<<" | "+QString::number(ListOfBSWVt[i].icap2)<<" | "+QString::number(ListOfBSWVt[i].icap1);
+                        streamACP<<" | "+QString::number(ListOfBSWVt[i].u2)<<" | "+QString::number(ListOfBSWVt[i].u1)<<" | "+QString::number(ListOfBSWVt[i].tcorp2)<<" | "+QString::number(ListOfBSWVt[i].tcorp1);
+                        streamACP<<" | "+QString::number(ListOfBSWVt[i].uref);
+                     }else{
+                        streamACP<<" | -"<<" | -"<<" | -";
+                        streamACP<<" | -"<<" | -"<<" | -"<<" | -" <<" | -";
+                     }
+                     streamACP.setFieldWidth(0);
+                     streamACP<<endl;
+                     streamACP.setFieldWidth(32);
+                    }
+                }
+        }
+        else {
+             if (fileACP.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
+                 streamACP.setFieldWidth(32);
+                 streamACP<<QString::fromUtf8("Время")<<QString::fromUtf8(" | Канал")<<ACPType;
+                 streamACP<<QString::fromUtf8(" | Суммарный ток нагрузки 2")<<QString::fromUtf8(" | Суммарный ток нагрузки 1");
+                 streamACP<<QString::fromUtf8(" | Напряжение на силовых шинах 2")<<QString::fromUtf8(" | Напряжение на силовых шинах 1");
+                 streamACP<<QString::fromUtf8(" | Температура 2 корпуса прибора")<<QString::fromUtf8(" | Температура 1 корпуса прибора")<<QString::fromUtf8(" | Опорное напряжение");
+                 streamACP.setFieldWidth(0);
+                 streamACP<<endl;
+                 streamACP.setFieldWidth(32);
+                 for (int i=0;i<ListOfBSWVt.size();i++){
+                     streamACP<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVt[i].name;
+                     if (ListOfBSWVt[i].otvetPoluchen==1){
+                        streamACP<<ui->leTarirValue->text().toLatin1();
+                        streamACP<<" | "+QString::number(ListOfBSWVt[i].icap2)<<" | "+QString::number(ListOfBSWVt[i].icap1);
+                        streamACP<<" | "+QString::number(ListOfBSWVt[i].u2)<<" | "+QString::number(ListOfBSWVt[i].u1)<<" | "+QString::number(ListOfBSWVt[i].tcorp2)<<" | "+QString::number(ListOfBSWVt[i].tcorp1);
+                        streamACP<<" | "+QString::number(ListOfBSWVt[i].uref);
+                     }else{
+                        streamACP<<" | -"<<" | -"<<" | -";
+                        streamACP<<" | -"<<" | -"<<" | -"<<" | -" <<" | -";
+                     }
+                     streamACP.setFieldWidth(0);
+                     streamACP<<endl;
+                     streamACP.setFieldWidth(32);
+                   }
+                }
+        }
+        fileACP.close();
+        ListOfBSWVt[j].otvetPoluchen=0;
+        }
+        else {
+            error = "Ответ на сообщение 17 от "+ ListOfBSWVt.at(j).name +" не получен";
+            emit errorMessage (error);
+            QTableWidgetItem *itm91_91 = new QTableWidgetItem("-");
+            QTableWidgetItem *itm92_92 = new QTableWidgetItem("-");
+            QTableWidgetItem *itm93_93 = new QTableWidgetItem("-");
+            QTableWidgetItem *itm94_94 = new QTableWidgetItem("-");
+            QTableWidgetItem *itm95_95 = new QTableWidgetItem("-");
+            QTableWidgetItem *itm96_96 = new QTableWidgetItem("-");
+            QTableWidgetItem *itm97_97 = new QTableWidgetItem("-");
+            ui->tblAcp->setItem(0,j,itm91_91); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
+            ui->tblAcp->setItem(1,j,itm92_92);
+            ui->tblAcp->setItem(2,j,itm93_93);
+            ui->tblAcp->setItem(3,j,itm94_94);
+            ui->tblAcp->setItem(4,j,itm95_95);
+            ui->tblAcp->setItem(5,j,itm96_96);
+            ui->tblAcp->setItem(6,j,itm97_97);
+        }
+    }
+
+}
+
 QString MainWindow::getPortName(QString dis, QString serial)
 {
     QString namePort;
@@ -1092,14 +1134,15 @@ void MainWindow::on_btnStart_clicked()
     for (int i=0;i<ListOfBSWVData.size();i++) ListOfBSWVData[i].otvetBuffer.clear();
     if (timerZaprosaTelem->isActive()){
         ui->tblBSWV->setEnabled(false);
-        ui->tabWidget->setTabEnabled(0,false);
+        ui->tabWidget->setTabEnabled(0,true);
         ui->tabWidget->setTabEnabled(3,true);
         ui->tabWidget->setTabEnabled(2,true);
         ui->btnStart->setText("Начать обмен");
         timerZaprosaTelem->stop();
         timerVivod->stop();
-        timerZaprosaTarir->stop();
+        //timerZaprosaTarir->stop();
         timerZaprosaProv->stop();
+        timerWriteInFile->stop();
 
         ui->greenMK1o->setVisible(false);
         ui->redMK1o->setVisible(true);
@@ -1116,13 +1159,14 @@ void MainWindow::on_btnStart_clicked()
     }
     else {
         ui->tblBSWV->setEnabled(true);
-        ui->tabWidget->setTabEnabled(0,true);
+        ui->tabWidget->setTabEnabled(0,false);
         ui->tabWidget->setTabEnabled(3,false);
         ui->tabWidget->setTabEnabled(2,false);
         ui->btnStart->setText("Закончить обмен");
         timerZaprosaTelem->start(1000);
         QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
         QTimer::singleShot(300,this,SLOT(TimerProvStart()));
+        QTimer::singleShot(350,this,SLOT(TimerWriteInFileStart()));
         QTimer::singleShot(400,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса        
     }
 }
@@ -1290,6 +1334,17 @@ void MainWindow::AnalizeRS485()
         }
 }
 
+void MainWindow::on_pbGetACPKalibr_clicked()
+{
+    if ((ui->leTarirValue->text().toFloat())) {
+        OtpravkaZaprosaTarir();
+        QTimer::singleShot(500,this,SLOT(VivodACP()));
+    }else {
+        QMessageBox::information(this, trUtf8("Внимание!"),trUtf8("Введите корректное значение параметра для получения калибровочных данных"));
+    }
+
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -1297,12 +1352,10 @@ MainWindow::~MainWindow()
     delete timerVivod;
     delete timerReconnect;
     delete timerZaprosaTelem;
-    delete timerZaprosaTarir;
+    //delete timerZaprosaTarir;
     delete timerZaprosaProv;
-//    delete PortMK1osn;
-//    delete PortMK1rez;
-//    delete PortMK2osn;
-//    delete PortMK2rez;
-//    delete PortMK3osn;
-//    delete PortMK3rez;
+    delete timerWriteInFile;
 }
+
+
+

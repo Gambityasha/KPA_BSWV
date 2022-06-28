@@ -16,6 +16,7 @@
 #include <QTextStream>
 #include <errorform.h>
 #include <QDir>
+#include <QMessageBox>
 
 //размеры пакетов данных (первые четыре байта всегда содержат начальный, адрес отправителя, адрес получателя и код сообщения, последние два байта - контрольная сумма)
 //тип сообщения 1 - 6 байт, 17 - 16 байт, 34 - 1 байт, 255 - 0 байт
@@ -122,10 +123,11 @@ private:
 public:
 
     QTimer *timerZaprosaTelem;
-    QTimer *timerZaprosaTarir;
+    //QTimer *timerZaprosaTarir;
     QTimer *timerZaprosaProv;
     QTimer *timerVivod;
     QTimer *timerReconnect;
+    QTimer *timerWriteInFile;
     QByteArray otvet;
     BSWVdata BSWV;
     QList <BSWVdata>ListOfBSWVData;
@@ -144,6 +146,7 @@ public:
 //window = new ErrorForm(this);
 public slots:
    void Vivod(); //Вывод телеметрии в таблицу
+   void VivodACP();
    void OtpravkaZaprosaTelem ();
    void OtpravkaZaprosaTarir ();
    void OtpravkaZaprosaNomer();
@@ -164,6 +167,8 @@ public slots:
     void Reconnect( );
     void ErrorMessage();
     void AnalizeRS485();
+    void delay(int millisecondsToWait);
+    void TimerWriteInFileStart();
 signals:
     //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
@@ -187,5 +192,7 @@ private slots:
    void on_btnNomer_clicked();
    void on_btnStart_clicked();
    void on_pbTestRS485_clicked();
+
+   void on_pbGetACPKalibr_clicked();
 };
 #endif // MAINWINDOW_H
