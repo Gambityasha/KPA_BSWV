@@ -198,7 +198,7 @@ private slots:
    void on_btnNomer_clicked();
    void on_btnStart_clicked();
    void on_pbTestRS485_clicked();
-
    void on_pbGetACPKalibr_clicked();
+
 };
 #endif // MAINWINDOW_H

@@ -454,14 +454,6 @@ MainWindow::MainWindow(QWidget *parent)
     //timerZaprosaTarir = new QTimer();
     timerZaprosaProv = new QTimer();
     timerWriteInFile = new QTimer();
-
-
-//    file.setFileName("123.txt");
-//    qint64 size = file.size();
-//    ui->lblSize->setText(QString::number(size));
-
-
-    //fname = QDate::currentDate().toString("dd.MM.yyyy")+".txt";
     logYear = QDate::currentDate().toString("yyyy");
     logMonth = QDate::currentDate().toString("MM");
     dirName = "../logs/"+logYear+"/"+logMonth+"/";
@@ -517,8 +509,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(Print(QString))); //Не тот же эррор месадж, что от порта
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(WriteInFileError(QString)));
     //connect(timerVivod, SIGNAL(timeout()), this, SLOT(WriteInFile()));
-    connect(timerWriteInFile, SIGNAL(timeout()), this, SLOT(WriteInFile()));
-    connect(ui->pushButton, SIGNAL(clicked()),this,SLOT(LoadSettings()));
+    connect(timerWriteInFile, SIGNAL(timeout()), this, SLOT(WriteInFile()));    
     LoadSettings();
     connect(PortMK1osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(PortMK2osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
@@ -816,7 +807,7 @@ void MainWindow::ProverkaNomera(){
 
 void MainWindow::WriteInFile()
 {   
-    fname=QDateTime::currentDateTime().toLocalTime().toString("dd.MM.yyyy.hh")+".txt";
+    fname=QDateTime::currentDateTime().toLocalTime().toString("dd.MM.yyyy.hh")+"_BSWVTelemetria.txt";
     file.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fname);
     QTextStream stream(&file);
     stream.setFieldAlignment(QTextStream::AlignLeft);
@@ -1332,6 +1323,3 @@ MainWindow::~MainWindow()
     delete timerZaprosaProv;
     delete timerWriteInFile;
 }
-
-
-
