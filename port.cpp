@@ -36,7 +36,8 @@ void port :: ConnectPort(void)//процедура подключения
         } else
         {
             thisPort.close();
-           emit error_(thisPort.errorString().toLocal8Bit());
+            emit error_(thisPort.errorString().toLocal8Bit());
+
         }
     }
     else

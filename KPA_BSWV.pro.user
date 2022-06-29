@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 5.0.2, 2022-06-29T07:06:52. -->
+<!-- Written by QtCreator 5.0.2, 2022-06-29T11:28:52. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -115,7 +115,21 @@
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.MakeStep</value>
      </valuemap>
-     <value type="int" key="ProjectExplorer.BuildStepList.StepsCount">2</value>
+     <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.2">
+      <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
+      <value type="QString" key="ProjectExplorer.ProcessStep.Arguments">&quot;%{ActiveProject:RunConfig:Executable:NativeFilePath}&quot; &quot;..\KPA_BSWV_RS485\&quot; /y /i</value>
+      <value type="QString" key="ProjectExplorer.ProcessStep.Command">C:/Windows/System32/xcopy.exe</value>
+      <value type="QString" key="ProjectExplorer.ProcessStep.WorkingDirectory">D:/GitHub/KPA_BSWV</value>
+      <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">ProjectExplorer.ProcessStep</value>
+     </valuemap>
+     <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.3">
+      <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
+      <value type="QString" key="ProjectExplorer.ProcessStep.Arguments">--no-translations --no-system-d3d-compiler --no-opengl-sw --no-angle  &quot;..\KPA_BSWV_RS485\%{ActiveProject:RunConfig:Executable:FileName}&quot;</value>
+      <value type="QString" key="ProjectExplorer.ProcessStep.Command">windeployqt.exe</value>
+      <value type="QString" key="ProjectExplorer.ProcessStep.WorkingDirectory">D:/GitHub/KPA_BSWV</value>
+      <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">ProjectExplorer.ProcessStep</value>
+     </valuemap>
+     <value type="int" key="ProjectExplorer.BuildStepList.StepsCount">4</value>
      <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Сборка</value>
      <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Сборка</value>
      <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">ProjectExplorer.BuildSteps.Build</value>
@@ -247,6 +261,7 @@
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">D:/GitHub/build-KPA_BSWV-Desktop_Qt_5_12_12_MinGW_32_bit-Debug</value>
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

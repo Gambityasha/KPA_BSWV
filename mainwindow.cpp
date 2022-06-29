@@ -337,16 +337,22 @@ MainWindow::MainWindow(QWidget *parent)
     ListOfBSWVData.append(BSWV);
 
     BSWVt.name = "MK1-osn"; BSWVt.namePort = "Com";BSWVt.icap2=0; BSWVt.icap1 = 0; BSWVt.u2 = 0; BSWVt.u1 = 0;BSWVt.tcorp2 = 0; BSWVt.tcorp1=0; BSWVt.uref=0;
+    BSWVt.otvetPoluchen=0;
     ListOfBSWVt.append(BSWVt);
     BSWVt.name = "MK1-rez"; BSWVt.namePort = "Com";BSWVt.icap2=0; BSWVt.icap1 = 0; BSWVt.u2 = 0; BSWVt.u1 = 0;BSWVt.tcorp2 = 0; BSWVt.tcorp1=0;BSWVt.uref=0;
+    BSWVt.otvetPoluchen=0;
     ListOfBSWVt.append(BSWVt);
     BSWVt.name = "MK2-osn"; BSWVt.namePort = "Com";BSWVt.icap2=0; BSWVt.icap1 = 0; BSWVt.u2 = 0; BSWVt.u1 = 0;BSWVt.tcorp2 = 0; BSWVt.tcorp1=0;BSWVt.uref=0;
+    BSWVt.otvetPoluchen=0;
     ListOfBSWVt.append(BSWVt);
     BSWVt.name = "MK2-rez"; BSWVt.namePort = "Com";BSWVt.icap2=0; BSWVt.icap1 = 0; BSWVt.u2 = 0; BSWVt.u1 = 0;BSWVt.tcorp2 = 0; BSWVt.tcorp1=0;BSWVt.uref=0;
+    BSWVt.otvetPoluchen=0;
     ListOfBSWVt.append(BSWVt);
     BSWVt.name = "MK3-osn"; BSWVt.namePort = "Com";BSWVt.icap2=0; BSWVt.icap1 = 0; BSWVt.u2 = 0; BSWVt.u1 = 0;BSWVt.tcorp2 = 0; BSWVt.tcorp1=0;BSWVt.uref=0;
+    BSWVt.otvetPoluchen=0;
     ListOfBSWVt.append(BSWVt);
     BSWVt.name = "MK3-rez"; BSWVt.namePort = "Com";BSWVt.icap2=0; BSWVt.icap1 = 0; BSWVt.u2 = 0; BSWVt.u1 = 0;BSWVt.tcorp2 = 0; BSWVt.tcorp1=0;BSWVt.uref=0;
+    BSWVt.otvetPoluchen=0;
     ListOfBSWVt.append(BSWVt);
 
     BSWVp.name = "MK1-osn"; BSWVp.namePort = "Com"; BSWVp.otvetPoluchen=0;
@@ -461,8 +467,8 @@ MainWindow::MainWindow(QWidget *parent)
     dir.mkdir("../logs/"+logYear);
     dir.mkdir("../logs/"+logYear+"/"+logMonth);
     //file.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fname);
-    QString fEname = QDate::currentDate().toString("dd.MM.yyyy")+"_Errors.txt";
-    fileError.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fEname);    
+//    QString fEname = QDate::currentDate().toString("dd.MM.yyyy")+"_Errors.txt";
+//    fileError.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fEname);
     connect(timerZaprosaTelem, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTelem()));
     //connect(timerZaprosaTarir, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTarir()));
     connect(timerZaprosaProv,SIGNAL(timeout()), this,SLOT(OtpravkaZaprosaProv()));
@@ -807,7 +813,7 @@ void MainWindow::ProverkaNomera(){
 
 void MainWindow::WriteInFile()
 {   
-    fname=QDateTime::currentDateTime().toLocalTime().toString("dd.MM.yyyy.hh")+"_BSWVTelemetria.txt";
+    fname=QDateTime::currentDateTime().toLocalTime().toString("dd.MM.yyyy.hh")+"_BSWV_Telemetria.txt";
     file.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fname);
     QTextStream stream(&file);
     stream.setFieldAlignment(QTextStream::AlignLeft);
@@ -870,17 +876,19 @@ void MainWindow::WriteInFile()
 
 void MainWindow::WriteInFileError(QString error)
 {
+    QString fEname = QDateTime::currentDateTime().toLocalTime().toString("dd.MM.yyyy.hh")+"_Errors.txt";
+    fileError.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fEname);
     QTextStream stream(&fileError);
-    QTextStream stream1(&fileError);
     stream.setFieldWidth(16);
     stream.setFieldAlignment(QTextStream::AlignLeft);
     if (fileError.exists()){//Проверка - существует ли файл
-            if (fileError.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла
-               // QString log =QTime::currentTime().toString("HH:mm:ss") +"  |  "+error+"\r\n";
-               // stream<<log;
-               QString log1 = QTime::currentTime().toString("HH:mm:ss")+"  | ";
-                QString log2 = error;
-                stream<<log1<<log2+"\r\n";
+            if (fileError.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла               
+                QString log1 = QTime::currentTime().toString("HH:mm:ss")+"  | ";
+                QString log2 = error;                
+                stream<<log1<<log2;
+                stream.setFieldWidth(0);
+                stream<<endl;
+                stream.setFieldWidth(16);
             }
     }
     else {
@@ -888,9 +896,11 @@ void MainWindow::WriteInFileError(QString error)
            //stream<< QString::fromUtf8(" Время             Описание ошибки \r\n");
           // stream<<QTime::currentTime().toString("HH:mm:ss") +"  |  "+error+"\r\n";
            stream<<QString::fromUtf8("Время")+"     |"<<QString::fromUtf8("Описание ошибки")+"\r\n";
-           QString log1 = QTime::currentTime().toString("HH:mm:ss")+"  | ";
-           QString log2 = error;
-           stream<<log1<<log2+"\r\n";
+           QString log1 = QTime::currentTime().toString("HH:mm:ss")+"  | ";           
+           stream<<log1<<error;
+           stream.setFieldWidth(0);
+           stream<<endl;
+           stream.setFieldWidth(16);
            }
     }
     fileError.close();
@@ -1064,7 +1074,7 @@ void MainWindow::VivodACP()
         for (int j=0;j<ListOfBSWVt.size();j++){
             if (ListOfBSWVt.at(j).otvetPoluchen==1){
                 streamACP<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVt[j].name;
-                streamACP<<ui->leTarirValue->text();
+                streamACP<<" | "+ui->leTarirValue->text();
                 streamACP<<" | "+QString::number(ListOfBSWVt[j].icap2)<<" | "+QString::number(ListOfBSWVt[j].icap1);
                 streamACP<<" | "+QString::number(ListOfBSWVt[j].u2)<<" | "+QString::number(ListOfBSWVt[j].u1)<<" | "+QString::number(ListOfBSWVt[j].tcorp2)<<" | "+QString::number(ListOfBSWVt[j].tcorp1);
                 streamACP<<" | "+QString::number(ListOfBSWVt[j].uref);
