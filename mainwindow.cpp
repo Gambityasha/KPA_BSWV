@@ -96,20 +96,20 @@ void MainWindow::LoadSettings()
     setting.endGroup();
     setting.beginGroup("MK2-osn");// [MK2-osn] в ини файле
     QString status3 = setting.value("work","0").toString();
-    if ( status3 == "on") {
-    dis3 = setting.value("description","0").toString();
-    serial3 = setting.value("serialNumber","0").toString();
-    QString name3 = getPortName(dis3,serial3);
-    emit savesettings3(name3, baudrate, databits, parity, stopbits, flowcontrol);
-    ListOfBSWVData[2].namePort = name3;
-    ListOfBSWVData[2].name = "MK2-osn";
-    ListOfBSWVt[2].namePort = name3;
-    ListOfBSWVt[2].name = "MK2-osn";
-    ListOfBSWVprov[2].namePort = name3;
-    ListOfBSWVprov[2].name = "MK2-osn";
-    ListOfBSWVnomer[2].namePort = name3;
-    ListOfBSWVnomer[2].name = "MK2-osn";
-    emit con3();
+    if (status3 == "on") {
+        dis3 = setting.value("description","0").toString();
+        serial3 = setting.value("serialNumber","0").toString();
+        QString name3 = getPortName(dis3,serial3);
+        emit savesettings3(name3, baudrate, databits, parity, stopbits, flowcontrol);
+        ListOfBSWVData[2].namePort = name3;
+        ListOfBSWVData[2].name = "MK2-osn";
+        ListOfBSWVt[2].namePort = name3;
+        ListOfBSWVt[2].name = "MK2-osn";
+        ListOfBSWVprov[2].namePort = name3;
+        ListOfBSWVprov[2].name = "MK2-osn";
+        ListOfBSWVnomer[2].namePort = name3;
+        ListOfBSWVnomer[2].name = "MK2-osn";
+        emit con3();
     }
     setting.endGroup();
     setting.beginGroup("MK2-rez");// [MK2-rez] в ини файле
@@ -150,7 +150,7 @@ void MainWindow::LoadSettings()
     setting.endGroup();
     setting.beginGroup("MK3-rez");// [MK3-rez] в ини файле
     QString status6 = setting.value("work","0").toString();
-    if ( status6 == "on"){
+    if (status6 == "on"){
         dis6 = setting.value("description","0").toString();
         serial6 = setting.value("serialNumber","0").toString();
         QString name6 = getPortName(dis6,serial6);
@@ -182,11 +182,10 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
         }
         else {
             timerReconnect->start();
-
             //window->setModal(true);
             //window->exec();
             if (ui->lblError->isVisible()){
-//                delay(100);
+//              delay(100);
             }else{
                 window->open();
             }
@@ -224,7 +223,7 @@ void MainWindow::Reconnect( )
     if (ListOfBSWVData[1].errorStatus==1) {
         setting.beginGroup("MK1-rez");// [MK1-rez] в ини файле
         QString status2 = setting.value("work","0").toString();
-        if ( status2 == "on"){
+        if (status2 == "on"){
             dis2 = setting.value("description","0").toString();
             serial2 = setting.value("serialNumber","0").toString();
             QString name2 = getPortName(dis2,serial2);
@@ -236,19 +235,19 @@ void MainWindow::Reconnect( )
     if (ListOfBSWVData[2].errorStatus==1) {
         setting.beginGroup("MK2-osn");// [MK2-osn] в ини файле
         QString status3 = setting.value("work","0").toString();
-        if ( status3 == "on") {
-        dis3 = setting.value("description","0").toString();
-        serial3 = setting.value("serialNumber","0").toString();
-        QString name3 = getPortName(dis3,serial3);
-        emit savesettings3(name3, baudrate, databits, parity, stopbits, flowcontrol);
-        emit con3();
+        if (status3 == "on") {
+            dis3 = setting.value("description","0").toString();
+            serial3 = setting.value("serialNumber","0").toString();
+            QString name3 = getPortName(dis3,serial3);
+            emit savesettings3(name3, baudrate, databits, parity, stopbits, flowcontrol);
+            emit con3();
         }
         setting.endGroup();
     }
     if (ListOfBSWVData[3].errorStatus==1) {
         setting.beginGroup("MK2-rez");// [MK2-rez] в ини файле
         QString status4 = setting.value("work","0").toString();
-        if ( status4 == "on"){
+        if (status4 == "on"){
             dis4 = setting.value("description","0").toString();
             serial4 = setting.value("serialNumber","0").toString();
             QString name4 = getPortName(dis4,serial4);
@@ -260,7 +259,7 @@ void MainWindow::Reconnect( )
     if (ListOfBSWVData[4].errorStatus==1) {
         setting.beginGroup("MK3-osn");// [MK3-osn] в ини файле
         QString status5 = setting.value("work","0").toString();
-        if ( status5 == "on") {
+        if (status5 == "on") {
             dis5 = setting.value("description","0").toString();
             serial5 = setting.value("serialNumber","0").toString();
             QString name5 = getPortName(dis5,serial5);
@@ -272,7 +271,7 @@ void MainWindow::Reconnect( )
      if (ListOfBSWVData[5].errorStatus==1) {
          setting.beginGroup("MK3-rez");// [MK3-rez] в ини файле
          QString status6 = setting.value("work","0").toString();
-         if ( status6 == "on"){
+         if (status6 == "on"){
              dis6 = setting.value("description","0").toString();
              serial6 = setting.value("serialNumber","0").toString();
              QString name6 = getPortName(dis6,serial6);
@@ -681,15 +680,15 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                 ListOfBSWVt[i].tcorp2 =float((unsigned short) (buffer[16]<<8) | buffer[17]); //"Температура 2 корпуса прибора"
                                 ListOfBSWVt[i].tcorp1 = float((unsigned short) (buffer[18]<<8) | buffer[19]);//"Температура 1 корпуса прибора"
                                 ListOfBSWVt[i].otvetPoluchen=1;
-                            }
-                            else {ListOfBSWVt[i].otvetPoluchen=0;
-                                  ListOfBSWVt[i].uref = 0.0;
-                                  ListOfBSWVt[i].icap2 = 0.0;
-                                  ListOfBSWVt[i].icap1 = 0.0;
-                                  ListOfBSWVt[i].u2 = 0.0;
-                                  ListOfBSWVt[i].u1 = 0.0;
-                                  ListOfBSWVt[i].tcorp2 = 0.0;
-                                  ListOfBSWVt[i].tcorp1 = 0.0;
+                            }else{
+                                ListOfBSWVt[i].otvetPoluchen=0;
+                                ListOfBSWVt[i].uref = 0.0;
+                                ListOfBSWVt[i].icap2 = 0.0;
+                                ListOfBSWVt[i].icap1 = 0.0;
+                                ListOfBSWVt[i].u2 = 0.0;
+                                ListOfBSWVt[i].u1 = 0.0;
+                                ListOfBSWVt[i].tcorp2 = 0.0;
+                                ListOfBSWVt[i].tcorp1 = 0.0;
                             }
                         }
                     }
@@ -697,54 +696,53 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                  case 34:
                       for (int i=0;i<ListOfBSWVnomer.size();i++){
                           if (ListOfBSWVnomer.at(i).namePort == comName){
-                             unsigned char upperCRCR = Crc16(buffer,le)>>8;
-                             unsigned char lowerCRCR = Crc16(buffer,le);
+                              unsigned char upperCRCR = Crc16(buffer,le)>>8;
+                              unsigned char lowerCRCR = Crc16(buffer,le);
                               if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
-                                    unsigned char nMK = buffer[4]>>4;
-                                    switch (nMK){
+                                   unsigned char nMK = buffer[4]>>4;
+                                   switch (nMK){
                                           //case 0b0001://номер МУКа, 0b0001 - 1 МК, 0b0010- 2 МК, 0b0011 - 3 МК
-                                    case 1:
+                                   case 1:
                                           ListOfBSWVnomer[i].nMK = "MK1";
-                                    break;
+                                   break;
                                           //case 0b0010:
-                                    case 2:
+                                   case 2:
                                           ListOfBSWVnomer[i].nMK = "MK2";
-                                    break;
+                                   break;
                                           //case 0b0011:
-                                    case 3:
+                                   case 3:
                                           ListOfBSWVnomer[i].nMK = "MK3";
-                                    break;
-                                    }
-                                    unsigned char bufferChan = buffer[4]<<4;
-                                    unsigned char nChan = bufferChan>>4;
+                                   break;
+                                   }
+                                   unsigned char bufferChan = buffer[4]<<4;
+                                   unsigned char nChan = bufferChan>>4;
                                    // if ((buffer[4]>>4)==0){ //номер канала 0b0000 - основной, 0b0001 -резервный;
-                                       if (nChan==0){ //номер канала 0b0000 - основной, 0b0001 -резервный;
+                                   if (nChan==0){ //номер канала 0b0000 - основной, 0b0001 -резервный;
                                        ListOfBSWVnomer[i].nChan = "-основной";
-                                    }
+                                   }
                                     //if ((buffer[4]>>4)==1)
-                                      if (nChan==1)
-                                       {
-                                        ListOfBSWVnomer[i].nChan = "-резервный";
-                                       }
-                                    ListOfBSWVnomer[i].otvetPoluchen=1;
-                              }
-                              else {ListOfBSWVnomer[i].otvetPoluchen=0;
-                                    ListOfBSWVnomer[i].nMK = "-";
-                                    ListOfBSWVnomer[i].nChan = "-";
+                                   if (nChan==1){
+                                       ListOfBSWVnomer[i].nChan = "-резервный";
+                                   }
+                                   ListOfBSWVnomer[i].otvetPoluchen=1;
+                              }else{
+                                   ListOfBSWVnomer[i].otvetPoluchen=0;
+                                   ListOfBSWVnomer[i].nMK = "-";
+                                   ListOfBSWVnomer[i].nChan = "-";
                               }
                           }
                       }
                  break;
                  case 255:
                       for (int i=0;i<ListOfBSWVprov.size();i++){
-                          if (ListOfBSWVprov.at(i).namePort == comName){
-                             unsigned char upperCRCR = Crc16(buffer,le)>>8;
-                             unsigned char lowerCRCR = Crc16(buffer,le);
-                              if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
-                              ListOfBSWVprov[i].otvetPoluchen=1;
-                              }
-                              else {ListOfBSWVprov[i].otvetPoluchen=0;
-                              }
+                           if (ListOfBSWVprov.at(i).namePort == comName){
+                               unsigned char upperCRCR = Crc16(buffer,le)>>8;
+                               unsigned char lowerCRCR = Crc16(buffer,le);
+                               if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
+                                    ListOfBSWVprov[i].otvetPoluchen=1;
+                               } else {
+                                    ListOfBSWVprov[i].otvetPoluchen=0;
+                               }
                           }
                       }
                  break;
@@ -856,8 +854,8 @@ void MainWindow::WriteInFile()
                stream<<endl;
                stream.setFieldWidth(32);
                for (int i=0;i<ListOfBSWVData.size();i++){
-                   stream<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVData[i].name;
-                   if (ListOfBSWVData[i].otvetPoluchen==1){
+                    stream<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVData[i].name;
+                    if (ListOfBSWVData[i].otvetPoluchen==1){
                         stream<<" | "+QString::number(ListOfBSWVData[i].icap2)<<" | "+QString::number(ListOfBSWVData[i].icap1);
                         stream<<" | "+QString::number(ListOfBSWVData[i].u2)<<" | "+QString::number(ListOfBSWVData[i].u1)<<" | "+QString::number(ListOfBSWVData[i].tcorp2)<<" | "+QString::number(ListOfBSWVData[i].tcorp1);
                    } else {
@@ -895,12 +893,12 @@ void MainWindow::WriteInFileError(QString error)
            if (fileError.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра                     
            //stream<< QString::fromUtf8(" Время             Описание ошибки \r\n");
           // stream<<QTime::currentTime().toString("HH:mm:ss") +"  |  "+error+"\r\n";
-           stream<<QString::fromUtf8("Время")+"     |"<<QString::fromUtf8("Описание ошибки")+"\r\n";
-           QString log1 = QTime::currentTime().toString("HH:mm:ss")+"  | ";           
-           stream<<log1<<error;
-           stream.setFieldWidth(0);
-           stream<<endl;
-           stream.setFieldWidth(16);
+               stream<<QString::fromUtf8("Время")+"     |"<<QString::fromUtf8("Описание ошибки")+"\r\n";
+               QString log1 = QTime::currentTime().toString("HH:mm:ss")+"  | ";
+               stream<<log1<<error;
+               stream.setFieldWidth(0);
+               stream<<endl;
+               stream.setFieldWidth(16);
            }
     }
     fileError.close();
@@ -938,7 +936,6 @@ for (int i=0;i<ListOfBSWVData.size();i++){
         ui->tblBSWV->setItem(3,i,itm94_94);
         ui->tblBSWV->setItem(4,i,itm95_95);
         ui->tblBSWV->setItem(5,i,itm96_96);
-
     }
 //  itm1_2->setTextColor(Qt::red); //задание цвета у текста определенной ячейки таблицы
 //  itm1_2->setBackgroundColor(Qt::black); //задание цвета самой определенной ячейки таблицы
@@ -1070,7 +1067,6 @@ void MainWindow::VivodACP()
         streamACP.setFieldWidth(0);
         streamACP<<endl;
         streamACP.setFieldWidth(32);
-
         for (int j=0;j<ListOfBSWVt.size();j++){
             if (ListOfBSWVt.at(j).otvetPoluchen==1){
                 streamACP<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVt[j].name;
@@ -1091,7 +1087,7 @@ void MainWindow::VivodACP()
             }
         }
     }
-        fileACP.close();
+    fileACP.close();
 }
 
 QString MainWindow::getPortName(QString dis, QString serial)

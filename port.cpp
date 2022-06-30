@@ -8,8 +8,7 @@ port::port(QObject *parent) : QObject(parent)
 }
 
 
-void port :: Write_Settings_Port(QString name, int baudrate,int DataBits,
-                         int Parity,int StopBits, int FlowControl){//заносим параметры порта в структуру данных
+void port :: Write_Settings_Port(QString name, int baudrate,int DataBits,int Parity,int StopBits, int FlowControl){//заносим параметры порта в структуру данных
     SettingsPort.name = name;
     SettingsPort.baudRate = (QSerialPort::BaudRate) baudrate;
     SettingsPort.dataBits = (QSerialPort::DataBits) DataBits;
@@ -58,9 +57,8 @@ void port::handleError(QSerialPort::SerialPortError error)//проверка о�
 
 void port::DisconnectPort()//Отключаем порт
 {
-    if(thisPort.isOpen())
-    {
-        thisPort.close();
+    if(thisPort.isOpen()){
+       thisPort.close();
        emit error_(SettingsPort.name.toLocal8Bit() + " >> Закрыт!\r");
     }
 }
