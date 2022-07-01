@@ -1138,9 +1138,9 @@ void MainWindow::on_btnStart_clicked()
         ui->tabWidget->setTabEnabled(2,false);
         ui->btnStart->setText("Закончить обмен");
         timerZaprosaTelem->start(1000);
-        QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
-        QTimer::singleShot(300,this,SLOT(TimerProvStart()));
-        QTimer::singleShot(350,this,SLOT(TimerWriteInFileStart()));
+        //QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
+        QTimer::singleShot(200,this,SLOT(TimerProvStart()));
+        QTimer::singleShot(300,this,SLOT(TimerWriteInFileStart()));
         QTimer::singleShot(400,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса        
     }
 }
