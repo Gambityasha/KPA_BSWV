@@ -523,7 +523,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK2rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
-    connect(window,SIGNAL(hideError()),this,SLOT(ErrorMessage()));
+    connect(window,SIGNAL(hideError()),this,SLOT(ErrorMessage()));   
 }
 
 void MainWindow:: OtpravkaZaprosaTelem()
@@ -535,16 +535,16 @@ void MainWindow:: OtpravkaZaprosaTelem()
 
 void MainWindow::TimerVivodStart()
 {
-    timerVivod->start(1000);
+    timerVivod->start(timerDelay);
 }
 
 void MainWindow::TimerProvStart()
 {
-    timerZaprosaProv->start(1000);
+    timerZaprosaProv->start(timerDelay);
 }
 void MainWindow::TimerWriteInFileStart()
 {
-    timerWriteInFile->start(1000);
+    timerWriteInFile->start(timerDelay);
 }
 void MainWindow::TimerTarirStart()
 {
@@ -760,7 +760,7 @@ void MainWindow::ChangeColor()
 
 void MainWindow::Print(QString dat)
 {
-    ui->consol->textCursor().insertText(dat+'\r'); // Вывод текста в консоль
+    ui->consol->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+dat+'\r'); // Вывод текста в консоль
     ui->consol->moveCursor(QTextCursor::End);//Scroll
     ui->tabWidget->tabBar()->setTabTextColor(1,Qt::red);
 }
@@ -810,7 +810,7 @@ void MainWindow::ProverkaNomera(){
 }
 
 void MainWindow::WriteInFile()
-{   
+{
     fname=QDateTime::currentDateTime().toLocalTime().toString("dd.MM.yyyy.hh")+"_BSWV_Telemetria.txt";
     file.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fname);
     QTextStream stream(&file);
@@ -869,7 +869,6 @@ void MainWindow::WriteInFile()
            }
     }
     file.close();
-
 }
 
 void MainWindow::WriteInFileError(QString error)
@@ -883,7 +882,8 @@ void MainWindow::WriteInFileError(QString error)
             if (fileError.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла               
                 QString log1 = QTime::currentTime().toString("HH:mm:ss")+"  | ";
                 QString log2 = error;                
-                stream<<log1<<log2;
+                //stream<<log1<<log2;
+                stream<<log2;
                 stream.setFieldWidth(0);
                 stream<<endl;
                 stream.setFieldWidth(16);
@@ -1137,11 +1137,11 @@ void MainWindow::on_btnStart_clicked()
         ui->tabWidget->setTabEnabled(3,false);
         ui->tabWidget->setTabEnabled(2,false);
         ui->btnStart->setText("Закончить обмен");
-        timerZaprosaTelem->start(1000);
+        timerZaprosaTelem->start(timerDelay);
         //QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
-        QTimer::singleShot(200,this,SLOT(TimerProvStart()));
-        QTimer::singleShot(300,this,SLOT(TimerWriteInFileStart()));
-        QTimer::singleShot(400,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса        
+        QTimer::singleShot(timerDelay*0.2,this,SLOT(TimerProvStart()));
+        QTimer::singleShot(timerDelay*0.4,this,SLOT(TimerWriteInFileStart()));
+        QTimer::singleShot(timerDelay*0.5,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса
     }
 }
 
@@ -1318,6 +1318,12 @@ void MainWindow::on_pbGetACPKalibr_clicked()
     }
 }
 
+void MainWindow::on_pushButton_clicked()
+{
+    ui->consol->clear();
+}
+
+
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -1328,4 +1334,7 @@ MainWindow::~MainWindow()
     //delete timerZaprosaTarir;
     delete timerZaprosaProv;
     delete timerWriteInFile;
+
 }
+
+

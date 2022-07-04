@@ -19,6 +19,8 @@
 #include <QDir>
 #include <QMessageBox>
 
+#define timerDelay 1000
+
 //размеры пакетов данных (первые четыре байта всегда содержат начальный, адрес отправителя, адрес получателя и код сообщения, последние два байта - контрольная сумма)
 //тип сообщения 1 - 6 байт, 17 - 16 байт, 34 - 1 байт, 255 - 0 байт
 //итого весь пакет ответа: 1 - 12 байт, 17 - 22 байт, 34 - 7 байт, 255 - 6 байт
@@ -200,5 +202,6 @@ private slots:
    void on_pbTestRS485_clicked();
    void on_pbGetACPKalibr_clicked();
 
+   void on_pushButton_clicked();
 };
 #endif // MAINWINDOW_H
