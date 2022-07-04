@@ -103,7 +103,7 @@ private:
     QString logYear;
     QString logMonth;
     QString dirName;
-    int baudrate = 115200;
+    int baudrate = 115200; //скорость обмена, по протоколу 115200
     int databits = 8;
     int parity = 2;              //DataToInt (QSerialPort::EvenParity)
     int stopbits = 1;            //DataToInt (QSerialPort::OneStop) , по протоколу 1
