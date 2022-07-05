@@ -177,6 +177,7 @@ public slots:
     void AnalizeRS485();
     void delay(int millisecondsToWait);
     void TimerWriteInFileStart();
+
 signals:
     //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
@@ -202,6 +203,7 @@ private slots:
    void on_pbTestRS485_clicked();
    void on_pbGetACPKalibr_clicked();
 
-   void on_pushButton_clicked();
+   void on_pushButton_clicked();   
+   void on_tabWidget_currentChanged(int index);
 };
 #endif // MAINWINDOW_H

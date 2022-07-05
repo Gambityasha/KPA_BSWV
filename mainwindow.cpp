@@ -523,7 +523,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK2rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
-    connect(window,SIGNAL(hideError()),this,SLOT(ErrorMessage()));   
+    connect(window,SIGNAL(hideError()),this,SLOT(ErrorMessage()));
+    ui->tabWidget->setCurrentIndex(0);
 }
 
 void MainWindow:: OtpravkaZaprosaTelem()
@@ -546,6 +547,8 @@ void MainWindow::TimerWriteInFileStart()
 {
     timerWriteInFile->start(timerDelay);
 }
+
+
 void MainWindow::TimerTarirStart()
 {
     //timerZaprosaTarir->start(1000);//пока поменял принцип вывода таблицы для тарировки
@@ -1334,7 +1337,42 @@ MainWindow::~MainWindow()
     //delete timerZaprosaTarir;
     delete timerZaprosaProv;
     delete timerWriteInFile;
-
 }
 
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    switch (index){
+    case 0:
+         ui->tabWidget->setMinimumSize(963,358);
+//         ui->tabWidget->setBaseSize(963,358);
+//         ui->tabWidget->setGeometry(963,358);
+         ui->tabWidget->resize(963,358);
+         delay(100);
+         QMainWindow::resize(1280,680);
+
+    break;
+    case 1:
+         ui->tabWidget->setMinimumSize(963,358);
+//         ui->tabWidget->setBaseSize(963,358);
+         ui->tabWidget->resize(963,358);
+         delay(100);
+         QMainWindow::resize(1280,680);
+    break;
+    case 2:
+         ui->tabWidget->setMinimumSize(963,191);
+//         ui->tabWidget->setBaseSize(963,358);
+        ui->tabWidget->resize(963,191);
+        delay(100);
+        QMainWindow::resize(1280,510);
+    break;
+    case 3:
+         ui->tabWidget->setMinimumSize(963,191);
+//         ui->tabWidget->setBaseSize(921,191);
+         ui->tabWidget->resize(963,191);
+         delay(100);
+         QMainWindow::resize(1280,510);
+
+    break;
+    }
+}
 
