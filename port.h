@@ -2,9 +2,10 @@
 #define PORT_H
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
+#include "stdint.h"
 #include <QObject>
 #include "mainwindow.h"
-#include "stdint.h"
+
 
 
 
@@ -25,11 +26,13 @@ class port : public QObject
     Q_OBJECT
 public:
     explicit port(QObject *parent = nullptr);
+     Settings SettingsPort;
+    QSerialPort thisPort;
      ~port();
 
-    QSerialPort thisPort;
 
-    Settings SettingsPort;
+
+
 
 
 

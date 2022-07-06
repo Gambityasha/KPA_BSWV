@@ -1,7 +1,7 @@
 #include "errorform.h"
 #include "ui_errorform.h"
 
-ErrorForm::ErrorForm(QWidget *parent) :
+ErrorForm::ErrorForm(QWidget *parent) ://
     QDialog(parent),
     ui(new Ui::ErrorForm)
 {
