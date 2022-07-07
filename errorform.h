@@ -27,7 +27,7 @@ private slots:
     void on_btnIgnor_clicked();
 
 signals:
-void hideError();
+void hideError(bool status);
 
 };
 

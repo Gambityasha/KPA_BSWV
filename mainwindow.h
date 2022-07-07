@@ -173,7 +173,7 @@ public slots:
     void LoadSettings();
     void ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName);
     void Reconnect( );
-    void ErrorMessage();
+    void ErrorMessage(bool status);
     void AnalizeRS485();
     void delay(int millisecondsToWait);
     void TimerWriteInFileStart();

@@ -37,7 +37,7 @@ void ErrorForm::AnimPlus2()
 
 void ErrorForm::on_btnIgnor_clicked()
 {
-    emit hideError();
+    emit hideError(1);
     QTimer::singleShot(400, this,SLOT(close()));
     close();
 }

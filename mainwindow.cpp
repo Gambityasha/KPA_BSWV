@@ -171,10 +171,11 @@ void MainWindow::LoadSettings()
 void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName)
 {
     //int k;
-    if (error!=0){
+    if ((error==1)||(error==13)){
         for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData[i].namePort==portName){
-                ListOfBSWVData[i].errorStatus=1;               
+                ListOfBSWVData[i].errorStatus=1;
+
             }
         }
         if (timerReconnect->isActive()){
@@ -196,9 +197,10 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
                 ListOfBSWVData[i].errorStatus=0;
                 timerReconnect->stop();
                 //QTimer::singleShot(2000,window,SLOT(close()));
-                delay(100);
-                window->close();
                 ui->lblError->setVisible(false);
+                delay(300);
+                window->close();
+
             }
         }
     }
@@ -282,9 +284,9 @@ void MainWindow::Reconnect( )
      }
 }
 
-void MainWindow::ErrorMessage()
+void MainWindow::ErrorMessage(bool status)
 {
-    ui->lblError->setVisible(true);
+    ui->lblError->setVisible(status);
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -497,6 +499,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(con4()),PortMK2rez,SLOT(ConnectPort()));
     connect(this, SIGNAL(con5()),PortMK3osn,SLOT(ConnectPort()));
     connect(this, SIGNAL(con6()),PortMK3rez,SLOT(ConnectPort()));
+    LoadSettings();
     connect(PortMK1osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//Лог ошибок соединения
     connect(PortMK2osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
     connect(PortMK3osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
@@ -514,8 +517,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(Print(QString))); //Не тот же эррор месадж, что от порта
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(WriteInFileError(QString)));
     //connect(timerVivod, SIGNAL(timeout()), this, SLOT(WriteInFile()));
-    connect(timerWriteInFile, SIGNAL(timeout()), this, SLOT(WriteInFile()));    
-    LoadSettings();
+    connect(timerWriteInFile, SIGNAL(timeout()), this, SLOT(WriteInFile()));
     connect(PortMK1osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(PortMK2osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(PortMK3osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
@@ -523,7 +525,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK2rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
-    connect(window,SIGNAL(hideError()),this,SLOT(ErrorMessage()));
+    connect(window,SIGNAL(hideError(bool)),this,SLOT(ErrorMessage(bool)));
     ui->tabWidget->setCurrentIndex(0);
 }
 
