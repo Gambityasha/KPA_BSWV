@@ -136,6 +136,7 @@ public:
     QTimer *timerVivod;
     QTimer *timerReconnect;
     QTimer *timerWriteInFile;
+    QTimer *timerCloseErrorWindow;
     QByteArray otvet;
     BSWVdata BSWV;
     QList <BSWVdata>ListOfBSWVData;
@@ -177,6 +178,7 @@ public slots:
     void AnalizeRS485();
     void delay(int millisecondsToWait);
     void TimerWriteInFileStart();
+    void CloseErrorWindow();
 
 signals:
     //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);

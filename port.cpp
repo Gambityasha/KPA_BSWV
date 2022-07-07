@@ -35,24 +35,67 @@ void port :: ConnectPort(void)//процедура подключения
         } else
         {
             thisPort.close();
-            emit error_(thisPort.errorString().toLocal8Bit());
+            //emit error_(thisPort.errorString().toLocal8Bit());
 
         }
     }
     else
     {
         thisPort.close();
-        emit error_(thisPort.errorString().toLocal8Bit());
+        //emit error_(thisPort.errorString().toLocal8Bit());
     }
 }
 void port::handleError(QSerialPort::SerialPortError error)//проверка ошибок при работе
 {
+    QString errorDiscription;
     emit errorMessage(error,thisPort.portName());
     if ( (thisPort.isOpen()) && (error == QSerialPort::ResourceError))
     {
-        emit error_(thisPort.errorString().toLocal8Bit());
+        //emit error_(thisPort.errorString().toLocal8Bit());
         DisconnectPort();
     }
+    switch (error){
+    case 1://DeviceNotFoundError
+          errorDiscription=SettingsPort.name+" Ошибка: попытка открыть несуществующее устройство";
+    break;
+    case 2://PermissionError
+        errorDiscription=SettingsPort.name+" Ошибка: попытка открыть уже занятое устройство другим процессом или отсутствуют права для открытия";
+    break;
+    case 3://OpenError
+        errorDiscription=SettingsPort.name+" Ошибка: попытка открыть уже занятое устройство";
+    break;
+    case 4://ParityError
+        errorDiscription=SettingsPort.name+" Ошибка четности";
+    break;
+    case 5://FramingError
+        errorDiscription=SettingsPort.name+" Framing ошибка";
+    break;
+    case 6://BreakConditionError
+        errorDiscription=SettingsPort.name+" BreakConditionError";
+    break;
+    case 7://WriteError
+        errorDiscription=SettingsPort.name+" Ошибка записи данных в порт";
+    break;
+    case 8://ReadError
+        errorDiscription=SettingsPort.name+" Ошибка чтения данных из порта";
+    break;
+    case 9://ResourceError
+        errorDiscription=SettingsPort.name+" Ошибка: устройство стало недоступно";
+    break;
+    case 10://UnsupportedOperationError
+        errorDiscription=SettingsPort.name+" Ошибка: запрашиваемая операция не поддерживается";
+    break;
+    case 11://UnknownError
+        errorDiscription=SettingsPort.name+" Неизвестная ошибка";
+    break;
+    case 12://TimeoutError
+        errorDiscription=SettingsPort.name+" Ошибка: не получен ответ от устройства";
+    break;
+    case 13://TimeoutError
+        errorDiscription=SettingsPort.name+" Ошибка: устройство не открыто";
+    break;
+    }
+    emit error_(errorDiscription);
 }
 
 void port::DisconnectPort()//Отключаем порт

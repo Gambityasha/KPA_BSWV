@@ -168,14 +168,57 @@ void MainWindow::LoadSettings()
     setting.endGroup();
 }
 
+void MainWindow::CloseErrorWindow()
+{
+    window->close();
+    ErrorMessage(0);
+    //ui->lblError->setVisible(false);
+    timerReconnect->stop();
+    timerCloseErrorWindow->stop();
+}
+void MainWindow::ErrorMessage(bool status)
+{
+    ui->lblError->setVisible(status);
+}
+
+//void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName)
+//{
+//    //int k;
+//    if (error!=0){
+//        for (int i=0;i<ListOfBSWVData.size();i++){
+//            if (ListOfBSWVData[i].namePort==portName){
+//                ListOfBSWVData[i].errorStatus=1;
+//                timerCloseErrorWindow->stop();
+//                timerCloseErrorWindow->start();
+//            }
+//        }
+//        if (timerReconnect->isActive()){
+//        //ничего не делать
+//        }
+//        else {
+//            timerReconnect->start();
+//            if (ui->lblError->isVisible()){
+//                //ничего не делать
+//            }else{
+//                window->open();
+//            }
+//        }
+//    }else {
+//        for (int i=0;i<ListOfBSWVData.size();i++){
+//            if (ListOfBSWVData[i].namePort==portName){
+//                ListOfBSWVData[i].errorStatus=0;
+
+
+//            }
+//        }
+//    }
+//}
 void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName)
 {
-    //int k;
-    if ((error==1)||(error==13)){
+    if (error!=0){
         for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData[i].namePort==portName){
                 ListOfBSWVData[i].errorStatus=1;
-
             }
         }
         if (timerReconnect->isActive()){
@@ -197,14 +240,14 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
                 ListOfBSWVData[i].errorStatus=0;
                 timerReconnect->stop();
                 //QTimer::singleShot(2000,window,SLOT(close()));
-                ui->lblError->setVisible(false);
-                delay(300);
+                delay(500);
                 window->close();
-
+                ui->lblError->setVisible(false);
             }
         }
     }
 }
+
 
 void MainWindow::Reconnect( )
 {    
@@ -282,11 +325,6 @@ void MainWindow::Reconnect( )
          }
          setting.endGroup();
      }
-}
-
-void MainWindow::ErrorMessage(bool status)
-{
-    ui->lblError->setVisible(status);
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -456,8 +494,10 @@ MainWindow::MainWindow(QWidget *parent)
     //-----------Конец формирования исходящего сообщения для БСШ-В (тип 34 - проверка номера МУКа)-----------
     timerVivod = new QTimer();
     timerReconnect = new QTimer();
-    timerReconnect->setInterval(2000);
+    timerReconnect->setInterval(1500);
     timerZaprosaTelem = new QTimer();
+    timerCloseErrorWindow = new QTimer();
+    timerCloseErrorWindow->setInterval(5000);
     //timerZaprosaTarir = new QTimer();
     timerZaprosaProv = new QTimer();
     timerWriteInFile = new QTimer();
@@ -526,6 +566,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
     connect(window,SIGNAL(hideError(bool)),this,SLOT(ErrorMessage(bool)));
+    connect(timerCloseErrorWindow,SIGNAL(timeout()),this,SLOT(CloseErrorWindow()));
     ui->tabWidget->setCurrentIndex(0);
 }
 
@@ -549,7 +590,6 @@ void MainWindow::TimerWriteInFileStart()
 {
     timerWriteInFile->start(timerDelay);
 }
-
 
 void MainWindow::TimerTarirStart()
 {
@@ -1336,9 +1376,9 @@ MainWindow::~MainWindow()
     delete timerVivod;
     delete timerReconnect;
     delete timerZaprosaTelem;
-    //delete timerZaprosaTarir;
     delete timerZaprosaProv;
     delete timerWriteInFile;
+    delete timerCloseErrorWindow;
 }
 
 void MainWindow::on_tabWidget_currentChanged(int index)
