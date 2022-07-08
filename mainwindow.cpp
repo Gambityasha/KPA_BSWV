@@ -1183,7 +1183,6 @@ void MainWindow::on_btnStart_clicked()
         ui->tabWidget->setTabEnabled(2,false);
         ui->btnStart->setText("Закончить обмен");
         timerZaprosaTelem->start(timerDelay);
-        //QTimer::singleShot(200,this,SLOT(TimerTarirStart()));
         QTimer::singleShot(timerDelay*0.2,this,SLOT(TimerProvStart()));
         QTimer::singleShot(timerDelay*0.4,this,SLOT(TimerWriteInFileStart()));
         QTimer::singleShot(timerDelay*0.5,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса

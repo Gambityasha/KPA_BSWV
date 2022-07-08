@@ -47,13 +47,14 @@ void port :: ConnectPort(void)//процедура подключения
 }
 void port::handleError(QSerialPort::SerialPortError error)//проверка ошибок при работе
 {
-    QString errorDiscription;
+
     emit errorMessage(error,thisPort.portName());
     if ( (thisPort.isOpen()) && (error == QSerialPort::ResourceError))
     {
         //emit error_(thisPort.errorString().toLocal8Bit());
         DisconnectPort();
     }
+    QString errorDiscription;
     switch (error){
     case 1://DeviceNotFoundError
           errorDiscription=SettingsPort.name+" Ошибка: попытка открыть несуществующее устройство";
