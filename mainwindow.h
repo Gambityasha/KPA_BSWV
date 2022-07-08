@@ -93,7 +93,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    ErrorForm *window = new ErrorForm(this);
+    ErrorForm *window = new ErrorForm(this);    
     unsigned char data [6];
     unsigned char dataT [6];
     unsigned char dataProv [6];
