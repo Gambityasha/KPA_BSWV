@@ -100,7 +100,7 @@ private:
     unsigned char dataNomer [6];
     unsigned char dataTestRS485 [8];
     QString name;
-    QString fname;
+    QString fname;    
     QString fACPname;
     QString logYear;
     QString logMonth;
