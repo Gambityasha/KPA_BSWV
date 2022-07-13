@@ -507,6 +507,17 @@ MainWindow::MainWindow(QWidget *parent)
     dir.mkdir("../logs");
     dir.mkdir("../logs/"+logYear);
     dir.mkdir("../logs/"+logYear+"/"+logMonth);
+    dir.mkdir("../logs/"+logYear+"/"+logMonth+"/MK1o");
+    dir.mkdir("../logs/"+logYear+"/"+logMonth+"/MK2o");
+    dir.mkdir("../logs/"+logYear+"/"+logMonth+"/MK3o");
+    dir.mkdir("../logs/"+logYear+"/"+logMonth+"/MK1r");
+    dir.mkdir("../logs/"+logYear+"/"+logMonth+"/MK2r");
+    dir.mkdir("../logs/"+logYear+"/"+logMonth+"/MK3r");
+    dir.mkdir("../logs/"+logYear+"/"+logMonth+"/Errors");
+    dir.mkdir("../logs/"+logYear+"/"+logMonth+"/AllChannels");
+    dir.mkdir("../logs/"+logYear+"/"+logMonth+"/ACP");
+
+
     //file.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fname);
 //    QString fEname = QDate::currentDate().toString("dd.MM.yyyy")+"_Errors.txt";
 //    fileError.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fEname);
@@ -854,10 +865,78 @@ void MainWindow::ProverkaNomera(){
     }
 }
 
+void MainWindow::WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,int k)
+{
+    QString fnameT=QDateTime::currentDateTime().toLocalTime().toString("dd.MM.yyyy.hh")+"_KS2_"+fnameTemplate+"_Telemetria.txt";
+    fileTemplate.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fnameTemplate+"/"+fnameT);
+    QTextStream stream(&fileTemplate);
+    stream.setFieldAlignment(QTextStream::AlignLeft);
+    if (fileTemplate.exists()){//Проверка - существует ли файл
+        if (fileTemplate.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла
+            QString str = QTime::currentTime().toString("ss");
+            int time = str.toInt();
+            stream.setFieldWidth(32);
+            if (time%5==0){
+                stream<<QString::fromUtf8("Время")<<QString::fromUtf8(" | Канал")<<QString::fromUtf8(" | Суммарный ток нагрузки 2")<<QString::fromUtf8(" | Суммарный ток нагрузки 1");
+                stream<<QString::fromUtf8(" | Напряжение на силовых шинах 2")<<QString::fromUtf8(" | Напряжение на силовых шинах 1");
+                stream<<QString::fromUtf8(" | Температура 2 корпуса прибора")<<QString::fromUtf8(" | Температура 1 корпуса прибора");
+                stream.setFieldWidth(0);
+                stream<<endl;
+                stream.setFieldWidth(32);
+            }
+                stream<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVData[k].name;
+                if (ListOfBSWVData[k].otvetPoluchen==1){
+                    stream<<" | "+QString::number(ListOfBSWVData[k].icap2)<<" | "+QString::number(ListOfBSWVData[k].icap1);
+                    stream<<" | "+QString::number(ListOfBSWVData[k].u2)<<" | "+QString::number(ListOfBSWVData[k].u1)<<" | "+QString::number(ListOfBSWVData[k].tcorp2)<<" | "+QString::number(ListOfBSWVData[k].tcorp1);
+                } else {
+                    stream<<" | -"<<" | -";
+                    stream<<" | -"<<" | -"<<" | -"<<" | -";
+                }
+                stream.setFieldWidth(0);
+                stream<<endl;
+                stream.setFieldWidth(32);
+
+        }
+    }
+    else {
+           if (fileTemplate.open(QIODevice::WriteOnly | QIODevice::Append)) {//Если файл только создается, то в первую строчку записываем название параметра
+               stream.setFieldWidth(32);
+               stream<<QString::fromUtf8("Время")<<QString::fromUtf8(" | Канал")<<QString::fromUtf8(" | Суммарный ток нагрузки 2")<<QString::fromUtf8(" | Суммарный ток нагрузки 1")<<
+               QString::fromUtf8(" | Напряжение на силовых шинах 2")<<QString::fromUtf8(" | Напряжение на силовых шинах 1")
+               <<QString::fromUtf8(" | Температура 2 корпуса прибора")<<QString::fromUtf8(" | Температура 1 корпуса прибора");
+               stream.setFieldWidth(0);
+               stream<<endl;
+               stream.setFieldWidth(32);
+               stream<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVData[k].name;
+               if (ListOfBSWVData[k].otvetPoluchen==1){
+                   stream<<" | "+QString::number(ListOfBSWVData[k].icap2)<<" | "+QString::number(ListOfBSWVData[k].icap1);
+                   stream<<" | "+QString::number(ListOfBSWVData[k].u2)<<" | "+QString::number(ListOfBSWVData[k].u1)<<" | "+QString::number(ListOfBSWVData[k].tcorp2)<<" | "+QString::number(ListOfBSWVData[k].tcorp1);
+               } else {
+                   stream<<" | -"<<" | -";
+                   stream<<" | -"<<" | -"<<" | -"<<" | -";
+               }
+               stream.setFieldWidth(0);
+               stream<<endl;
+               stream.setFieldWidth(32);
+           }
+    }
+    fileTemplate.close();
+
+}
+
+
+
 void MainWindow::WriteInFile()
 {
+    WriteInFileTemplate("MK1o",fileMK1o,0);
+    WriteInFileTemplate("MK1r",fileMK1r,1);
+    WriteInFileTemplate("MK2o",fileMK2o,2);
+    WriteInFileTemplate("MK2r",fileMK2r,3);
+    WriteInFileTemplate("MK3o",fileMK3o,4);
+    WriteInFileTemplate("MK3r",fileMK3r,5);
+
     fname=QDateTime::currentDateTime().toLocalTime().toString("dd.MM.yyyy.hh")+"_BSWV_Telemetria.txt";
-    file.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fname);
+    file.setFileName("../logs/"+logYear+"/"+logMonth+"/"+"AllChannels"+"/"+fname);
     QTextStream stream(&file);
     stream.setFieldAlignment(QTextStream::AlignLeft);
 
@@ -919,7 +998,7 @@ void MainWindow::WriteInFile()
 void MainWindow::WriteInFileError(QString error)
 {
     QString fEname = QDateTime::currentDateTime().toLocalTime().toString("dd.MM.yyyy.hh")+"_Errors.txt";
-    fileError.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fEname);
+    fileError.setFileName("../logs/"+logYear+"/"+logMonth+"/"+"Errors"+"/"+fEname);
     QTextStream stream(&fileError);
     stream.setFieldWidth(16);
     stream.setFieldAlignment(QTextStream::AlignLeft);
@@ -1086,7 +1165,7 @@ void MainWindow::VivodACP()
 
 
     fACPname = QDate::currentDate().toString("dd.MM.yyyy")+"_ACP.txt";
-    fileACP.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fACPname);
+    fileACP.setFileName("../logs/"+logYear+"/"+logMonth+"/"+"ACP"+"/"+fACPname);
 
     QString ACPType;
     if (ui->rbTarirTypeI->isChecked()){

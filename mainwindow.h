@@ -148,6 +148,12 @@ public:
     QList <BSWVnomerMK>ListOfBSWVnomer;
     QFile file;
     QFile fileACP;
+    QFile fileMK1o;
+    QFile fileMK1r;
+    QFile fileMK2o;
+    QFile fileMK2r;
+    QFile fileMK3o;
+    QFile fileMK3r;
     QTime time;
     QFile fileError;
     QDir dir;
@@ -179,6 +185,7 @@ public slots:
     void delay(int millisecondsToWait);
     void TimerWriteInFileStart();
     void CloseErrorWindow();
+    void WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,int k);
 
 signals:
     //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
