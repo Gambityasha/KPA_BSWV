@@ -332,7 +332,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {    
     ui->setupUi(this);
-
+    setWindowIcon(QIcon("KPABSWV.png"));
     ui->tabWidget->setTabEnabled(0,true);
     ui->lblError->setVisible(false);
     ui->tblBSWV->setEnabled(false);
