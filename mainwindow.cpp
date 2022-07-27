@@ -867,7 +867,7 @@ void MainWindow::ProverkaNomera(){
 
 void MainWindow::WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,int k)
 {
-    QString fnameT=QDateTime::currentDateTime().toLocalTime().toString("dd.MM.yyyy.hh")+"_KS2_"+fnameTemplate+"_Telemetria.txt";
+    QString fnameT=QDateTime::currentDateTime().toLocalTime().toString("dd.MM.yyyy.hh")+"_BSWV_"+fnameTemplate+"_Telemetria.txt";
     fileTemplate.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fnameTemplate+"/"+fnameT);
     QTextStream stream(&fileTemplate);
     stream.setFieldAlignment(QTextStream::AlignLeft);
