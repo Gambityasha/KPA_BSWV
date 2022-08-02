@@ -74,7 +74,7 @@ struct BSWVnomerMK //создание структуры
 {
     QString name; //шифр канала
     QString namePort; //присвоенное имя порта
-    QString nMK; //номер МУКа, 1 - 1 МК, 2- 2 МК
+    QString nMK; //номер МУКа, 1 - 1 МК, 2- 2 МК, 3 - 3 MK
     QString nChan;//номер канала, 0 - основной, 1 - резервный
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен

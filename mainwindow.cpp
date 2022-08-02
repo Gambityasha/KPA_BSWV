@@ -881,7 +881,8 @@ void MainWindow::WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,i
                 stream<<QString::fromUtf8(" | Напряжение на силовых шинах 2")<<QString::fromUtf8(" | Напряжение на силовых шинах 1");
                 stream<<QString::fromUtf8(" | Температура 2 корпуса прибора")<<QString::fromUtf8(" | Температура 1 корпуса прибора");
                 stream.setFieldWidth(0);
-                stream<<endl;
+                //stream<<endl;
+                stream<<"\r\n";
                 stream.setFieldWidth(32);
             }
                 stream<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVData[k].name;
@@ -893,7 +894,8 @@ void MainWindow::WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,i
                     stream<<" | -"<<" | -"<<" | -"<<" | -";
                 }
                 stream.setFieldWidth(0);
-                stream<<endl;
+                //stream<<endl;
+                stream<<"\r\n";
                 stream.setFieldWidth(32);
 
         }
@@ -905,7 +907,8 @@ void MainWindow::WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,i
                QString::fromUtf8(" | Напряжение на силовых шинах 2")<<QString::fromUtf8(" | Напряжение на силовых шинах 1")
                <<QString::fromUtf8(" | Температура 2 корпуса прибора")<<QString::fromUtf8(" | Температура 1 корпуса прибора");
                stream.setFieldWidth(0);
-               stream<<endl;
+               //stream<<endl;
+               stream<<"\r\n";
                stream.setFieldWidth(32);
                stream<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVData[k].name;
                if (ListOfBSWVData[k].otvetPoluchen==1){
@@ -916,7 +919,8 @@ void MainWindow::WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,i
                    stream<<" | -"<<" | -"<<" | -"<<" | -";
                }
                stream.setFieldWidth(0);
-               stream<<endl;
+               //stream<<endl;
+               stream<<"\r\n";
                stream.setFieldWidth(32);
            }
     }
@@ -950,7 +954,8 @@ void MainWindow::WriteInFile()
                 stream<<QString::fromUtf8(" | Напряжение на силовых шинах 2")<<QString::fromUtf8(" | Напряжение на силовых шинах 1");
                 stream<<QString::fromUtf8(" | Температура 2 корпуса прибора")<<QString::fromUtf8(" | Температура 1 корпуса прибора");
                 stream.setFieldWidth(0);
-                stream<<endl;
+                //stream<<endl;
+                stream<<"\r\n";
                 stream.setFieldWidth(32);
             }
             for (int i=0;i<ListOfBSWVData.size();i++){
@@ -963,7 +968,8 @@ void MainWindow::WriteInFile()
                     stream<<" | -"<<" | -"<<" | -"<<" | -";
                 }
                 stream.setFieldWidth(0);
-                stream<<endl;
+                //stream<<endl;
+                stream<<"\r\n";
                 stream.setFieldWidth(32);
             }
         }
@@ -975,7 +981,8 @@ void MainWindow::WriteInFile()
                QString::fromUtf8(" | Напряжение на силовых шинах 2")<<QString::fromUtf8(" | Напряжение на силовых шинах 1")
                <<QString::fromUtf8(" | Температура 2 корпуса прибора")<<QString::fromUtf8(" | Температура 1 корпуса прибора");
                stream.setFieldWidth(0);
-               stream<<endl;
+               //stream<<endl;
+               stream<<"\r\n";
                stream.setFieldWidth(32);
                for (int i=0;i<ListOfBSWVData.size();i++){
                     stream<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVData[i].name;
@@ -987,7 +994,8 @@ void MainWindow::WriteInFile()
                        stream<<" | -"<<" | -"<<" | -"<<" | -";
                    }
                    stream.setFieldWidth(0);
-                   stream<<endl;
+                   //stream<<endl;
+                   stream<<"\r\n";
                    stream.setFieldWidth(32);
                }
            }
@@ -1005,11 +1013,12 @@ void MainWindow::WriteInFileError(QString error)
     if (fileError.exists()){//Проверка - существует ли файл
             if (fileError.open(QIODevice::WriteOnly | QIODevice::Append)) { // Append - для записи в конец файла               
                 QString log1 = QTime::currentTime().toString("HH:mm:ss")+"  | ";
-                QString log2 = error;                
-                //stream<<log1<<log2;
+                QString log2 = error;
+                stream<<log1;
                 stream<<log2;
                 stream.setFieldWidth(0);
-                stream<<endl;
+                //stream<<endl;
+                stream<<"\r\n";
                 stream.setFieldWidth(16);
             }
     }
@@ -1019,9 +1028,11 @@ void MainWindow::WriteInFileError(QString error)
           // stream<<QTime::currentTime().toString("HH:mm:ss") +"  |  "+error+"\r\n";
                stream<<QString::fromUtf8("Время")+"     |"<<QString::fromUtf8("Описание ошибки")+"\r\n";
                QString log1 = QTime::currentTime().toString("HH:mm:ss")+"  | ";
-               stream<<log1<<error;
+               stream<<log1;
+               stream<<error;
                stream.setFieldWidth(0);
-               stream<<endl;
+               //stream<<endl;
+               stream<<"\r\n";
                stream.setFieldWidth(16);
            }
     }
@@ -1189,7 +1200,8 @@ void MainWindow::VivodACP()
         streamACP<<QString::fromUtf8(" | Напряжение на силовых шинах 2")<<QString::fromUtf8(" | Напряжение на силовых шинах 1");
         streamACP<<QString::fromUtf8(" | Температура 2 корпуса прибора")<<QString::fromUtf8(" | Температура 1 корпуса прибора")<<QString::fromUtf8(" | Опорное напряжение");
         streamACP.setFieldWidth(0);
-        streamACP<<endl;
+        //streamACP<<endl;
+        streamACP<<"\r\n";
         streamACP.setFieldWidth(32);
         for (int j=0;j<ListOfBSWVt.size();j++){
             if (ListOfBSWVt.at(j).otvetPoluchen==1){
@@ -1199,14 +1211,16 @@ void MainWindow::VivodACP()
                 streamACP<<" | "+QString::number(ListOfBSWVt[j].u2)<<" | "+QString::number(ListOfBSWVt[j].u1)<<" | "+QString::number(ListOfBSWVt[j].tcorp2)<<" | "+QString::number(ListOfBSWVt[j].tcorp1);
                 streamACP<<" | "+QString::number(ListOfBSWVt[j].uref);
                 streamACP.setFieldWidth(0);
-                streamACP<<endl;
+                //streamACP<<endl;
+                streamACP<<"\r\n";
                 streamACP.setFieldWidth(32);
             }else{
                 streamACP<<QTime::currentTime().toString("HH:mm:ss")<<" | "+ListOfBSWVt[j].name;
                 streamACP<<" | "+ui->leTarirValue->text()<<" | -"<<" | -";
                 streamACP<<" | -"<<" | -"<<" | -"<<" | -" <<" | -";
                 streamACP.setFieldWidth(0);
-                streamACP<<endl;
+                //streamACP<<endl;
+                streamACP<<"\r\n";
                 streamACP.setFieldWidth(32);
             }
         }
