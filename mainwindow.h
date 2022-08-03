@@ -128,6 +128,7 @@ private:
     QByteArray otvet485data;
     QString otvet485name;
 
+
 public:
 
     QTimer *timerZaprosaTelem;

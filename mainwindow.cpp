@@ -533,10 +533,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(savesettings6(QString,int,int,int,int,int)),PortMK3rez,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
     connect(this, SIGNAL(writeData(QByteArray)),PortMK1osn,SLOT(WriteToPort(QByteArray)));
     connect(this, SIGNAL(writeData(QByteArray)),PortMK2osn,SLOT(WriteToPort(QByteArray)));
-    connect(this, SIGNAL(writeData(QByteArray)),PortMK3osn,SLOT(WriteToPort(QByteArray)));
-    connect(this, SIGNAL(writeData(QByteArray)),PortMK1rez,SLOT(WriteToPort(QByteArray)));
-    connect(this, SIGNAL(writeData(QByteArray)),PortMK2rez,SLOT(WriteToPort(QByteArray)));
-    connect(this, SIGNAL(writeData(QByteArray)),PortMK3rez,SLOT(WriteToPort(QByteArray)));
+    //connect(this, SIGNAL(writeData(QByteArray)),PortMK3osn,SLOT(WriteToPort(QByteArray)));
+    //connect(this, SIGNAL(writeData(QByteArray)),PortMK1rez,SLOT(WriteToPort(QByteArray)));
+    //connect(this, SIGNAL(writeData(QByteArray)),PortMK2rez,SLOT(WriteToPort(QByteArray)));
+    //connect(this, SIGNAL(writeData(QByteArray)),PortMK3rez,SLOT(WriteToPort(QByteArray)));
     connect(this, SIGNAL(testRSMK1o(QByteArray)),PortMK1osn,SLOT(WriteToPortTestRS(QByteArray)));
     connect(this, SIGNAL(testRSMK2o(QByteArray)),PortMK2osn,SLOT(WriteToPortTestRS(QByteArray)));
     connect(this, SIGNAL(testRSMK3o(QByteArray)),PortMK3osn,SLOT(WriteToPortTestRS(QByteArray)));
@@ -586,6 +586,10 @@ void MainWindow:: OtpravkaZaprosaTelem()
     QByteArray dataQ = QByteArray::fromRawData((char*)data,sizeof(data));
     //dataQ[0] = reinterpret_cast<QByteArray>(data[0].data());
     emit writeData (dataQ);
+    //Начало тестового вывода сообщения
+    ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
+    ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+    //Конец теста
 }
 
 void MainWindow::TimerVivodStart()
@@ -630,23 +634,64 @@ void MainWindow::OtpravkaZaprosaProv()
 {
     QByteArray dataQProv = QByteArray::fromRawData((char*)dataProv,sizeof(dataProv));
     emit writeData (dataQProv);
+    //Начало тестового вывода сообщения
+    ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
+    ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+    //Конец теста
 }
 
 void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
 {
+    //Печать буфера в тест консоль
+    unsigned char buffer [dataRead.size()];
+    memcpy( buffer, dataRead.data(), dataRead.size());
+    if (dataRead.size()==12){
+    ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(buffer[0])+
+            "/"+QString::number(buffer[1])+"/"+QString::number(buffer[2])+"/"+QString::number(buffer[3])+
+            "/"+QString::number(buffer[4])+"/"+QString::number(buffer[5])+"/"+QString::number(buffer[6])+
+            "/"+QString::number(buffer[7])+"/"+QString::number(buffer[8])+"/"+QString::number(buffer[9])
+            +"/"+QString::number(buffer[10])+"/"+QString::number(buffer[11])+'\r'); // Вывод текста в консоль
+    ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+}
+    //КОнец теста
+    //Печать буфера в тест консоль
+    if (dataRead.size()==6){
+    unsigned char buffer [dataRead.size()];
+    memcpy( buffer, dataRead.data(), dataRead.size());
+
+    ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(buffer[0])+"/"+QString::number(buffer[1])+"/"+QString::number(buffer[2])+"/"+QString::number(buffer[3])+"/"+QString::number(buffer[4])+"/"+QString::number(buffer[5])+'\r'); // Вывод текста в консоль
+    ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+}
+    //КОнец теста
+    //test start
+    if ((dataRead.size()!=6)&(dataRead.size()!=12)){
+        unsigned char buffer [dataRead.size()];
+        memcpy( buffer, dataRead.data(), dataRead.size());
+        QString Data;
+        for (int h=0;h<dataRead.size();h++){
+             Data=Data+"/"+QString::number(buffer[0]);
+        }
+
+        ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+Data+'\r');
+    }
+    //test end
+
+
     for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData.at(i).namePort == comName){
                 ListOfBSWVData[i].otvetBuffer.append(dataRead);
-                for (int j = 0; ListOfBSWVData[i].otvetBuffer[j]!=char(0xAA);j++) {
-                    ListOfBSWVData[i].otvetBuffer.remove(0,1);
-                }
+//                for (int j = 0; ListOfBSWVData[i].otvetBuffer[j]!=char(0xAA);j++) {
+//                    ListOfBSWVData[i].otvetBuffer.remove(0,1);
+//                }
                 if (ListOfBSWVData[i].otvetBuffer.size()>3){
                     switch (ListOfBSWVData[i].otvetBuffer[3]){
                     case char (1):
                          if (ListOfBSWVData[i].otvetBuffer.size() == otvetTelemSize){
                              ListOfBSWVData[i].otvet = ListOfBSWVData[i].otvetBuffer;
                              emit readyToAnalize(ListOfBSWVData.at(i).otvet, ListOfBSWVData.at(i).namePort);
+
                              ListOfBSWVData[i].otvetBuffer.clear();
+
                          }
                     break;
                     case char (17):
@@ -1041,6 +1086,7 @@ void MainWindow::WriteInFileError(QString error)
 
 void MainWindow::Vivod(){
 for (int i=0;i<ListOfBSWVData.size();i++){
+    ListOfBSWVData[i].otvetBuffer.clear();
     if (ListOfBSWVData.at(i).otvetPoluchen==1){
         QTableWidgetItem *itm0_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVData.at(i).icap2)); //создание итема таблицы для заполнения
         ui->tblBSWV->setItem(0,i,itm0_0); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
@@ -1055,6 +1101,7 @@ for (int i=0;i<ListOfBSWVData.size();i++){
         QTableWidgetItem *itm5_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVData.at(i).tcorp1));
         ui->tblBSWV->setItem(5,i,itm5_0);
         ListOfBSWVData[i].otvetPoluchen=0;
+
     }
     else {
         error = "Ответ на сообщение 1 от "+ListOfBSWVData.at(i).name+" не получен";
@@ -1279,6 +1326,12 @@ void MainWindow::on_btnStart_clicked()
         QTimer::singleShot(timerDelay*0.2,this,SLOT(TimerProvStart()));
         QTimer::singleShot(timerDelay*0.4,this,SLOT(TimerWriteInFileStart()));
         QTimer::singleShot(timerDelay*0.5,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса
+//        QTimer::singleShot(timerDelay*0.4,this,SLOT(TimerProvStart()));
+//        QTimer::singleShot(timerDelay*0.6,this,SLOT(TimerWriteInFileStart()));
+//        QTimer::singleShot(timerDelay*0.8,this,SLOT(TimerVivodStart()));
+
+
+
     }
 }
 

@@ -5,6 +5,7 @@
 #include "stdint.h"
 #include <QObject>
 #include "mainwindow.h"
+#include <QThread>
 
 
 
@@ -19,8 +20,6 @@ struct Settings
     QSerialPort::FlowControl flowControl;
 };
 
-
-
 class port : public QObject
 {
     Q_OBJECT
@@ -29,12 +28,6 @@ public:
      Settings SettingsPort;
     QSerialPort thisPort;
      ~port();
-
-
-
-
-
-
 
  signals:
     void finished_Port(); //Сигнал закрытия класса

@@ -124,6 +124,7 @@ void port :: ReadInPort(){//Чтение данных из порта
     QByteArray dataRead;
     dataRead.append(thisPort.readAll());
     QString comName = thisPort.portName();
+    //QThread::sleep(2);
     emit sendBSWVtm(dataRead,comName);
 
     //((QString)(adr.toInt())).toLatin1().toHex()
