@@ -47,6 +47,7 @@ struct BSWVdata //создание структуры
     QByteArray otvetBuffer;
     short otvetPoluchen; //0 - не получен, 1 - получен
     short errorStatus;//0 - нет ошибок порта, 1 - есть ошибки порта
+    int dopPaket;
 };
 
 struct BSWVtarir //создание структуры
@@ -61,7 +62,8 @@ struct BSWVtarir //создание структуры
     float tcorp2;//"Температура 2 корпуса прибора"
     float tcorp1;//"Температура 1 корпуса прибора"
     QByteArray otvet;
-    short otvetPoluchen; //0 - не получен, 1 - получен  
+    short otvetPoluchen; //0 - не получен, 1 - получен
+    int dopPaket;
 };
 struct BSWVprov //создание структуры
 {
@@ -69,6 +71,7 @@ struct BSWVprov //создание структуры
     QString namePort; //присвоенное имя порта
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
+    int dopPaket;
 };
 struct BSWVnomerMK //создание структуры
 {
@@ -78,6 +81,7 @@ struct BSWVnomerMK //создание структуры
     QString nChan;//номер канала, 0 - основной, 1 - резервный
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
+    int dopPaket;
 };
 
 
@@ -127,6 +131,7 @@ private:
     QString a;
     QByteArray otvet485data;
     QString otvet485name;
+
 
 
 public:
@@ -187,6 +192,11 @@ public slots:
     void TimerWriteInFileStart();
     void CloseErrorWindow();
     void WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,int k);
+    void ProverkaDostavkiPaketaTelem();
+    void ProverkaDostavkiPaketaProv();
+    void ProverkaDostavkiPaketaNomer();
+    void ProverkaDostavkiPaketaACP();
+
 
 signals:
     //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
@@ -196,7 +206,13 @@ signals:
    void savesettings4(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void savesettings5(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void savesettings6(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
-   void writeData(QByteArray dataQ);
+   //void writeData(QByteArray dataQ);
+   void writeData1(QByteArray dataQ);
+   void writeData2(QByteArray dataQ);
+   void writeData3(QByteArray dataQ);
+   void writeData4(QByteArray dataQ);
+   void writeData5(QByteArray dataQ);
+   void writeData6(QByteArray dataQ);
    void con1();void con2();void con3();void con4();void con5();void con6();
    void readyToAnalize(QByteArray otvet, QString comName);
    void errorMessage(QString);
@@ -215,5 +231,6 @@ private slots:
 
    void on_pushButton_clicked();   
    void on_tabWidget_currentChanged(int index);
+
 };
 #endif // MAINWINDOW_H

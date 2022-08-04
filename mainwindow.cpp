@@ -531,12 +531,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(savesettings4(QString,int,int,int,int,int)),PortMK2rez,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
     connect(this, SIGNAL(savesettings5(QString,int,int,int,int,int)),PortMK3osn,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
     connect(this, SIGNAL(savesettings6(QString,int,int,int,int,int)),PortMK3rez,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
-    connect(this, SIGNAL(writeData(QByteArray)),PortMK1osn,SLOT(WriteToPort(QByteArray)));
-    connect(this, SIGNAL(writeData(QByteArray)),PortMK2osn,SLOT(WriteToPort(QByteArray)));
-    //connect(this, SIGNAL(writeData(QByteArray)),PortMK3osn,SLOT(WriteToPort(QByteArray)));
-    //connect(this, SIGNAL(writeData(QByteArray)),PortMK1rez,SLOT(WriteToPort(QByteArray)));
-    //connect(this, SIGNAL(writeData(QByteArray)),PortMK2rez,SLOT(WriteToPort(QByteArray)));
-    //connect(this, SIGNAL(writeData(QByteArray)),PortMK3rez,SLOT(WriteToPort(QByteArray)));
+//    connect(this, SIGNAL(writeData(QByteArray)),PortMK1osn,SLOT(WriteToPort(QByteArray)));
+//    connect(this, SIGNAL(writeData(QByteArray)),PortMK2osn,SLOT(WriteToPort(QByteArray)));
+//    connect(this, SIGNAL(writeData(QByteArray)),PortMK3osn,SLOT(WriteToPort(QByteArray)));
+//    connect(this, SIGNAL(writeData(QByteArray)),PortMK1rez,SLOT(WriteToPort(QByteArray)));
+//    connect(this, SIGNAL(writeData(QByteArray)),PortMK2rez,SLOT(WriteToPort(QByteArray)));
+//    connect(this, SIGNAL(writeData(QByteArray)),PortMK3rez,SLOT(WriteToPort(QByteArray)));
+    connect(this, SIGNAL(writeData1(QByteArray)),PortMK1osn,SLOT(WriteToPort(QByteArray)));
+    connect(this, SIGNAL(writeData2(QByteArray)),PortMK2osn,SLOT(WriteToPort(QByteArray)));
+    connect(this, SIGNAL(writeData3(QByteArray)),PortMK3osn,SLOT(WriteToPort(QByteArray)));
+    connect(this, SIGNAL(writeData4(QByteArray)),PortMK1rez,SLOT(WriteToPort(QByteArray)));
+    connect(this, SIGNAL(writeData5(QByteArray)),PortMK2rez,SLOT(WriteToPort(QByteArray)));
+    connect(this, SIGNAL(writeData6(QByteArray)),PortMK3rez,SLOT(WriteToPort(QByteArray)));
     connect(this, SIGNAL(testRSMK1o(QByteArray)),PortMK1osn,SLOT(WriteToPortTestRS(QByteArray)));
     connect(this, SIGNAL(testRSMK2o(QByteArray)),PortMK2osn,SLOT(WriteToPortTestRS(QByteArray)));
     connect(this, SIGNAL(testRSMK3o(QByteArray)),PortMK3osn,SLOT(WriteToPortTestRS(QByteArray)));
@@ -577,18 +583,36 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
     connect(window,SIGNAL(hideError(bool)),this,SLOT(ErrorMessage(bool)));
-    connect(timerCloseErrorWindow,SIGNAL(timeout()),this,SLOT(CloseErrorWindow()));
+    connect(timerCloseErrorWindow,SIGNAL(timeout()),this,SLOT(CloseErrorWindow()));    
     ui->tabWidget->setCurrentIndex(0);
+
+    foreach (const QSerialPortInfo &serialPortInfo, QSerialPortInfo::availablePorts())
+        {
+        Print(serialPortInfo.portName()+" Description: "+serialPortInfo.description()+" Serial: "+serialPortInfo.serialNumber());
+        }
+
+
+
 }
 
 void MainWindow:: OtpravkaZaprosaTelem()
 {
+    for (int i=0;i<ListOfBSWVData.size();i++){
+        ListOfBSWVData[i].dopPaket=0;
+    }
     QByteArray dataQ = QByteArray::fromRawData((char*)data,sizeof(data));
     //dataQ[0] = reinterpret_cast<QByteArray>(data[0].data());
-    emit writeData (dataQ);
+    emit writeData1 (dataQ);
+    emit writeData2 (dataQ);
+    emit writeData3 (dataQ);
+    emit writeData4 (dataQ);
+    emit writeData5 (dataQ);
+    emit writeData6 (dataQ);
     //Начало тестового вывода сообщения
     ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
     ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+    QTimer::singleShot(20,this,SLOT(ProverkaDostavkiPaketaTelem()));
+
     //Конец теста
 }
 
@@ -613,6 +637,20 @@ void MainWindow::TimerTarirStart()
 
 void MainWindow::on_btnNomer_clicked()
 {
+
+    QTableWidgetItem *itm0_0 = new QTableWidgetItem("-");
+    ui->tblNomer->setItem(0,0,itm0_0);
+    QTableWidgetItem *itm1_0 = new QTableWidgetItem("-");
+    ui->tblNomer->setItem(1,0,itm1_0);
+    QTableWidgetItem *itm0_1 = new QTableWidgetItem("-");
+    ui->tblNomer->setItem(0,1,itm0_1);
+    QTableWidgetItem *itm1_1 = new QTableWidgetItem("-");
+    ui->tblNomer->setItem(1,1,itm1_1);
+    QTableWidgetItem *itm0_2 = new QTableWidgetItem("-");
+    ui->tblNomer->setItem(0,2,itm0_2);
+    QTableWidgetItem *itm1_2 = new QTableWidgetItem("-");
+    ui->tblNomer->setItem(1,2,itm1_2);
+
     OtpravkaZaprosaNomer();
     QTimer::singleShot(2000,this,SLOT(ProverkaNomera()));
 }
@@ -620,23 +658,54 @@ void MainWindow::on_btnNomer_clicked()
 
 void MainWindow:: OtpravkaZaprosaTarir()
 {
+    for (int i=0;i<ListOfBSWVt.size();i++){
+        ListOfBSWVt[i].dopPaket=0;
+    }
     QByteArray dataQt = QByteArray::fromRawData((char*)dataT,sizeof(dataT));
-    emit writeData (dataQt);
+    //emit writeData (dataQt);
+    emit writeData1 (dataQt);
+    emit writeData2 (dataQt);
+    emit writeData3 (dataQt);
+    emit writeData4 (dataQt);
+    emit writeData5 (dataQt);
+    emit writeData6 (dataQt);
+    QTimer::singleShot(20,this,SLOT(ProverkaDostavkiPaketaACP()));
 }
 
 void MainWindow::OtpravkaZaprosaNomer()
 {
+    for (int i=0;i<ListOfBSWVnomer.size();i++){
+        ListOfBSWVnomer[i].dopPaket=0;
+    }
     QByteArray dataQNomer = QByteArray::fromRawData((char*)dataNomer,sizeof(dataNomer));
-    emit writeData (dataQNomer);
+    //emit writeData (dataQNomer);
+    emit writeData1 (dataQNomer);
+    emit writeData2 (dataQNomer);
+    emit writeData3 (dataQNomer);
+    emit writeData4 (dataQNomer);
+    emit writeData5 (dataQNomer);
+    emit writeData6 (dataQNomer);
+    QTimer::singleShot(20,this,SLOT(ProverkaDostavkiPaketaNomer()));
 }
 
 void MainWindow::OtpravkaZaprosaProv()
 {
+    for (int i=0;i<ListOfBSWVprov.size();i++){
+        ListOfBSWVprov[i].dopPaket=0;
+    }
     QByteArray dataQProv = QByteArray::fromRawData((char*)dataProv,sizeof(dataProv));
-    emit writeData (dataQProv);
+//    emit writeData (dataQProv);
+    emit writeData1 (dataQProv);
+    emit writeData2 (dataQProv);
+    emit writeData3 (dataQProv);
+    emit writeData4 (dataQProv);
+    emit writeData5 (dataQProv);
+    emit writeData6 (dataQProv);
+
     //Начало тестового вывода сообщения
     ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
     ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+    QTimer::singleShot(20,this,SLOT(ProverkaDostavkiPaketaProv()));
     //Конец теста
 }
 
@@ -1560,6 +1629,137 @@ void MainWindow::on_tabWidget_currentChanged(int index)
          QMainWindow::resize(1280,510);
 
     break;
+    }
+}
+
+void MainWindow::ProverkaDostavkiPaketaTelem()
+{
+    for (int i=0;i<ListOfBSWVData.size();i++){
+        if (ListOfBSWVData.at(i).otvetPoluchen==1){
+
+        }else{
+            if (ListOfBSWVData.at(i).dopPaket==0){
+
+                QByteArray dataQ = QByteArray::fromRawData((char*)data,sizeof(data));
+                //dataQ[0] = reinterpret_cast<QByteArray>(data[0].data());
+                switch (i){
+                    case 0: emit writeData1 (dataQ);
+                    break;
+                    case 1: emit writeData2 (dataQ);
+                    break;
+                    case 2: emit writeData3 (dataQ);
+                    break;
+                    case 3: emit writeData4 (dataQ);
+                    break;
+                    case 4: emit writeData5 (dataQ);
+                    break;
+                    case 5: emit writeData6 (dataQ);
+                    break;
+                }
+                //emit writeData (dataQ);
+                ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
+                ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+                Print("Не принят корректный пакет 1 за 20 мс от "+ListOfBSWVData.at(i).name);
+                ListOfBSWVData[i].dopPaket=1;
+            }
+        }
+
+
+    }
+}
+
+void MainWindow::ProverkaDostavkiPaketaProv()
+{
+    for (int i=0;i<ListOfBSWVprov.size();i++){
+        if (ListOfBSWVprov.at(i).otvetPoluchen==1){
+
+        }else{
+            if (ListOfBSWVprov.at(i).dopPaket==0){
+                QByteArray dataQProv = QByteArray::fromRawData((char*)dataProv,sizeof(dataProv));
+                switch (i){
+                    case 0: emit writeData1 (dataQProv);
+                    break;
+                    case 1: emit writeData2 (dataQProv);
+                    break;
+                    case 2: emit writeData3 (dataQProv);
+                    break;
+                    case 3: emit writeData4 (dataQProv);
+                    break;
+                    case 4: emit writeData5 (dataQProv);
+                    break;
+                    case 5: emit writeData6 (dataQProv);
+                    break;
+                }
+//                emit writeData (dataQProv);
+                ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
+                ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+                Print("Не принят корректный пакет 255 за 20 мс от "+ListOfBSWVprov.at(i).name);
+                ListOfBSWVprov[i].dopPaket=1;
+            }
+        }
+    }
+}
+
+void MainWindow::ProverkaDostavkiPaketaNomer()
+{
+    for (int i=0;i<ListOfBSWVnomer.size();i++){
+        if (ListOfBSWVnomer.at(i).otvetPoluchen==1){
+
+        }else{
+            if (ListOfBSWVnomer.at(i).dopPaket==0){
+
+                QByteArray dataQNomer = QByteArray::fromRawData((char*)dataNomer,sizeof(dataNomer));
+
+                switch (i){
+                    case 0: emit writeData1 (dataQNomer);
+                    break;
+                    case 1: emit writeData2 (dataQNomer);
+                    break;
+                    case 2: emit writeData3 (dataQNomer);
+                    break;
+                    case 3: emit writeData4 (dataQNomer);
+                    break;
+                    case 4: emit writeData5 (dataQNomer);
+                    break;
+                    case 5: emit writeData6 (dataQNomer);
+                    break;
+                }
+//
+                Print("Не принят корректный пакет 34 за 20 мс от "+ListOfBSWVnomer.at(i).name);
+                ListOfBSWVnomer[i].dopPaket=1;
+            }
+        }
+    }
+}
+
+void MainWindow::ProverkaDostavkiPaketaACP()
+{
+    for (int i=0;i<ListOfBSWVt.size();i++){
+        if (ListOfBSWVt.at(i).otvetPoluchen==1){
+
+        }else{
+            if (ListOfBSWVt.at(i).dopPaket==0){
+
+                QByteArray dataQt = QByteArray::fromRawData((char*)dataT,sizeof(dataT));
+                switch (i){
+                    case 0: emit writeData1 (dataQt);
+                    break;
+                    case 1: emit writeData2 (dataQt);
+                    break;
+                    case 2: emit writeData3 (dataQt);
+                    break;
+                    case 3: emit writeData4 (dataQt);
+                    break;
+                    case 4: emit writeData5 (dataQt);
+                    break;
+                    case 5: emit writeData6 (dataQt);
+                    break;
+                }
+//
+                Print("Не принят корректный пакет 17 за 20 мс от "+ListOfBSWVt.at(i).name);
+                ListOfBSWVt[i].dopPaket=1;
+            }
+        }
     }
 }
 
