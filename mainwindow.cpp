@@ -56,10 +56,10 @@ void  MainWindow::delay(int millisecondsToWait)
 
 void MainWindow::LoadSettings()
 {
-    QString dis1, serial1, dis2, serial2,dis3, serial3,dis4, serial4,dis5, serial5,dis6, serial6;
+    QString dis1, serial1, dis2, serial2,dis3, serial3,dis4, serial4,dis5, serial5, serial6,dis6;
     QSettings setting("ports.ini", QSettings::IniFormat); //ports.ini файл должен быть в одной папке с exe
     setting.beginGroup("MK1-osn");// [MK1-osn] в ини файле
-    QString status1 = setting.value("work","0").toString();
+    QString status1 = setting.value("work","0").toString();    
     if ( status1 == "on") {
          dis1 = setting.value("description","0").toString();
          serial1 = setting.value("serialNumber","0").toString();
@@ -74,6 +74,9 @@ void MainWindow::LoadSettings()
          ListOfBSWVnomer[0].namePort = name1;
          ListOfBSWVnomer[0].name = "MK1-osn";
          emit con1();
+         ListOfBSWVData[0].on_off_status = 1;
+    } else {
+        ListOfBSWVData[0].on_off_status = 0;
     }
     setting.endGroup();
     setting.beginGroup("MK1-rez");// [MK1-rez] в ини файле
@@ -92,6 +95,9 @@ void MainWindow::LoadSettings()
         ListOfBSWVnomer[1].namePort = name2;
         ListOfBSWVnomer[1].name = "MK1-rez";
         emit con2();
+        ListOfBSWVData[1].on_off_status = 1;
+    }else {
+        ListOfBSWVData[1].on_off_status = 0;
     }
     setting.endGroup();
     setting.beginGroup("MK2-osn");// [MK2-osn] в ини файле
@@ -110,6 +116,9 @@ void MainWindow::LoadSettings()
         ListOfBSWVnomer[2].namePort = name3;
         ListOfBSWVnomer[2].name = "MK2-osn";
         emit con3();
+        ListOfBSWVData[2].on_off_status = 1;
+    }else {
+        ListOfBSWVData[2].on_off_status = 0;
     }
     setting.endGroup();
     setting.beginGroup("MK2-rez");// [MK2-rez] в ини файле
@@ -128,6 +137,9 @@ void MainWindow::LoadSettings()
         ListOfBSWVnomer[3].namePort = name4;
         ListOfBSWVnomer[3].name = "MK2-rez";
         emit con4();
+        ListOfBSWVData[3].on_off_status = 1;
+    }else {
+        ListOfBSWVData[3].on_off_status = 0;
     }
     setting.endGroup();
     setting.beginGroup("MK3-osn");// [MK3-osn] в ини файле
@@ -146,6 +158,9 @@ void MainWindow::LoadSettings()
         ListOfBSWVnomer[4].namePort = name5;
         ListOfBSWVnomer[4].name = "MK3-osn";
         emit con5();
+        ListOfBSWVData[4].on_off_status = 1;
+    }else {
+        ListOfBSWVData[4].on_off_status = 0;
     }
     setting.endGroup();
     setting.beginGroup("MK3-rez");// [MK3-rez] в ини файле
@@ -164,6 +179,9 @@ void MainWindow::LoadSettings()
         ListOfBSWVnomer[5].namePort = name6;
         ListOfBSWVnomer[5].name = "MK3-rez";
         emit con6();
+        ListOfBSWVData[5].on_off_status = 1;
+    }else {
+        ListOfBSWVData[5].on_off_status = 0;
     }
     setting.endGroup();
 }
@@ -180,42 +198,10 @@ void MainWindow::ErrorMessage(bool status)
 {
     ui->lblError->setVisible(status);
 }
-
-//void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName)
-//{
-//    //int k;
-//    if (error!=0){
-//        for (int i=0;i<ListOfBSWVData.size();i++){
-//            if (ListOfBSWVData[i].namePort==portName){
-//                ListOfBSWVData[i].errorStatus=1;
-//                timerCloseErrorWindow->stop();
-//                timerCloseErrorWindow->start();
-//            }
-//        }
-//        if (timerReconnect->isActive()){
-//        //ничего не делать
-//        }
-//        else {
-//            timerReconnect->start();
-//            if (ui->lblError->isVisible()){
-//                //ничего не делать
-//            }else{
-//                window->open();
-//            }
-//        }
-//    }else {
-//        for (int i=0;i<ListOfBSWVData.size();i++){
-//            if (ListOfBSWVData[i].namePort==portName){
-//                ListOfBSWVData[i].errorStatus=0;
-
-
-//            }
-//        }
-//    }
-//}
+//Тут добавить обработку для снятия реконнекта при отсутствии ошибок
 void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName)
 {
-    if (error!=0){
+    if ((error==1)||(error==13)){
         for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData[i].namePort==portName){
                 ListOfBSWVData[i].errorStatus=1;
@@ -226,10 +212,9 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
         }
         else {
             timerReconnect->start();
-            //window->setModal(true);
-            //window->exec();
+
             if (ui->lblError->isVisible()){
-//              delay(100);
+
             }else{
                 window->open();
             }
@@ -238,15 +223,33 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
         for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData[i].namePort==portName){
                 ListOfBSWVData[i].errorStatus=0;
-                timerReconnect->stop();
-                //QTimer::singleShot(2000,window,SLOT(close()));
-                delay(500);
-                window->close();
-                ui->lblError->setVisible(false);
             }
+        }
+        if ((ListOfBSWVData.at(0).errorStatus==0)&(ListOfBSWVData.at(1).errorStatus==0)&(ListOfBSWVData.at(2).errorStatus==0)&
+                (ListOfBSWVData.at(3).errorStatus==0)& (ListOfBSWVData.at(4).errorStatus==0)&(ListOfBSWVData.at(5).errorStatus==0)){
+           timerReconnect->stop();
+           delay(2000);
+           window->close();
+           ui->lblError->setVisible(false);
         }
     }
 }
+
+
+
+//    }else {
+//        for (int i=0;i<ListOfBSWVData.size();i++){
+//            if (ListOfBSWVData[i].namePort==portName){
+//                ListOfBSWVData[i].errorStatus=0;
+//                timerReconnect->stop();
+//                //QTimer::singleShot(2000,window,SLOT(close()));
+//                delay(500);
+//                window->close();
+//                ui->lblError->setVisible(false);
+//            }
+//        }
+//    }
+
 
 
 void MainWindow::Reconnect( )
@@ -522,7 +525,6 @@ MainWindow::MainWindow(QWidget *parent)
 //    QString fEname = QDate::currentDate().toString("dd.MM.yyyy")+"_Errors.txt";
 //    fileError.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fEname);
     connect(timerZaprosaTelem, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTelem()));
-    //connect(timerZaprosaTarir, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTarir()));
     connect(timerZaprosaProv,SIGNAL(timeout()), this,SLOT(OtpravkaZaprosaProv()));
     connect(timerZaprosaTelem,SIGNAL(timeout()),this, SLOT(ChangeColor()));
     connect(this, SIGNAL(savesettings1(QString,int,int,int,int,int)),PortMK1osn,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
@@ -611,7 +613,7 @@ void MainWindow:: OtpravkaZaprosaTelem()
     //Начало тестового вывода сообщения
     ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
     ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-    QTimer::singleShot(20,this,SLOT(ProverkaDostavkiPaketaTelem()));
+    QTimer::singleShot(errorDelay,this,SLOT(ProverkaDostavkiPaketaTelem()));
 
     //Конец теста
 }
@@ -669,7 +671,7 @@ void MainWindow:: OtpravkaZaprosaTarir()
     emit writeData4 (dataQt);
     emit writeData5 (dataQt);
     emit writeData6 (dataQt);
-    QTimer::singleShot(20,this,SLOT(ProverkaDostavkiPaketaACP()));
+    QTimer::singleShot(errorDelay,this,SLOT(ProverkaDostavkiPaketaACP()));
 }
 
 void MainWindow::OtpravkaZaprosaNomer()
@@ -685,7 +687,7 @@ void MainWindow::OtpravkaZaprosaNomer()
     emit writeData4 (dataQNomer);
     emit writeData5 (dataQNomer);
     emit writeData6 (dataQNomer);
-    QTimer::singleShot(20,this,SLOT(ProverkaDostavkiPaketaNomer()));
+    QTimer::singleShot(errorDelay,this,SLOT(ProverkaDostavkiPaketaNomer()));
 }
 
 void MainWindow::OtpravkaZaprosaProv()
@@ -705,7 +707,7 @@ void MainWindow::OtpravkaZaprosaProv()
     //Начало тестового вывода сообщения
     ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
     ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-    QTimer::singleShot(20,this,SLOT(ProverkaDostavkiPaketaProv()));
+    QTimer::singleShot(errorDelay,this,SLOT(ProverkaDostavkiPaketaProv()));
     //Конец теста
 }
 
@@ -973,8 +975,10 @@ void MainWindow::ProverkaNomera(){
         //ListOfBSWVnomer[f].otvetPoluchen=0;
         }
         else {
+            if (ListOfBSWVData[f].on_off_status == 1){
             error = "Ответ на сообщение 34 от "+ ListOfBSWVprov.at(f).name +" не получен";
-            emit errorMessage (error);            
+            emit errorMessage (error);
+            }
         }        
     }
 }
@@ -1173,20 +1177,23 @@ for (int i=0;i<ListOfBSWVData.size();i++){
 
     }
     else {
-        error = "Ответ на сообщение 1 от "+ListOfBSWVData.at(i).name+" не получен";
-        emit errorMessage (error);
-        QTableWidgetItem *itm91_91 = new QTableWidgetItem("-");
-        QTableWidgetItem *itm92_92 = new QTableWidgetItem("-");
-        QTableWidgetItem *itm93_93 = new QTableWidgetItem("-");
-        QTableWidgetItem *itm94_94 = new QTableWidgetItem("-");
-        QTableWidgetItem *itm95_95 = new QTableWidgetItem("-");
-        QTableWidgetItem *itm96_96 = new QTableWidgetItem("-");
-        ui->tblBSWV->setItem(0,i,itm91_91); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
-        ui->tblBSWV->setItem(1,i,itm92_92);
-        ui->tblBSWV->setItem(2,i,itm93_93);
-        ui->tblBSWV->setItem(3,i,itm94_94);
-        ui->tblBSWV->setItem(4,i,itm95_95);
-        ui->tblBSWV->setItem(5,i,itm96_96);
+        if (ListOfBSWVData.at(i).on_off_status == 1){
+            error = "Ответ на сообщение 1 от "+ListOfBSWVData.at(i).name+" не получен";
+            emit errorMessage (error);
+            QTableWidgetItem *itm91_91 = new QTableWidgetItem("-");
+            QTableWidgetItem *itm92_92 = new QTableWidgetItem("-");
+            QTableWidgetItem *itm93_93 = new QTableWidgetItem("-");
+            QTableWidgetItem *itm94_94 = new QTableWidgetItem("-");
+            QTableWidgetItem *itm95_95 = new QTableWidgetItem("-");
+            QTableWidgetItem *itm96_96 = new QTableWidgetItem("-");
+            ui->tblBSWV->setItem(0,i,itm91_91); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
+            ui->tblBSWV->setItem(1,i,itm92_92);
+            ui->tblBSWV->setItem(2,i,itm93_93);
+            ui->tblBSWV->setItem(3,i,itm94_94);
+            ui->tblBSWV->setItem(4,i,itm95_95);
+            ui->tblBSWV->setItem(5,i,itm96_96);
+        }
+
     }
 //  itm1_2->setTextColor(Qt::red); //задание цвета у текста определенной ячейки таблицы
 //  itm1_2->setBackgroundColor(Qt::black); //задание цвета самой определенной ячейки таблицы
@@ -1219,8 +1226,10 @@ for (int k=0;k<ListOfBSWVprov.size();k++){
             ui->greenMK3r->setVisible(false);
             ui->redMK3r->setVisible(true);
         }
-        error = "Ответ на сообщение 255 от "+ListOfBSWVprov.at(k).name + " не получен";
-        emit errorMessage (error);
+        if (ListOfBSWVData[k].on_off_status == 1){
+            error = "Ответ на сообщение 255 от "+ListOfBSWVprov.at(k).name + " не получен";
+            emit errorMessage (error);
+        }
     }
     if (ListOfBSWVprov.at(k).otvetPoluchen==1){
         if (ListOfBSWVprov.at(k).name=="MK1-osn"){
@@ -1271,6 +1280,7 @@ void MainWindow::VivodACP()
             QTableWidgetItem *itm6_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVt.at(j).uref));
             ui->tblAcp->setItem(6,j,itm6_0);
         }else{
+            if (ListOfBSWVData[j].on_off_status == 1){
             error = "Ответ на сообщение 17 от "+ ListOfBSWVt.at(j).name +" не получен";
             emit errorMessage (error);
             QTableWidgetItem *itm91_91 = new QTableWidgetItem("-");
@@ -1287,6 +1297,7 @@ void MainWindow::VivodACP()
             ui->tblAcp->setItem(4,j,itm95_95);
             ui->tblAcp->setItem(5,j,itm96_96);
             ui->tblAcp->setItem(6,j,itm97_97);
+            }
         }
     }
 
@@ -1393,8 +1404,8 @@ void MainWindow::on_btnStart_clicked()
         ui->btnStart->setText("Закончить обмен");
         timerZaprosaTelem->start(timerDelay);
         QTimer::singleShot(timerDelay*0.2,this,SLOT(TimerProvStart()));
-        QTimer::singleShot(timerDelay*0.4,this,SLOT(TimerWriteInFileStart()));
-        QTimer::singleShot(timerDelay*0.5,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса
+        QTimer::singleShot(timerDelay*0.5,this,SLOT(TimerWriteInFileStart()));
+        QTimer::singleShot(timerDelay*0.7,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса
 //        QTimer::singleShot(timerDelay*0.4,this,SLOT(TimerProvStart()));
 //        QTimer::singleShot(timerDelay*0.6,this,SLOT(TimerWriteInFileStart()));
 //        QTimer::singleShot(timerDelay*0.8,this,SLOT(TimerVivodStart()));
@@ -1659,8 +1670,10 @@ void MainWindow::ProverkaDostavkiPaketaTelem()
                 //emit writeData (dataQ);
                 ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
                 ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-                Print("Не принят корректный пакет 1 за 20 мс от "+ListOfBSWVData.at(i).name);
-                ListOfBSWVData[i].dopPaket=1;
+                if (ListOfBSWVData[i].on_off_status == 1){
+                    Print("Не принят корректный пакет 1 за "+QString::number(errorDelay)+" мс от "+ListOfBSWVData.at(i).name);
+                    ListOfBSWVData[i].dopPaket=1;
+                }
             }
         }
 
@@ -1693,8 +1706,10 @@ void MainWindow::ProverkaDostavkiPaketaProv()
 //                emit writeData (dataQProv);
                 ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
                 ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-                Print("Не принят корректный пакет 255 за 20 мс от "+ListOfBSWVprov.at(i).name);
-                ListOfBSWVprov[i].dopPaket=1;
+                if (ListOfBSWVData[i].on_off_status == 1){
+                    Print("Не принят корректный пакет 255 за "+QString::number(errorDelay)+" мс от "+ListOfBSWVprov.at(i).name);
+                    ListOfBSWVprov[i].dopPaket=1;
+                }
             }
         }
     }
@@ -1724,9 +1739,10 @@ void MainWindow::ProverkaDostavkiPaketaNomer()
                     case 5: emit writeData6 (dataQNomer);
                     break;
                 }
-//
-                Print("Не принят корректный пакет 34 за 20 мс от "+ListOfBSWVnomer.at(i).name);
-                ListOfBSWVnomer[i].dopPaket=1;
+                if (ListOfBSWVData[i].on_off_status == 1){
+                    Print("Не принят корректный пакет 34 за"+QString::number(errorDelay)+" мс от "+ListOfBSWVnomer.at(i).name);
+                    ListOfBSWVnomer[i].dopPaket=1;
+                }
             }
         }
     }
@@ -1755,9 +1771,10 @@ void MainWindow::ProverkaDostavkiPaketaACP()
                     case 5: emit writeData6 (dataQt);
                     break;
                 }
-//
-                Print("Не принят корректный пакет 17 за 20 мс от "+ListOfBSWVt.at(i).name);
-                ListOfBSWVt[i].dopPaket=1;
+                if (ListOfBSWVData[i].on_off_status == 1){
+                    Print("Не принят корректный пакет 17 за"+QString::number(errorDelay)+" мс от "+ListOfBSWVt.at(i).name);
+                    ListOfBSWVt[i].dopPaket=1;
+                }
             }
         }
     }

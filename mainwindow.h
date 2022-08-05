@@ -20,6 +20,7 @@
 #include <errorform.h>
 
 #define timerDelay 1000
+#define errorDelay 50
 
 //размеры пакетов данных (первые четыре байта всегда содержат начальный, адрес отправителя, адрес получателя и код сообщения, последние два байта - контрольная сумма)
 //тип сообщения 1 - 6 байт, 17 - 16 байт, 34 - 1 байт, 255 - 0 байт
@@ -48,6 +49,7 @@ struct BSWVdata //создание структуры
     short otvetPoluchen; //0 - не получен, 1 - получен
     short errorStatus;//0 - нет ошибок порта, 1 - есть ошибки порта
     int dopPaket;
+    bool on_off_status;
 };
 
 struct BSWVtarir //создание структуры
@@ -137,7 +139,6 @@ private:
 public:
 
     QTimer *timerZaprosaTelem;
-    //QTimer *timerZaprosaTarir;
     QTimer *timerZaprosaProv;
     QTimer *timerVivod;
     QTimer *timerReconnect;
