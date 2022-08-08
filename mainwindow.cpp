@@ -201,7 +201,7 @@ void MainWindow::ErrorMessage(bool status)
 //Тут добавить обработку для снятия реконнекта при отсутствии ошибок
 void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName)
 {
-    if ((error==1)||(error==13)){
+    if ((error==1)||(error==13)||(error==9)){
         for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData[i].namePort==portName){
                 ListOfBSWVData[i].errorStatus=1;
@@ -219,7 +219,7 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
                 window->open();
             }
         }
-    }else {
+    }else if (error==0){
         for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData[i].namePort==portName){
                 ListOfBSWVData[i].errorStatus=0;
