@@ -599,7 +599,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow:: OtpravkaZaprosaTelem()
 {
-
+    for (int i=0;i<ListOfBSWVData.size();i++){
+        ListOfBSWVData[i].otvetBuffer.clear();
+    }
     QByteArray dataQ = QByteArray::fromRawData((char*)data,sizeof(data));
     //dataQ[0] = reinterpret_cast<QByteArray>(data[0].data());
     emit writeData1 (dataQ);
@@ -685,6 +687,7 @@ void MainWindow::OtpravkaZaprosaNomer()
 
 void MainWindow::OtpravkaZaprosaProv()
 {
+
 
     QByteArray dataQProv = QByteArray::fromRawData((char*)dataProv,sizeof(dataProv));
 //    emit writeData (dataQProv);
