@@ -20,7 +20,7 @@
 #include <errorform.h>
 
 #define timerDelay 1000
-#define errorDelay 50
+#define errorDelay 100
 
 //размеры пакетов данных (первые четыре байта всегда содержат начальный, адрес отправителя, адрес получателя и код сообщения, последние два байта - контрольная сумма)
 //тип сообщения 1 - 6 байт, 17 - 16 байт, 34 - 1 байт, 255 - 0 байт
@@ -47,8 +47,7 @@ struct BSWVdata //создание структуры
     QByteArray otvet;
     QByteArray otvetBuffer;
     short otvetPoluchen; //0 - не получен, 1 - получен
-    short errorStatus;//0 - нет ошибок порта, 1 - есть ошибки порта
-    int dopPaket;
+    short errorStatus;//0 - нет ошибок порта, 1 - есть ошибки порта    
     bool on_off_status;
 };
 
@@ -65,7 +64,7 @@ struct BSWVtarir //создание структуры
     float tcorp1;//"Температура 1 корпуса прибора"
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
-    int dopPaket;
+
 };
 struct BSWVprov //создание структуры
 {
@@ -83,7 +82,7 @@ struct BSWVnomerMK //создание структуры
     QString nChan;//номер канала, 0 - основной, 1 - резервный
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
-    int dopPaket;
+
 };
 
 
@@ -169,6 +168,8 @@ public:
 public slots:
    void Vivod(); //Вывод телеметрии в таблицу
    void VivodACP();
+   void Vivod_1();
+   void Vivod_255();
    void OtpravkaZaprosaTelem ();
    void OtpravkaZaprosaTarir ();
    void OtpravkaZaprosaNomer();
@@ -193,10 +194,7 @@ public slots:
     void TimerWriteInFileStart();
     void CloseErrorWindow();
     void WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,int k);
-    void ProverkaDostavkiPaketaTelem();
-    void ProverkaDostavkiPaketaProv();
-    void ProverkaDostavkiPaketaNomer();
-    void ProverkaDostavkiPaketaACP();
+
 
 
 signals:
@@ -224,6 +222,7 @@ signals:
 
 
 
+
 private slots:
    void on_btnNomer_clicked();
    void on_btnStart_clicked();
@@ -232,6 +231,7 @@ private slots:
 
    void on_pushButton_clicked();   
    void on_tabWidget_currentChanged(int index);
+   void ReconnectZaprosov();
 
 };
 #endif // MAINWINDOW_H
