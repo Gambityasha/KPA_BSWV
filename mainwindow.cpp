@@ -601,6 +601,8 @@ void MainWindow:: OtpravkaZaprosaTelem()
 {
     for (int i=0;i<ListOfBSWVData.size();i++){
         ListOfBSWVData[i].otvetBuffer.clear();
+        ListOfBSWVprov[i].otvetPoluchen=0;
+        ListOfBSWVData[i].otvetPoluchen=0;
     }
     QByteArray dataQ = QByteArray::fromRawData((char*)data,sizeof(data));
     //dataQ[0] = reinterpret_cast<QByteArray>(data[0].data());
@@ -610,7 +612,7 @@ void MainWindow:: OtpravkaZaprosaTelem()
     emit writeData4 (dataQ);
     emit writeData5 (dataQ);
     emit writeData6 (dataQ);
-    QTimer::singleShot(timerDelay*0.15,this,SLOT(Vivod_1()));
+    QTimer::singleShot(timerDelay*0.5,this,SLOT(Vivod_1()));
     //Начало тестового вывода сообщения
     ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
     ui->consolTest->moveCursor(QTextCursor::End);//Scroll
@@ -697,7 +699,7 @@ void MainWindow::OtpravkaZaprosaProv()
     emit writeData4 (dataQProv);
     emit writeData5 (dataQProv);
     emit writeData6 (dataQProv);
-    QTimer::singleShot(timerDelay*0.15,this,SLOT(Vivod_255()));
+    QTimer::singleShot(timerDelay*0.5,this,SLOT(Vivod_255()));
     //Начало тестового вывода сообщения
     ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
     ui->consolTest->moveCursor(QTextCursor::End);//Scroll    
@@ -827,6 +829,7 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                   ListOfBSWVData[i].u1 = 0.0;
                                   ListOfBSWVData[i].tcorp2 = 0.0;
                                   ListOfBSWVData[i].tcorp1 = 0.0;
+                                  Print("Не совпала контрольная сумма пакета 1 от "+ListOfBSWVData[i].name);
                             }
                         }
                      }
@@ -854,6 +857,7 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                 ListOfBSWVt[i].u1 = 0.0;
                                 ListOfBSWVt[i].tcorp2 = 0.0;
                                 ListOfBSWVt[i].tcorp1 = 0.0;
+                                Print("Не совпала контрольная сумма пакета 17 от "+ListOfBSWVt[i].name);
                             }
                         }
                     }
@@ -894,6 +898,7 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                    ListOfBSWVnomer[i].otvetPoluchen=0;
                                    ListOfBSWVnomer[i].nMK = "-";
                                    ListOfBSWVnomer[i].nChan = "-";
+                                   Print("Не совпала контрольная сумма пакета 34 от "+ListOfBSWVnomer[i].name);
                               }
                           }
                       }
@@ -907,6 +912,7 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                     ListOfBSWVprov[i].otvetPoluchen=1;
                                } else {
                                     ListOfBSWVprov[i].otvetPoluchen=0;
+                                    Print("Не совпала контрольная сумма пакета 255 от "+ListOfBSWVprov[i].name);
                                }
                           }
                       }
@@ -916,6 +922,7 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
              }
    break;
     }
+
 }
 
 void MainWindow::ChangeColor()
@@ -1050,6 +1057,11 @@ void MainWindow::WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,i
 
 void MainWindow::WriteInFile()
 {
+//    for (int j=0;j<ListOfBSWVt.size();j++){
+//        if ((ListOfBSWVData.at(j).otvetPoluchen==0)||(ListOfBSWVprov.at(j).otvetPoluchen==0)){
+//            QTimer::singleShot(2000,this,SLOT(ReconnectZaprosov()));
+//        }
+//    }
     WriteInFileTemplate("MK1o",fileMK1o,0);
     WriteInFileTemplate("MK1r",fileMK1r,1);
     WriteInFileTemplate("MK2o",fileMK2o,2);
@@ -1511,8 +1523,8 @@ void MainWindow::on_btnStart_clicked()
         ui->tabWidget->setTabEnabled(2,false);
         ui->btnStart->setText("Закончить обмен");
         timerZaprosaTelem->start(timerDelay);
-        QTimer::singleShot(timerDelay*0.3,this,SLOT(TimerProvStart()));
-        QTimer::singleShot(timerDelay*0.5,this,SLOT(TimerWriteInFileStart()));//потом проверить правильность записи в файл!!!
+        QTimer::singleShot(timerDelay*0.2,this,SLOT(TimerProvStart()));
+        QTimer::singleShot(timerDelay*0.4,this,SLOT(TimerWriteInFileStart()));//потом проверить правильность записи в файл!!!
         //QTimer::singleShot(timerDelay*0.7,this,SLOT(TimerVivodStart())); //старт таймера для вывода на экран данных через 500 мс после отправки запроса
     }
 }
@@ -1736,16 +1748,19 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
 void MainWindow::ReconnectZaprosov()
 {
-//    Print("Reconnect zaprosov!!!");
-//    timerZaprosaTelem->stop();
-//    timerVivod->stop();
-//    timerZaprosaProv->stop();
-//    timerWriteInFile->stop();
-
-//    timerZaprosaTelem->start(timerDelay);
-//    QTimer::singleShot(timerDelay*0.2,this,SLOT(TimerProvStart()));
-//    QTimer::singleShot(timerDelay*0.5,this,SLOT(TimerWriteInFileStart()));
-//    QTimer::singleShot(timerDelay*0.7,this,SLOT(TimerVivodStart()));
+//    for (int j=0;j<ListOfBSWVt.size();j++){
+//        if ((ListOfBSWVData.at(j).otvetPoluchen==0)||(ListOfBSWVprov.at(j).otvetPoluchen==0)){
+//            Print("Reconnect zaprosov!!!");
+//            timerZaprosaTelem->stop();
+//            timerZaprosaProv->stop();
+//            timerWriteInFile->stop();
+//            delay(3000);
+//            timerZaprosaTelem->start(timerDelay);
+//            QTimer::singleShot(timerDelay*0.2,this,SLOT(TimerProvStart()));
+//            QTimer::singleShot(timerDelay*0.5,this,SLOT(TimerWriteInFileStart()));
+//            Print("Reconnect zaprosov закончен!");
+//        }
+//    }
 }
 
 MainWindow::~MainWindow()
