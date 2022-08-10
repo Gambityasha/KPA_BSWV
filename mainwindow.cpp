@@ -63,6 +63,11 @@ void MainWindow::LoadSettings()
     if ( status1 == "on") {
          dis1 = setting.value("description","0").toString();
          serial1 = setting.value("serialNumber","0").toString();
+         if (ListOfSerial.contains(serial1)){
+             //Ничего не делать
+         }else{
+             ListOfSerial.append(serial1);
+         }
          QString name1 = getPortName(dis1,serial1);
          emit savesettings1(name1, baudrate, databits, parity, stopbits, flowcontrol);
          ListOfBSWVData[0].namePort = name1;
@@ -84,6 +89,11 @@ void MainWindow::LoadSettings()
     if ( status2 == "on"){
         dis2 = setting.value("description","0").toString();
         serial2 = setting.value("serialNumber","0").toString();
+        if (ListOfSerial.contains(serial2)){
+            //Ничего не делать
+        }else{
+            ListOfSerial.append(serial2);
+        }
         QString name2 = getPortName(dis2,serial2);
         emit savesettings2(name2, baudrate, databits, parity, stopbits, flowcontrol);
         ListOfBSWVData[1].namePort = name2;
@@ -105,6 +115,11 @@ void MainWindow::LoadSettings()
     if (status3 == "on") {
         dis3 = setting.value("description","0").toString();
         serial3 = setting.value("serialNumber","0").toString();
+        if (ListOfSerial.contains(serial3)){
+            //Ничего не делать
+        }else{
+            ListOfSerial.append(serial3);
+        }
         QString name3 = getPortName(dis3,serial3);
         emit savesettings3(name3, baudrate, databits, parity, stopbits, flowcontrol);
         ListOfBSWVData[2].namePort = name3;
@@ -126,6 +141,11 @@ void MainWindow::LoadSettings()
     if ( status4 == "on"){
         dis4 = setting.value("description","0").toString();
         serial4 = setting.value("serialNumber","0").toString();
+        if (ListOfSerial.contains(serial4)){
+            //Ничего не делать
+        }else{
+            ListOfSerial.append(serial4);
+        }
         QString name4 = getPortName(dis4,serial4);
         emit savesettings4(name4, baudrate, databits, parity, stopbits, flowcontrol);
         ListOfBSWVData[3].namePort = name4;
@@ -147,6 +167,11 @@ void MainWindow::LoadSettings()
     if ( status5 == "on") {
         dis5 = setting.value("description","0").toString();
         serial5 = setting.value("serialNumber","0").toString();
+        if (ListOfSerial.contains(serial5)){
+            //Ничего не делать
+        }else{
+            ListOfSerial.append(serial5);
+        }
         QString name5 = getPortName(dis5,serial5);
         emit savesettings5(name5, baudrate, databits, parity, stopbits, flowcontrol);
         ListOfBSWVData[4].namePort = name5;
@@ -168,6 +193,11 @@ void MainWindow::LoadSettings()
     if (status6 == "on"){
         dis6 = setting.value("description","0").toString();
         serial6 = setting.value("serialNumber","0").toString();
+        if (ListOfSerial.contains(serial6)){
+            //Ничего не делать
+        }else{
+            ListOfSerial.append(serial6);
+        }
         QString name6 = getPortName(dis6,serial6);
         emit savesettings6(name6, baudrate, databits, parity, stopbits, flowcontrol);
         ListOfBSWVData[5].namePort = name6;
@@ -188,20 +218,23 @@ void MainWindow::LoadSettings()
 
 void MainWindow::CloseErrorWindow()
 {
-    window->close();
-    ErrorMessage(0);
-    //ui->lblError->setVisible(false);
-    timerReconnect->stop();
-    timerCloseErrorWindow->stop();
+//    window->close();
+//    ErrorMessage(0);
+//    //ui->lblError->setVisible(false);
+//    timerReconnect->stop();
+//    timerCloseErrorWindow->stop();
 }
+
 void MainWindow::ErrorMessage(bool status)
 {
     ui->lblError->setVisible(status);
 }
 //Тут добавить обработку для снятия реконнекта при отсутствии ошибок
+
 void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName)
 {
-    if ((error==1)||(error==13)||(error==9)){
+    //if ((error==1)||(error==13)||(error==9)){
+    if ((error!=0)){
         for (int i=0;i<ListOfBSWVData.size();i++){
             if (ListOfBSWVData[i].namePort==portName){
                 ListOfBSWVData[i].errorStatus=1;
@@ -213,8 +246,7 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
         else {
             timerReconnect->start();
 
-            if (ui->lblError->isVisible()){
-
+            if (ui->lblError->isVisible()){//ничего не делать
             }else{
                 window->open();
             }
@@ -226,17 +258,16 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
             }
         }
         if ((ListOfBSWVData.at(0).errorStatus==0)&(ListOfBSWVData.at(1).errorStatus==0)&(ListOfBSWVData.at(2).errorStatus==0)&
-                (ListOfBSWVData.at(3).errorStatus==0)& (ListOfBSWVData.at(4).errorStatus==0)&(ListOfBSWVData.at(5).errorStatus==0)){
+           (ListOfBSWVData.at(3).errorStatus==0)& (ListOfBSWVData.at(4).errorStatus==0)&(ListOfBSWVData.at(5).errorStatus==0)){
            timerReconnect->stop();
            delay(2000);
+//           emit discon1();emit discon2();emit discon3();emit discon4();emit discon5();emit discon6();
+//           LoadSettings();
            window->close();
            ui->lblError->setVisible(false);
         }
     }
 }
-
-
-
 //    }else {
 //        for (int i=0;i<ListOfBSWVData.size();i++){
 //            if (ListOfBSWVData[i].namePort==portName){
@@ -518,8 +549,6 @@ MainWindow::MainWindow(QWidget *parent)
     dir.mkdir("../logs/"+logYear+"/"+logMonth+"/Errors");
     dir.mkdir("../logs/"+logYear+"/"+logMonth+"/AllChannels");
     dir.mkdir("../logs/"+logYear+"/"+logMonth+"/ACP");
-
-
     //file.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fname);
 //    QString fEname = QDate::currentDate().toString("dd.MM.yyyy")+"_Errors.txt";
 //    fileError.setFileName("../logs/"+logYear+"/"+logMonth+"/"+fEname);
@@ -557,20 +586,27 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(con4()),PortMK2rez,SLOT(ConnectPort()));
     connect(this, SIGNAL(con5()),PortMK3osn,SLOT(ConnectPort()));
     connect(this, SIGNAL(con6()),PortMK3rez,SLOT(ConnectPort()));
-    LoadSettings();
+    connect(this, SIGNAL(discon1()),PortMK1osn,SLOT(DisconnectPort()));
+    connect(this, SIGNAL(discon2()),PortMK1rez,SLOT(DisconnectPort()));
+    connect(this, SIGNAL(discon3()),PortMK2osn,SLOT(DisconnectPort()));
+    connect(this, SIGNAL(discon4()),PortMK2rez,SLOT(DisconnectPort()));
+    connect(this, SIGNAL(discon5()),PortMK3osn,SLOT(DisconnectPort()));
+    connect(this, SIGNAL(discon6()),PortMK3rez,SLOT(DisconnectPort()));
+
     connect(PortMK1osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//Лог ошибок соединения
     connect(PortMK2osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
     connect(PortMK3osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
     connect(PortMK1rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
     connect(PortMK2rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
     connect(PortMK3rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
+    LoadSettings();
     connect(PortMK1osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
     connect(PortMK1rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
     connect(PortMK2osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
     connect(PortMK2rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
     connect(PortMK3rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
     connect(PortMK3osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
-    connect(timerVivod, SIGNAL(timeout()), this, SLOT(Vivod()));    
+    //connect(timerVivod, SIGNAL(timeout()), this, SLOT(Vivod()));
     connect(this, SIGNAL(readyToAnalize(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(Print(QString))); //Не тот же эррор месадж, что от порта
     connect(this, SIGNAL(errorMessage(QString)), this,SLOT(WriteInFileError(QString)));
@@ -584,16 +620,23 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
     connect(window,SIGNAL(hideError(bool)),this,SLOT(ErrorMessage(bool)));
-    connect(timerCloseErrorWindow,SIGNAL(timeout()),this,SLOT(CloseErrorWindow()));    
+    //connect(timerCloseErrorWindow,SIGNAL(timeout()),this,SLOT(CloseErrorWindow()));
     ui->tabWidget->setCurrentIndex(0);
 
     foreach (const QSerialPortInfo &serialPortInfo, QSerialPortInfo::availablePorts())
         {
+        if (ListOfSerialFact.contains(serialPortInfo.serialNumber())){
+            //Ничего не делать
+        }else{
+            ListOfSerialFact.append(serialPortInfo.serialNumber());
+        }
         Print(serialPortInfo.portName()+" Description: "+serialPortInfo.description()+" Serial: "+serialPortInfo.serialNumber());
         }
-
-
-
+    for (int i=0;i<ListOfSerial.size();i++)  {
+        if (ListOfSerialFact.indexOf(ListOfSerial.at(i))==-1){
+            Print("Не подключен конвертер интерфейсов RS-485 (серийный номер "+ListOfSerial.at(i)+")");
+        }
+    }
 }
 
 void MainWindow:: OtpravkaZaprosaTelem()
@@ -931,13 +974,6 @@ void MainWindow::ChangeColor()
 
 void MainWindow::Print(QString dat)
 {
-//    for (int i=0;i<ListOfBSWVData.size();i++){
-//        if (timerZaprosaTelem->isActive()){
-//            if((ListOfBSWVData.at(i).otvetPoluchen==0)||(ListOfBSWVprov.at(i).otvetPoluchen==0)){
-//                ReconnectZaprosov();
-//            }
-//        }
-//    }
     ui->consol->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+dat+'\r'); // Вывод текста в консоль
     ui->consol->moveCursor(QTextCursor::End);//Scroll
     ui->tabWidget->tabBar()->setTabTextColor(1,Qt::red);
@@ -1501,7 +1537,7 @@ void MainWindow::on_btnStart_clicked()
         //timerZaprosaTarir->stop();
         timerZaprosaProv->stop();
         timerWriteInFile->stop();
-
+        delay(1000);
         ui->greenMK1o->setVisible(false);
         ui->redMK1o->setVisible(true);
         ui->greenMK1r->setVisible(false);
@@ -1516,6 +1552,7 @@ void MainWindow::on_btnStart_clicked()
         ui->redMK3r->setVisible(true);
     }
     else {
+
         ui->tblBSWV->setEnabled(true);
         ui->tabWidget->setTabEnabled(0,false);
         ui->tabWidget->setTabEnabled(3,false);

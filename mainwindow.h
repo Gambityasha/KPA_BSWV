@@ -1,5 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+#pragma once //еще одна защита от повторного включения
+
 
 #include <QMainWindow>
 #include <port.h>
@@ -110,6 +112,8 @@ private:
     QString logYear;
     QString logMonth;
     QString dirName;
+    QList<QString>ListOfSerial;
+    QList<QString>ListOfSerialFact;
     int baudrate = 115200; //скорость обмена, по протоколу 115200
     int databits = 8;
     int parity = 2;              //DataToInt (QSerialPort::EvenParity)
@@ -194,35 +198,6 @@ public slots:
     void TimerWriteInFileStart();
     void CloseErrorWindow();
     void WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,int k);
-
-
-
-signals:
-    //void savesettings(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
-   void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
-   void savesettings2(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
-   void savesettings3(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
-   void savesettings4(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
-   void savesettings5(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
-   void savesettings6(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
-   //void writeData(QByteArray dataQ);
-   void writeData1(QByteArray dataQ);
-   void writeData2(QByteArray dataQ);
-   void writeData3(QByteArray dataQ);
-   void writeData4(QByteArray dataQ);
-   void writeData5(QByteArray dataQ);
-   void writeData6(QByteArray dataQ);
-   void con1();void con2();void con3();void con4();void con5();void con6();
-   void readyToAnalize(QByteArray otvet, QString comName);
-   void errorMessage(QString);
-   void errorReconnect(QString);
-   void msgTestRS485(QByteArray data, QString comName);
-   void testRSMK1o(QByteArray);void testRSMK1r(QByteArray);void testRSMK2o(QByteArray);
-   void testRSMK2r(QByteArray);void testRSMK3o(QByteArray);void testRSMK3r(QByteArray);
-
-
-
-
 private slots:
    void on_btnNomer_clicked();
    void on_btnStart_clicked();
@@ -232,6 +207,28 @@ private slots:
    void on_pushButton_clicked();   
    void on_tabWidget_currentChanged(int index);
    void ReconnectZaprosov();
+
+signals:
+   void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
+   void savesettings2(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
+   void savesettings3(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
+   void savesettings4(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
+   void savesettings5(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
+   void savesettings6(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
+   void writeData1(QByteArray dataQ);
+   void writeData2(QByteArray dataQ);
+   void writeData3(QByteArray dataQ);
+   void writeData4(QByteArray dataQ);
+   void writeData5(QByteArray dataQ);
+   void writeData6(QByteArray dataQ);
+   void con1();void con2();void con3();void con4();void con5();void con6();
+   void discon1();void discon2();void discon3();void discon4();void discon5();void discon6();
+   void readyToAnalize(QByteArray otvet, QString comName);
+   void errorMessage(QString);
+   void errorReconnect(QString);
+   void msgTestRS485(QByteArray data, QString comName);
+   void testRSMK1o(QByteArray);void testRSMK1r(QByteArray);void testRSMK2o(QByteArray);
+   void testRSMK2r(QByteArray);void testRSMK3o(QByteArray);void testRSMK3r(QByteArray);
 
 };
 #endif // MAINWINDOW_H

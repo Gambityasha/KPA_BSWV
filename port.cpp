@@ -30,13 +30,12 @@ void port :: ConnectPort(void)//процедура подключения
         {
             if (thisPort.isOpen())
             {
-               emit error_((SettingsPort.name.toLocal8Bit()+ " >> Открыт! \r"));
+               emit error_((SettingsPort.name.toLocal8Bit()+ " >> Открыт! "));
             }
         } else
         {
             thisPort.close();
             //emit error_(thisPort.errorString().toLocal8Bit());
-
         }
     }
     else
