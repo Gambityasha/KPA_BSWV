@@ -251,7 +251,6 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
 //    }
 
 
-
 void MainWindow::Reconnect( )
 {    
     QString dis1, serial1, dis2, serial2,dis3, serial3,dis4, serial4,dis5, serial5,dis6, serial6;
