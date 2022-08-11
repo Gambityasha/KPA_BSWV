@@ -167,6 +167,7 @@ public:
     QTime time;
     QFile fileError;
     QDir dir;
+    bool converterError_status;
 
 //window = new ErrorForm(this);
 public slots:
@@ -203,10 +204,9 @@ private slots:
    void on_btnStart_clicked();
    void on_pbTestRS485_clicked();
    void on_pbGetACPKalibr_clicked();
-
    void on_pushButton_clicked();   
    void on_tabWidget_currentChanged(int index);
-   void ReconnectZaprosov();
+   void on_pbReconnectRS485_clicked();
 
 signals:
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
@@ -225,7 +225,7 @@ signals:
    void discon1();void discon2();void discon3();void discon4();void discon5();void discon6();
    void readyToAnalize(QByteArray otvet, QString comName);
    void errorMessage(QString);
-   void errorReconnect(QString);
+   //void errorReconnect(QString);
    void msgTestRS485(QByteArray data, QString comName);
    void testRSMK1o(QByteArray);void testRSMK1r(QByteArray);void testRSMK2o(QByteArray);
    void testRSMK2r(QByteArray);void testRSMK3o(QByteArray);void testRSMK3r(QByteArray);

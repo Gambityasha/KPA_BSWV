@@ -395,6 +395,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->redMK3o->setVisible(true);
     ui->greenMK3r->setVisible(false);
     ui->redMK3r->setVisible(true);
+    ui->pbReconnectRS485->setVisible(false);
     BSWV.name = "MK1-osn"; BSWV.namePort = "Com";BSWV.icap2=0; BSWV.icap1 = 0; BSWV.u2 = 0; BSWV.u1 = 0;BSWV.tcorp2 = 0; BSWV.tcorp1=0;
     ListOfBSWVData.append(BSWV);
     BSWV.name = "MK1-rez"; BSWV.namePort = "Com";BSWV.icap2=0; BSWV.icap1 = 0; BSWV.u2 = 0; BSWV.u1 = 0;BSWV.tcorp2 = 0; BSWV.tcorp1=0;
@@ -635,6 +636,8 @@ MainWindow::MainWindow(QWidget *parent)
     for (int i=0;i<ListOfSerial.size();i++)  {
         if (ListOfSerialFact.indexOf(ListOfSerial.at(i))==-1){
             Print("Не подключен конвертер интерфейсов RS-485 (серийный номер "+ListOfSerial.at(i)+")");
+            converterError_status=true;
+            ui->pbReconnectRS485->setVisible(true);
         }
     }
 }
@@ -1780,25 +1783,6 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     }
 }
 
-
-
-void MainWindow::ReconnectZaprosov()
-{
-//    for (int j=0;j<ListOfBSWVt.size();j++){
-//        if ((ListOfBSWVData.at(j).otvetPoluchen==0)||(ListOfBSWVprov.at(j).otvetPoluchen==0)){
-//            Print("Reconnect zaprosov!!!");
-//            timerZaprosaTelem->stop();
-//            timerZaprosaProv->stop();
-//            timerWriteInFile->stop();
-//            delay(3000);
-//            timerZaprosaTelem->start(timerDelay);
-//            QTimer::singleShot(timerDelay*0.2,this,SLOT(TimerProvStart()));
-//            QTimer::singleShot(timerDelay*0.5,this,SLOT(TimerWriteInFileStart()));
-//            Print("Reconnect zaprosov закончен!");
-//        }
-//    }
-}
-
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -1810,3 +1794,45 @@ MainWindow::~MainWindow()
     delete timerWriteInFile;
     delete timerCloseErrorWindow;
 }
+
+void MainWindow::on_pbReconnectRS485_clicked()
+{
+    ui->btnStart->setEnabled(false);
+    ui->tabWidget->setTabEnabled(0,false);
+    ui->tabWidget->setTabEnabled(3,false);
+    ui->tabWidget->setTabEnabled(2,false);
+    emit discon1(); emit discon2();emit discon3();emit discon4();emit discon5();emit discon6();
+    delay(500);
+    LoadSettings();
+    delay(500);
+    ListOfSerialFact.clear();
+    foreach (const QSerialPortInfo &serialPortInfo, QSerialPortInfo::availablePorts())
+        {
+
+        if (ListOfSerialFact.contains(serialPortInfo.serialNumber())){
+            //Ничего не делать
+        }else{
+            ListOfSerialFact.append(serialPortInfo.serialNumber());
+        }
+
+        }
+    bool minus1=false;
+    for (int i=0;i<ListOfSerial.size();i++)  {
+        if (ListOfSerialFact.indexOf(ListOfSerial.at(i))==-1){
+            minus1=true;
+            Print("Не подключен конвертер интерфейсов RS-485 (серийный номер "+ListOfSerial.at(i)+")");
+            converterError_status=true;
+        ui->pbReconnectRS485->setVisible(true);
+        }
+    }
+    if (minus1==false) {
+        converterError_status=false;
+        ui->pbReconnectRS485->setVisible(false);
+    }
+    ui->tabWidget->setTabEnabled(0,true);
+    ui->tabWidget->setTabEnabled(3,true);
+    ui->tabWidget->setTabEnabled(2,true);
+    ui->btnStart->setEnabled(true);
+
+}
+

@@ -41,7 +41,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1" rowspan="2" alignment="Qt::AlignTop">
+    <item row="0" column="1" rowspan="2" colspan="2">
      <widget class="QGroupBox" name="groupBox_3">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -498,7 +498,10 @@
       <zorder>lblError</zorder>
      </widget>
     </item>
-    <item row="2" column="1">
+    <item row="2" column="0" rowspan="2">
+     <widget class="QPlainTextEdit" name="consolTest"/>
+    </item>
+    <item row="2" column="1" rowspan="2" colspan="2">
      <widget class="QTabWidget" name="tabWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -519,7 +522,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -761,6 +764,19 @@
         </property>
         <property name="text">
          <string>Очистить</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pbReconnectRS485">
+        <property name="geometry">
+         <rect>
+          <x>690</x>
+          <y>170</y>
+          <width>221</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Переподключить конвертеры RS-485</string>
         </property>
        </widget>
       </widget>
@@ -1008,22 +1024,6 @@
        </widget>
       </widget>
      </widget>
-    </item>
-    <item row="3" column="1">
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="2" column="0">
-     <widget class="QPlainTextEdit" name="consolTest"/>
     </item>
    </layout>
   </widget>
