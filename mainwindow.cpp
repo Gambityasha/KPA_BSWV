@@ -56,10 +56,17 @@ void  MainWindow::delay(int millisecondsToWait)
 
 void MainWindow::LoadSettings()
 {
+    if (!QFile::exists("ports.ini")){
+        QMessageBox::information(this, trUtf8("Внимание!"),trUtf8("Файл настроек не найден!"));
+    }
     QString dis1, serial1, dis2, serial2,dis3, serial3,dis4, serial4,dis5, serial5, serial6,dis6;
     QSettings setting("ports.ini", QSettings::IniFormat); //ports.ini файл должен быть в одной папке с exe
     setting.beginGroup("Admin");// [Admin] в ини файле
     AdminTools = setting.value("AdminTools","0").toBool();
+    if (AdminTools==1){
+        timerDelay=setting.value("timerDelay","1000").toInt();
+        stopIfError=setting.value("stopIfError","0").toBool();
+    }
     setting.endGroup();
     setting.beginGroup("MK1-osn");// [MK1-osn] в ини файле
     QString status1 = setting.value("work","0").toString();    
@@ -368,7 +375,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {    
     ui->setupUi(this);
-    setWindowIcon(QIcon("KPABSWV.png"));
+    setWindowIcon(QIcon("KPABSWV.png"));    
     ui->tabWidget->setTabEnabled(0,true);
     ui->lblError->setVisible(false);
     ui->tblBSWV->setEnabled(false);
@@ -483,6 +490,21 @@ MainWindow::MainWindow(QWidget *parent)
     port *PortMK2rez = new port();
     port *PortMK3osn = new port();
     port *PortMK3rez = new port();
+
+    PortMK1osn->moveToThread(thread_MK1o);
+    PortMK1rez->moveToThread(thread_MK1r);
+    PortMK2osn->moveToThread(thread_MK2o);
+    PortMK2rez->moveToThread(thread_MK2r);
+    PortMK3osn->moveToThread(thread_MK3o);
+    PortMK3rez->moveToThread(thread_MK3r);
+
+    thread_MK1o->start();
+    thread_MK1r->start();
+    thread_MK2o->start();
+    thread_MK2r->start();
+    thread_MK3o->start();
+    thread_MK3r->start();
+
 
     //-----------------Формирование исходящего сообщения для БСШ-В (тип 1 - обычный обмен)---------------------
     data[0] = startByte;
@@ -623,6 +645,27 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
     connect(window,SIGNAL(hideError(bool)),this,SLOT(ErrorMessage(bool)));
+//    connect(thread_MK1o, SIGNAL(finished()), thread_MK1o, SLOT(deleteLater()));
+//    connect(thread_MK2o, SIGNAL(finished()), thread_MK2o, SLOT(deleteLater()));
+//    connect(thread_MK3o, SIGNAL(finished()), thread_MK3o, SLOT(deleteLater()));
+//    connect(thread_MK1r, SIGNAL(finished()), thread_MK1r, SLOT(deleteLater()));
+//    connect(thread_MK2r, SIGNAL(finished()), thread_MK2r, SLOT(deleteLater()));
+//    connect(thread_MK3r, SIGNAL(finished()), thread_MK3r, SLOT(deleteLater()));
+//    connect(PortMK1osn, SIGNAL(finished_port()), thread_MK1o, SLOT(quit()));
+//    connect(PortMK2osn, SIGNAL(finished_Port()), thread_MK2o, SLOT(quit()));
+//    connect(PortMK3osn, SIGNAL(finished_Port()), thread_MK3o, SLOT(quit()));
+//    connect(PortMK1rez, SIGNAL(finished_Port()), thread_MK1r, SLOT(quit()));
+//    connect(PortMK2rez, SIGNAL(finished_Port()), thread_MK2r, SLOT(quit()));
+//    connect(PortMK3rez, SIGNAL(finished_Port()), thread_MK3r, SLOT(quit()));
+//    connect(thread_MK1o, SIGNAL(finished()), PortMK1osn, SLOT(deleteLater()));
+//    connect(thread_MK2o, SIGNAL(finished()), PortMK2osn, SLOT(deleteLater()));
+//    connect(thread_MK3o, SIGNAL(finished()), PortMK3osn, SLOT(deleteLater()));
+//    connect(thread_MK1r, SIGNAL(finished()), PortMK1rez, SLOT(deleteLater()));
+//    connect(thread_MK2r, SIGNAL(finished()), PortMK2rez, SLOT(deleteLater()));
+//    connect(thread_MK3r, SIGNAL(finished()), PortMK3rez, SLOT(deleteLater()));
+
+
+
     //connect(timerCloseErrorWindow,SIGNAL(timeout()),this,SLOT(CloseErrorWindow()));
     ui->tabWidget->setCurrentIndex(0);
     if (AdminTools==0){
@@ -641,7 +684,7 @@ MainWindow::MainWindow(QWidget *parent)
         if (AdminTools==1){
             Print(serialPortInfo.portName()+" Description: "+serialPortInfo.description()+" Serial: "+serialPortInfo.serialNumber());
         }
-        }
+    }
 
     for (int i=0;i<ListOfSerial.size();i++)  {
         if (ListOfSerialFact.indexOf(ListOfSerial.at(i))==-1){
@@ -1446,6 +1489,9 @@ void MainWindow::Vivod_1()
         else {
             if (ListOfBSWVData.at(i).on_off_status == 1){
                 error = "Ответ на сообщение 1 от "+ListOfBSWVData.at(i).name+" не получен";
+                if (stopIfError==1){
+                    ui->btnStart->click();
+                }
                 emit errorMessage (error);
                 QTableWidgetItem *itm91_91 = new QTableWidgetItem("-");
                 QTableWidgetItem *itm92_92 = new QTableWidgetItem("-");
@@ -1498,6 +1544,9 @@ void MainWindow::Vivod_255()
                 if (ListOfBSWVData[k].on_off_status == 1){
                     error = "Ответ на сообщение 255 от "+ListOfBSWVprov.at(k).name + " не получен";
                     emit errorMessage (error);
+                    if (stopIfError==1){
+                        ui->btnStart->click();
+                    }
                 }
             }
             if (ListOfBSWVprov.at(k).otvetPoluchen==1){
@@ -1800,18 +1849,6 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     }
 }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-    delete window;
-    delete timerVivod;
-    delete timerReconnect;
-    delete timerZaprosaTelem;
-    delete timerZaprosaProv;
-    delete timerWriteInFile;
-    delete timerCloseErrorWindow;
-}
-
 void MainWindow::on_pbReconnectRS485_clicked()
 {
     ui->btnStart->setEnabled(false);
@@ -1852,4 +1889,21 @@ void MainWindow::on_pbReconnectRS485_clicked()
     ui->btnStart->setEnabled(true);
 
 }
+MainWindow::~MainWindow()
+{
+    delete ui;
+    delete window;
+    delete timerVivod;
+    delete timerReconnect;
+    delete timerZaprosaTelem;
+    delete timerZaprosaProv;
+    delete timerWriteInFile;
+    delete timerCloseErrorWindow;
+    delete thread_MK1o;
+    delete thread_MK1r;
+    delete thread_MK2o;
+    delete thread_MK2r;
+    delete thread_MK3o;
+    delete thread_MK3r;
 
+}

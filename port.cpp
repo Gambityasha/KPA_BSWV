@@ -35,6 +35,7 @@ void port :: ConnectPort(void)//процедура подключения
         } else
         {
             thisPort.close();
+            emit finished_Port();
             //emit error_(thisPort.errorString().toLocal8Bit());
         }
     }
@@ -102,6 +103,7 @@ void port::DisconnectPort()//Отключаем порт
 {
     if(thisPort.isOpen()){
        thisPort.close();
+       emit finished_Port();
        emit error_(SettingsPort.name.toLocal8Bit() + " >> Закрыт!\r");
     }
 }
@@ -109,6 +111,8 @@ void port::DisconnectPort()//Отключаем порт
 void port :: WriteToPort(QByteArray data){//Запись данных в порт
     if(thisPort.isOpen()){
     thisPort.write(data,6);
+    thisPort.flush();
+    thisPort.waitForBytesWritten(10);
     }
 }
 
@@ -116,6 +120,8 @@ void port::WriteToPortTestRS(QByteArray data)
 {
     if(thisPort.isOpen()){
     thisPort.write(data,8);
+    thisPort.flush();
+    thisPort.waitForBytesWritten(1);
     }
 }
 
@@ -131,5 +137,5 @@ void port :: ReadInPort(){//Чтение данных из порта
 
 port::~port()
 {
-    thisPort.close();
+    thisPort.close();    
 }

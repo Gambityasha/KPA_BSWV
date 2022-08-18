@@ -20,8 +20,9 @@
 #include <QDir>
 #include <QMessageBox>
 #include <errorform.h>
+#include <QThread>
 
-#define timerDelay 1000
+//#define timerDelay 1000
 #define errorDelay 100
 
 //размеры пакетов данных (первые четыре байта всегда содержат начальный, адрес отправителя, адрес получателя и код сообщения, последние два байта - контрольная сумма)
@@ -101,6 +102,14 @@ public:
 private:
     Ui::MainWindow *ui;
     bool AdminTools;
+    int timerDelay = 1000;
+    bool stopIfError = 0;
+    QThread* thread_MK1o = new QThread;
+    QThread* thread_MK1r = new QThread;
+    QThread* thread_MK2o = new QThread;
+    QThread* thread_MK2r = new QThread;
+    QThread* thread_MK3o = new QThread;
+    QThread* thread_MK3r = new QThread;
     ErrorForm *window = new ErrorForm(this);    
     unsigned char data [6];
     unsigned char dataT [6];
