@@ -100,6 +100,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    bool AdminTools;
     ErrorForm *window = new ErrorForm(this);    
     unsigned char data [6];
     unsigned char dataT [6];

@@ -58,6 +58,9 @@ void MainWindow::LoadSettings()
 {
     QString dis1, serial1, dis2, serial2,dis3, serial3,dis4, serial4,dis5, serial5, serial6,dis6;
     QSettings setting("ports.ini", QSettings::IniFormat); //ports.ini файл должен быть в одной папке с exe
+    setting.beginGroup("Admin");// [Admin] в ини файле
+    AdminTools = setting.value("AdminTools","0").toBool();
+    setting.endGroup();
     setting.beginGroup("MK1-osn");// [MK1-osn] в ини файле
     QString status1 = setting.value("work","0").toString();    
     if ( status1 == "on") {
@@ -593,7 +596,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(discon4()),PortMK2rez,SLOT(DisconnectPort()));
     connect(this, SIGNAL(discon5()),PortMK3osn,SLOT(DisconnectPort()));
     connect(this, SIGNAL(discon6()),PortMK3rez,SLOT(DisconnectPort()));
-
     connect(PortMK1osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//Лог ошибок соединения
     connect(PortMK2osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
     connect(PortMK3osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
@@ -623,6 +625,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(window,SIGNAL(hideError(bool)),this,SLOT(ErrorMessage(bool)));
     //connect(timerCloseErrorWindow,SIGNAL(timeout()),this,SLOT(CloseErrorWindow()));
     ui->tabWidget->setCurrentIndex(0);
+    if (AdminTools==0){
+        ui->consolTest->setVisible(false);
+    }else{
+        ui->consolTest->setVisible(true);
+    }
 
     foreach (const QSerialPortInfo &serialPortInfo, QSerialPortInfo::availablePorts())
         {
@@ -631,8 +638,11 @@ MainWindow::MainWindow(QWidget *parent)
         }else{
             ListOfSerialFact.append(serialPortInfo.serialNumber());
         }
-        Print(serialPortInfo.portName()+" Description: "+serialPortInfo.description()+" Serial: "+serialPortInfo.serialNumber());
+        if (AdminTools==1){
+            Print(serialPortInfo.portName()+" Description: "+serialPortInfo.description()+" Serial: "+serialPortInfo.serialNumber());
         }
+        }
+
     for (int i=0;i<ListOfSerial.size();i++)  {
         if (ListOfSerialFact.indexOf(ListOfSerial.at(i))==-1){
             Print("Не подключен конвертер интерфейсов RS-485 (серийный номер "+ListOfSerial.at(i)+")");
@@ -659,9 +669,10 @@ void MainWindow:: OtpravkaZaprosaTelem()
     emit writeData6 (dataQ);
     QTimer::singleShot(timerDelay*0.5,this,SLOT(Vivod_1()));
     //Начало тестового вывода сообщения
-    ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
-    ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-
+    if (AdminTools==1){
+        ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
+        ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+    }
     //Конец теста
 }
 
@@ -746,8 +757,10 @@ void MainWindow::OtpravkaZaprosaProv()
     emit writeData6 (dataQProv);
     QTimer::singleShot(timerDelay*0.5,this,SLOT(Vivod_255()));
     //Начало тестового вывода сообщения
-    ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
-    ui->consolTest->moveCursor(QTextCursor::End);//Scroll    
+    if (AdminTools==1){
+        ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
+        ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+    }
     //Конец теста
 }
 
@@ -757,21 +770,24 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
     unsigned char buffer [dataRead.size()];
     memcpy( buffer, dataRead.data(), dataRead.size());
     if (dataRead.size()==12){
-    ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(buffer[0])+
+        if (AdminTools==1){
+            ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(buffer[0])+
             "/"+QString::number(buffer[1])+"/"+QString::number(buffer[2])+"/"+QString::number(buffer[3])+
             "/"+QString::number(buffer[4])+"/"+QString::number(buffer[5])+"/"+QString::number(buffer[6])+
             "/"+QString::number(buffer[7])+"/"+QString::number(buffer[8])+"/"+QString::number(buffer[9])
             +"/"+QString::number(buffer[10])+"/"+QString::number(buffer[11])+'\r'); // Вывод текста в консоль
-    ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-}
+            ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+        }
+    }
     //КОнец теста
     //Печать буфера в тест консоль
     if (dataRead.size()==6){
     unsigned char buffer [dataRead.size()];
     memcpy( buffer, dataRead.data(), dataRead.size());
-
-    ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(buffer[0])+"/"+QString::number(buffer[1])+"/"+QString::number(buffer[2])+"/"+QString::number(buffer[3])+"/"+QString::number(buffer[4])+"/"+QString::number(buffer[5])+'\r'); // Вывод текста в консоль
-    ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+    if (AdminTools==1){
+        ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(buffer[0])+"/"+QString::number(buffer[1])+"/"+QString::number(buffer[2])+"/"+QString::number(buffer[3])+"/"+QString::number(buffer[4])+"/"+QString::number(buffer[5])+'\r'); // Вывод текста в консоль
+        ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+    }
 }
     //КОнец теста
     //test start
@@ -780,10 +796,11 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
         memcpy( buffer, dataRead.data(), dataRead.size());
         QString Data;
         for (int h=0;h<dataRead.size();h++){
-             Data=Data+"/"+QString::number(buffer[0]);
+             Data=Data+"/"+QString::number(buffer[h]);
         }
-
-        ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+Data+'\r');
+        if (AdminTools==1){
+            ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+Data+'\r');
+        }
     }
     //test end
 
