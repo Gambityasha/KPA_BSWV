@@ -737,7 +737,6 @@ void MainWindow:: OtpravkaZaprosaTarir()
 {
 
     //QByteArray dataQt = QByteArray::fromRawData((char*)dataT,sizeof(dataT));
-    //emit writeData (dataQt);
     emit writeData1 (dataQt);
     emit writeData2 (dataQt);
     emit writeData3 (dataQt);
@@ -750,7 +749,6 @@ void MainWindow::OtpravkaZaprosaNomer()
 {
 
     //QByteArray dataQNomer = QByteArray::fromRawData((char*)dataNomer,sizeof(dataNomer));
-    //emit writeData (dataQNomer);
     emit writeData1 (dataQNomer);
     emit writeData2 (dataQNomer);
     emit writeData3 (dataQNomer);
@@ -1867,7 +1865,12 @@ void MainWindow::RequestSender(int messageNumber)
     if (stopRequest!=1){
         switch (messageNumber){
             case 1:
-
+            emit writeToPort1 (messageNumber,dataQ,otvetTelemSize);
+            emit writeToPort2 (messageNumber,dataQ,otvetTelemSize);
+            emit writeToPort3 (messageNumber,dataQ,otvetTelemSize);
+            emit writeToPort4 (messageNumber,dataQ,otvetTelemSize);
+            emit writeToPort5 (messageNumber,dataQ,otvetTelemSize);
+            emit writeToPort6 (messageNumber,dataQ,otvetTelemSize);
             break;
             case 255:
 
