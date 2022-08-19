@@ -243,40 +243,39 @@ void MainWindow::ErrorMessage(bool status)
 
 void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName)
 {
-    //if ((error==1)||(error==13)||(error==9)){
-    if ((error!=0)){
-        for (int i=0;i<ListOfBSWVData.size();i++){
-            if (ListOfBSWVData[i].namePort==portName){
-                ListOfBSWVData[i].errorStatus=1;
-            }
-        }
-        if (timerReconnect->isActive()){
-        //ничего не делать
-        }
-        else {
-            timerReconnect->start();
 
-            if (ui->lblError->isVisible()){//ничего не делать
-            }else{
-                window->open();
-            }
-        }
-    }else if (error==0){
-        for (int i=0;i<ListOfBSWVData.size();i++){
-            if (ListOfBSWVData[i].namePort==portName){
-                ListOfBSWVData[i].errorStatus=0;
-            }
-        }
-        if ((ListOfBSWVData.at(0).errorStatus==0)&(ListOfBSWVData.at(1).errorStatus==0)&(ListOfBSWVData.at(2).errorStatus==0)&
-           (ListOfBSWVData.at(3).errorStatus==0)& (ListOfBSWVData.at(4).errorStatus==0)&(ListOfBSWVData.at(5).errorStatus==0)){
-           timerReconnect->stop();
-           delay(2000);
-//           emit discon1();emit discon2();emit discon3();emit discon4();emit discon5();emit discon6();
-//           LoadSettings();
-           window->close();
-           ui->lblError->setVisible(false);
-        }
-    }
+//    if ((error!=0)){
+//        for (int i=0;i<ListOfBSWVData.size();i++){
+//            if (ListOfBSWVData[i].namePort==portName){
+//                ListOfBSWVData[i].errorStatus=1;
+//            }
+//        }
+//        if (timerReconnect->isActive()){
+//        //ничего не делать
+//        }
+//        else {
+//            timerReconnect->start();
+
+//            if (ui->lblError->isVisible()){//ничего не делать
+//            }else{
+//                window->open();
+//            }
+//        }
+//    }else if (error==0){
+//        for (int i=0;i<ListOfBSWVData.size();i++){
+//            if (ListOfBSWVData[i].namePort==portName){
+//                ListOfBSWVData[i].errorStatus=0;
+//            }
+//        }
+//        if ((ListOfBSWVData.at(0).errorStatus==0)&(ListOfBSWVData.at(1).errorStatus==0)&(ListOfBSWVData.at(2).errorStatus==0)&
+//           (ListOfBSWVData.at(3).errorStatus==0)& (ListOfBSWVData.at(4).errorStatus==0)&(ListOfBSWVData.at(5).errorStatus==0)){
+//           timerReconnect->stop();
+//           delay(2000);
+
+//           window->close();
+//           ui->lblError->setVisible(false);
+//        }
+//    }
 }
 //    }else {
 //        for (int i=0;i<ListOfBSWVData.size();i++){
@@ -303,8 +302,12 @@ void MainWindow::Reconnect( )
              dis1 = setting.value("description","0").toString();
              serial1 = setting.value("serialNumber","0").toString();
              QString name1 = getPortName(dis1,serial1);
-             emit savesettings1(name1, baudrate, databits, parity, stopbits, flowcontrol);
+             emit savesettings1(name1, baudrate, databits, parity, stopbits, flowcontrol);             
              emit con1();
+             //test
+
+
+             //...test
         }
         setting.endGroup();
     }
@@ -484,12 +487,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tblAcp->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tblAcp->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     //ui->tabWidget->setSizePolicy(QSizePolicy::Stretch);
-    port *PortMK1osn = new port();
-    port *PortMK1rez = new port();
-    port *PortMK2osn = new port();
-    port *PortMK2rez = new port();
-    port *PortMK3osn = new port();
-    port *PortMK3rez = new port();
+
 
     PortMK1osn->moveToThread(thread_MK1o);
     PortMK1rez->moveToThread(thread_MK1r);
@@ -498,12 +496,12 @@ MainWindow::MainWindow(QWidget *parent)
     PortMK3osn->moveToThread(thread_MK3o);
     PortMK3rez->moveToThread(thread_MK3r);
 
-    thread_MK1o->start();
-    thread_MK1r->start();
-    thread_MK2o->start();
-    thread_MK2r->start();
-    thread_MK3o->start();
-    thread_MK3r->start();
+    thread_MK1o->start(QThread::TimeCriticalPriority);
+    thread_MK1r->start(QThread::TimeCriticalPriority);
+    thread_MK2o->start(QThread::TimeCriticalPriority);
+    thread_MK2r->start(QThread::TimeCriticalPriority);
+    thread_MK3o->start(QThread::TimeCriticalPriority);
+    thread_MK3r->start(QThread::TimeCriticalPriority);
 
 
     //-----------------Формирование исходящего сообщения для БСШ-В (тип 1 - обычный обмен)---------------------
@@ -645,24 +643,24 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
     connect(window,SIGNAL(hideError(bool)),this,SLOT(ErrorMessage(bool)));
-//    connect(thread_MK1o, SIGNAL(finished()), thread_MK1o, SLOT(deleteLater()));
-//    connect(thread_MK2o, SIGNAL(finished()), thread_MK2o, SLOT(deleteLater()));
-//    connect(thread_MK3o, SIGNAL(finished()), thread_MK3o, SLOT(deleteLater()));
-//    connect(thread_MK1r, SIGNAL(finished()), thread_MK1r, SLOT(deleteLater()));
-//    connect(thread_MK2r, SIGNAL(finished()), thread_MK2r, SLOT(deleteLater()));
-//    connect(thread_MK3r, SIGNAL(finished()), thread_MK3r, SLOT(deleteLater()));
-//    connect(PortMK1osn, SIGNAL(finished_port()), thread_MK1o, SLOT(quit()));
-//    connect(PortMK2osn, SIGNAL(finished_Port()), thread_MK2o, SLOT(quit()));
-//    connect(PortMK3osn, SIGNAL(finished_Port()), thread_MK3o, SLOT(quit()));
-//    connect(PortMK1rez, SIGNAL(finished_Port()), thread_MK1r, SLOT(quit()));
-//    connect(PortMK2rez, SIGNAL(finished_Port()), thread_MK2r, SLOT(quit()));
-//    connect(PortMK3rez, SIGNAL(finished_Port()), thread_MK3r, SLOT(quit()));
-//    connect(thread_MK1o, SIGNAL(finished()), PortMK1osn, SLOT(deleteLater()));
-//    connect(thread_MK2o, SIGNAL(finished()), PortMK2osn, SLOT(deleteLater()));
-//    connect(thread_MK3o, SIGNAL(finished()), PortMK3osn, SLOT(deleteLater()));
-//    connect(thread_MK1r, SIGNAL(finished()), PortMK1rez, SLOT(deleteLater()));
-//    connect(thread_MK2r, SIGNAL(finished()), PortMK2rez, SLOT(deleteLater()));
-//    connect(thread_MK3r, SIGNAL(finished()), PortMK3rez, SLOT(deleteLater()));
+    connect(thread_MK1o, SIGNAL(finished()), thread_MK1o, SLOT(deleteLater()));
+    connect(thread_MK2o, SIGNAL(finished()), thread_MK2o, SLOT(deleteLater()));
+    connect(thread_MK3o, SIGNAL(finished()), thread_MK3o, SLOT(deleteLater()));
+    connect(thread_MK1r, SIGNAL(finished()), thread_MK1r, SLOT(deleteLater()));
+    connect(thread_MK2r, SIGNAL(finished()), thread_MK2r, SLOT(deleteLater()));
+    connect(thread_MK3r, SIGNAL(finished()), thread_MK3r, SLOT(deleteLater()));
+    connect(PortMK1osn, SIGNAL(finished_port()), thread_MK1o, SLOT(quit()));
+    connect(PortMK2osn, SIGNAL(finished_Port()), thread_MK2o, SLOT(quit()));
+    connect(PortMK3osn, SIGNAL(finished_Port()), thread_MK3o, SLOT(quit()));
+    connect(PortMK1rez, SIGNAL(finished_Port()), thread_MK1r, SLOT(quit()));
+    connect(PortMK2rez, SIGNAL(finished_Port()), thread_MK2r, SLOT(quit()));
+    connect(PortMK3rez, SIGNAL(finished_Port()), thread_MK3r, SLOT(quit()));
+    connect(thread_MK1o, SIGNAL(finished()), PortMK1osn, SLOT(deleteLater()));
+    connect(thread_MK2o, SIGNAL(finished()), PortMK2osn, SLOT(deleteLater()));
+    connect(thread_MK3o, SIGNAL(finished()), PortMK3osn, SLOT(deleteLater()));
+    connect(thread_MK1r, SIGNAL(finished()), PortMK1rez, SLOT(deleteLater()));
+    connect(thread_MK2r, SIGNAL(finished()), PortMK2rez, SLOT(deleteLater()));
+    connect(thread_MK3r, SIGNAL(finished()), PortMK3rez, SLOT(deleteLater()));
 
 
 

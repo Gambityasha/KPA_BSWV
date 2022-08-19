@@ -112,7 +112,7 @@ void port :: WriteToPort(QByteArray data){//Запись данных в пор�
     if(thisPort.isOpen()){
     thisPort.write(data,6);
     thisPort.flush();
-    thisPort.waitForBytesWritten(10);
+    //thisPort.waitForBytesWritten(1);
     }
 }
 
@@ -121,7 +121,7 @@ void port::WriteToPortTestRS(QByteArray data)
     if(thisPort.isOpen()){
     thisPort.write(data,8);
     thisPort.flush();
-    thisPort.waitForBytesWritten(1);
+    //thisPort.waitForBytesWritten(1);
     }
 }
 

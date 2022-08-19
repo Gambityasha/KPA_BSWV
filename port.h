@@ -4,7 +4,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include "stdint.h"
 #include <QObject>
-#include "mainwindow.h"
+//#include "mainwindow.h"
 #include <QThread>
 #pragma once //еще одна защита от повторного включения
 

@@ -100,6 +100,12 @@ public:
 
 
 private:
+    port *PortMK1osn = new port();
+    port *PortMK1rez = new port();
+    port *PortMK2osn = new port();
+    port *PortMK2rez = new port();
+    port *PortMK3osn = new port();
+    port *PortMK3rez = new port();
     Ui::MainWindow *ui;
     bool AdminTools;
     int timerDelay = 1000;
