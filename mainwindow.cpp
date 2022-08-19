@@ -244,38 +244,38 @@ void MainWindow::ErrorMessage(bool status)
 void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName)
 {
 
-//    if ((error!=0)){
-//        for (int i=0;i<ListOfBSWVData.size();i++){
-//            if (ListOfBSWVData[i].namePort==portName){
-//                ListOfBSWVData[i].errorStatus=1;
-//            }
-//        }
-//        if (timerReconnect->isActive()){
-//        //ничего не делать
-//        }
-//        else {
-//            timerReconnect->start();
+    if ((error!=0)){
+        for (int i=0;i<ListOfBSWVData.size();i++){
+            if (ListOfBSWVData[i].namePort==portName){
+                ListOfBSWVData[i].errorStatus=1;
+            }
+        }
+        if (timerReconnect->isActive()){
+        //ничего не делать
+        }
+        else {
+            timerReconnect->start();
 
-//            if (ui->lblError->isVisible()){//ничего не делать
-//            }else{
-//                window->open();
-//            }
-//        }
-//    }else if (error==0){
-//        for (int i=0;i<ListOfBSWVData.size();i++){
-//            if (ListOfBSWVData[i].namePort==portName){
-//                ListOfBSWVData[i].errorStatus=0;
-//            }
-//        }
-//        if ((ListOfBSWVData.at(0).errorStatus==0)&(ListOfBSWVData.at(1).errorStatus==0)&(ListOfBSWVData.at(2).errorStatus==0)&
-//           (ListOfBSWVData.at(3).errorStatus==0)& (ListOfBSWVData.at(4).errorStatus==0)&(ListOfBSWVData.at(5).errorStatus==0)){
-//           timerReconnect->stop();
-//           delay(2000);
+            if (ui->lblError->isVisible()){//ничего не делать
+            }else{
+                window->open();
+            }
+        }
+    }else if (error==0){
+        for (int i=0;i<ListOfBSWVData.size();i++){
+            if (ListOfBSWVData[i].namePort==portName){
+                ListOfBSWVData[i].errorStatus=0;
+            }
+        }
+        if ((ListOfBSWVData.at(0).errorStatus==0)&(ListOfBSWVData.at(1).errorStatus==0)&(ListOfBSWVData.at(2).errorStatus==0)&
+           (ListOfBSWVData.at(3).errorStatus==0)& (ListOfBSWVData.at(4).errorStatus==0)&(ListOfBSWVData.at(5).errorStatus==0)){
+           timerReconnect->stop();
+           delay(2000);
 
-//           window->close();
-//           ui->lblError->setVisible(false);
-//        }
-//    }
+           window->close();
+           ui->lblError->setVisible(false);
+        }
+    }
 }
 //    }else {
 //        for (int i=0;i<ListOfBSWVData.size();i++){
@@ -488,22 +488,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tblAcp->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     //ui->tabWidget->setSizePolicy(QSizePolicy::Stretch);
 
-
-    PortMK1osn->moveToThread(thread_MK1o);
-    PortMK1rez->moveToThread(thread_MK1r);
-    PortMK2osn->moveToThread(thread_MK2o);
-    PortMK2rez->moveToThread(thread_MK2r);
-    PortMK3osn->moveToThread(thread_MK3o);
-    PortMK3rez->moveToThread(thread_MK3r);
-
-    thread_MK1o->start(QThread::TimeCriticalPriority);
-    thread_MK1r->start(QThread::TimeCriticalPriority);
-    thread_MK2o->start(QThread::TimeCriticalPriority);
-    thread_MK2r->start(QThread::TimeCriticalPriority);
-    thread_MK3o->start(QThread::TimeCriticalPriority);
-    thread_MK3r->start(QThread::TimeCriticalPriority);
-
-
     //-----------------Формирование исходящего сообщения для БСШ-В (тип 1 - обычный обмен)---------------------
     data[0] = startByte;
     data[1] = outAdr;
@@ -643,26 +627,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
     connect(window,SIGNAL(hideError(bool)),this,SLOT(ErrorMessage(bool)));
-    connect(thread_MK1o, SIGNAL(finished()), thread_MK1o, SLOT(deleteLater()));
-    connect(thread_MK2o, SIGNAL(finished()), thread_MK2o, SLOT(deleteLater()));
-    connect(thread_MK3o, SIGNAL(finished()), thread_MK3o, SLOT(deleteLater()));
-    connect(thread_MK1r, SIGNAL(finished()), thread_MK1r, SLOT(deleteLater()));
-    connect(thread_MK2r, SIGNAL(finished()), thread_MK2r, SLOT(deleteLater()));
-    connect(thread_MK3r, SIGNAL(finished()), thread_MK3r, SLOT(deleteLater()));
-    connect(PortMK1osn, SIGNAL(finished_port()), thread_MK1o, SLOT(quit()));
-    connect(PortMK2osn, SIGNAL(finished_Port()), thread_MK2o, SLOT(quit()));
-    connect(PortMK3osn, SIGNAL(finished_Port()), thread_MK3o, SLOT(quit()));
-    connect(PortMK1rez, SIGNAL(finished_Port()), thread_MK1r, SLOT(quit()));
-    connect(PortMK2rez, SIGNAL(finished_Port()), thread_MK2r, SLOT(quit()));
-    connect(PortMK3rez, SIGNAL(finished_Port()), thread_MK3r, SLOT(quit()));
-    connect(thread_MK1o, SIGNAL(finished()), PortMK1osn, SLOT(deleteLater()));
-    connect(thread_MK2o, SIGNAL(finished()), PortMK2osn, SLOT(deleteLater()));
-    connect(thread_MK3o, SIGNAL(finished()), PortMK3osn, SLOT(deleteLater()));
-    connect(thread_MK1r, SIGNAL(finished()), PortMK1rez, SLOT(deleteLater()));
-    connect(thread_MK2r, SIGNAL(finished()), PortMK2rez, SLOT(deleteLater()));
-    connect(thread_MK3r, SIGNAL(finished()), PortMK3rez, SLOT(deleteLater()));
-
-
 
     //connect(timerCloseErrorWindow,SIGNAL(timeout()),this,SLOT(CloseErrorWindow()));
     ui->tabWidget->setCurrentIndex(0);
@@ -812,7 +776,7 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
     memcpy( buffer, dataRead.data(), dataRead.size());
     if (dataRead.size()==12){
         if (AdminTools==1){
-            ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(buffer[0])+
+            ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+comName+" - "+QString::number(buffer[0])+
             "/"+QString::number(buffer[1])+"/"+QString::number(buffer[2])+"/"+QString::number(buffer[3])+
             "/"+QString::number(buffer[4])+"/"+QString::number(buffer[5])+"/"+QString::number(buffer[6])+
             "/"+QString::number(buffer[7])+"/"+QString::number(buffer[8])+"/"+QString::number(buffer[9])
@@ -826,7 +790,7 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
     unsigned char buffer [dataRead.size()];
     memcpy( buffer, dataRead.data(), dataRead.size());
     if (AdminTools==1){
-        ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(buffer[0])+"/"+QString::number(buffer[1])+"/"+QString::number(buffer[2])+"/"+QString::number(buffer[3])+"/"+QString::number(buffer[4])+"/"+QString::number(buffer[5])+'\r'); // Вывод текста в консоль
+        ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+comName+" - "+QString::number(buffer[0])+"/"+QString::number(buffer[1])+"/"+QString::number(buffer[2])+"/"+QString::number(buffer[3])+"/"+QString::number(buffer[4])+"/"+QString::number(buffer[5])+'\r'); // Вывод текста в консоль
         ui->consolTest->moveCursor(QTextCursor::End);//Scroll
     }
 }
@@ -840,7 +804,7 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
              Data=Data+"/"+QString::number(buffer[h]);
         }
         if (AdminTools==1){
-            ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+Data+'\r');
+            ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+comName+" - "+Data+'\r');
         }
     }
     //test end

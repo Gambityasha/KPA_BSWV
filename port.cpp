@@ -121,7 +121,6 @@ void port::WriteToPortTestRS(QByteArray data)
     if(thisPort.isOpen()){
     thisPort.write(data,8);
     thisPort.flush();
-    //thisPort.waitForBytesWritten(1);
     }
 }
 
