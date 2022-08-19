@@ -1649,6 +1649,7 @@ void MainWindow::on_btnStart_clicked()
         ui->btnStart->setText("Начать обмен");
         //timerWriteInFile->stop();
         currentRequestNumber=0;
+        stopRequest=1;
         delay(1000);
         ui->greenMK1o->setVisible(false);
         ui->redMK1o->setVisible(true);
@@ -1664,6 +1665,7 @@ void MainWindow::on_btnStart_clicked()
         ui->redMK3r->setVisible(true);
     }
     else {
+        currentRequestNumber=1;
         RequestSender(1,"");
         ui->tblBSWV->setEnabled(true);
         ui->tabWidget->setTabEnabled(0,false);
@@ -1934,6 +1936,7 @@ void MainWindow::on_pbReconnectRS485_clicked()
 void MainWindow::RequestSender(int numberRequest, QString portName)
 {
     if (stopRequest!=1){
+        currentRequestNumber=numberRequest;
         switch (numberRequest){
             case 1:
                 emit writeToPort1 (dataQ,otvetTelemSize, numberRequest);

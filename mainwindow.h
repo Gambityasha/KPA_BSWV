@@ -155,8 +155,8 @@ private:
     QByteArray otvet485data;
     QString otvet485name;
 
-    int currentRequestNumber;
-    bool stopRequest;
+    int currentRequestNumber=0;
+    bool stopRequest=0;
 
 public:
 
