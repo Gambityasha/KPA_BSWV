@@ -99,7 +99,7 @@ void port::handleError(QSerialPort::SerialPortError error)//проверка о�
     emit error_(errorDiscription);
 }
 
-void port::DisconnectPort()//Отключаем порт
+void port::DisconnectPort()//Отключаем порт.
 {
     if(thisPort.isOpen()){
        thisPort.close();
