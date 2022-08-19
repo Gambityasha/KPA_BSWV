@@ -135,6 +135,76 @@ void port :: ReadInPort(){//Чтение данных из порта
     //((QString)(adr.toInt())).toLatin1().toHex()
 }
 
+void port::Exchange(QByteArray data, int otvetSize, int numberRequest)
+{
+    if (transactionInProgress){
+        emit error_("Попытка начать новую передачу данных, пока не закончилась предыдущая");
+        return;
+    }else{
+        transactionInProgress = true;
+    }
+    QByteArray responseData;
+    responseData.clear();
+    int sizeRead = 0;
+    bool protocol_waiting_timeout = false;
+    bool listening_timeout = false;
+    int allrequiredbytes_time; //время, которое потребовалось, чтобы получить все необходимые (или даже лишние) байты
+    if(thisPort.isOpen()){
+    thisPort.write(data,otvetSize);
+    thisPort.flush();
+    if (thisPort.waitForBytesWritten(10)){
+        QTime protocol_waiting_dieTime = QTime::currentTime().addMSecs(protocol_waiting_time); //рассчитываем время, по достижению которого мы понимаем, что нам не успели ответить по протоколу
+        QTime listening_dieTime = QTime::currentTime().addMSecs(listening_time); //рассчитываем время, по достижению которого мы понимаем, что нам не отвечают даже с учетом "запасного" времени
+        QTime start_transaction_time = QTime::currentTime();
+        do {
+            thisPort.waitForReadyRead(1);
+            responseData += thisPort.readAll();
+            sizeRead=responseData.size();
+            if (QTime::currentTime() >= protocol_waiting_dieTime){
+                protocol_waiting_timeout = true;
+            }else{
+                protocol_waiting_timeout = false;
+            }
+        }while ((sizeRead < otvetSize) && (!protocol_waiting_timeout));//пока не приняли необходимое количество байт или пока ждали слишком долго
+        if (protocol_waiting_timeout){ //если в течение необходимого по протоколу времени не пришло достаточно байт
+            emit error_(QString("не удалось за отведенное время (%1мс) принять необходимое количество байт: приняли %2 из %3").arg(protocol_waiting_time).arg(sizeRead).arg(otvetSize));
+            do {
+                thisPort.waitForReadyRead(1);
+                responseData += thisPort.readAll();
+                sizeRead=responseData.size();
+                if (QTime::currentTime() >= listening_dieTime){
+                    listening_timeout = true;
+                } else {
+                    listening_timeout = false;
+                    }
+            } while ((sizeRead < otvetSize) && (!listening_timeout));//пока не приняли необходимое количество байт либо пока не наступил таймаут listening_time
+              if (sizeRead >= otvetSize){ //если приняли данных больше либо равно, чем требовалось
+                  allrequiredbytes_time = start_transaction_time.msecsTo(QTime::currentTime()); //фиксируем, сколько прошло времени с момента начала транзакции
+                  emit error_(QString(" однако за (%3мс) приняли %1 из %2").arg(sizeRead).arg(otvetSize).arg(allrequiredbytes_time));
+              }
+        }else {
+             if (sizeRead > otvetSize){
+                 emit error_(QString("приняли данных больше, чем должны были: %1 из %2").arg(sizeRead).arg(otvetSize));
+             }
+        }
+        }else {
+             emit error_("не удалось за отведенное время отправиить все байты");
+        }
+    } else {
+          emit error_ ("пытаемся совершать посылку в порт, который не удалось открыть");
+    }
+      emit sendBSWVtm(responseData,thisPort.portName());
+      transactionInProgress = false;
+      switch (numberRequest){
+          case 1:
+              emit nextRequest(255,thisPort.portName());
+          break;
+          case 255:
+          emit nextRequest(1,thisPort.portName());
+          break;
+      }
+}
+
 port::~port()
 {
     thisPort.close();    

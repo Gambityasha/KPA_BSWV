@@ -147,13 +147,16 @@ private:
     int otvetTarirSize = 22;
     int otvetMKSize = 7;
     int otvetProvSize = 6;
-    int otvetTestRS485Size = 8;    
+    int otvetTestRS485Size = 8;
+    QByteArray dataQ;
+    QByteArray dataQProv;
     QString error;
     QString a;
     QByteArray otvet485data;
     QString otvet485name;
 
-
+    int currentRequestNumber;
+    bool stopRequest;
 
 public:
 
@@ -163,6 +166,7 @@ public:
     QTimer *timerReconnect;
     QTimer *timerWriteInFile;
     QTimer *timerCloseErrorWindow;
+
     QByteArray otvet;
     BSWVdata BSWV;
     QList <BSWVdata>ListOfBSWVData;
@@ -224,6 +228,8 @@ private slots:
    void on_tabWidget_currentChanged(int index);
    void on_pbReconnectRS485_clicked();
 
+   void RequestSender(int numberRequest, QString portName);
+
 signals:
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void savesettings2(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
@@ -237,6 +243,12 @@ signals:
    void writeData4(QByteArray dataQ);
    void writeData5(QByteArray dataQ);
    void writeData6(QByteArray dataQ);
+   void writeToPort1(QByteArray dataQ, int otvetSize, int numberRequest);
+   void writeToPort2(QByteArray dataQ, int otvetSize, int numberRequest);
+   void writeToPort3(QByteArray dataQ, int otvetSize, int numberRequest);
+   void writeToPort4(QByteArray dataQ, int otvetSize, int numberRequest);
+   void writeToPort5(QByteArray dataQ, int otvetSize, int numberRequest);
+   void writeToPort6(QByteArray dataQ, int otvetSize, int numberRequest);
    void con1();void con2();void con3();void con4();void con5();void con6();
    void discon1();void discon2();void discon3();void discon4();void discon5();void discon6();
    void readyToAnalize(QByteArray otvet, QString comName);

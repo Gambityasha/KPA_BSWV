@@ -6,6 +6,7 @@
 #include <QObject>
 //#include "mainwindow.h"
 #include <QThread>
+#include <QTime>
 #pragma once //еще одна защита от повторного включения
 
 
@@ -30,6 +31,10 @@ public:
      Settings SettingsPort;
     QSerialPort thisPort;
      ~port();
+private:
+    int protocol_waiting_time = 30;
+    int listening_time = 100;
+    bool transactionInProgress;
 
  public slots:
      void  DisconnectPort();
@@ -41,6 +46,7 @@ public:
 
  private slots:
      void handleError(QSerialPort::SerialPortError error);//Слот обработки ошибок
+     void Exchange(QByteArray data, int otvetSize, int numberRequest);
 
 signals:
    void finished_Port(); //Сигнал закрытия класса
@@ -48,6 +54,7 @@ signals:
    void error_(QString err);//Сигнал ошибок порта
    void outPort (QString data); //Сигнал вывода полученных данных
    void errorMessage(QSerialPort::SerialPortError error,QString);
+   void nextRequest(int,QString);
 
 };
 
