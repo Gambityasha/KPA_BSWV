@@ -632,6 +632,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tabWidget->setCurrentIndex(0);
     if (AdminTools==0){
         ui->consolTest->setVisible(false);
+        ui->tabWidget->removeTab(4);
     }else{
         ui->consolTest->setVisible(true);
     }
