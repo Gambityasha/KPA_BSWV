@@ -500,6 +500,7 @@ MainWindow::MainWindow(QWidget *parent)
 //  unsigned char lower = lower1>>8; //получение младшего байта контрольной суммы
     data[4] = upper;
     data[5] = lower;
+    dataQ = QByteArray(reinterpret_cast<char*>(data), sizeof(data));
 //  unsigned short full = (upper*256)+lower; // получение общего значения контрольной суммы из старшего и младшего байтов
 // unsigned short full = (unsigned short) (upper<<8) | lower; // получение общего значения контрольной суммы из старшего и младшего байтов с помощью побитового сложения
 //-----------Конец формирования исходящего сообщения для БСШ-В (тип 1 - телеметрия)-----------
@@ -512,6 +513,7 @@ MainWindow::MainWindow(QWidget *parent)
     unsigned char lowerT = Crc16(dataT,len);
     dataT[4] = upperT;
     dataT[5] = lowerT;
+    dataQt = QByteArray(reinterpret_cast<char*>(dataT), sizeof(dataT));
 //-----------Конец формирования исходящего сообщения для БСШ-В (тип 17 - данные АЦП для калибровки БСШ-В)-----------
 //-----------Формирование исходящего сообщения для БСШ-В (тип 255 - проверка связи)--------
     dataProv[0] = startByte;
@@ -522,6 +524,7 @@ MainWindow::MainWindow(QWidget *parent)
     unsigned char lowerProv = Crc16(dataProv,len);
     dataProv[4] = upperProv;
     dataProv[5] = lowerProv;
+    dataQProv = QByteArray(reinterpret_cast<char*>(dataProv), sizeof(dataProv));
 //-----------Конец формирования исходящего сообщения для БСШ-В (тип 255 - проверка связи)-----------
 //-----------Формирование исходящего сообщения для БСШ-В (тип 34 - проверка номера МУКа)--------
     dataNomer[0] = startByte;
@@ -532,6 +535,7 @@ MainWindow::MainWindow(QWidget *parent)
     unsigned char lowerNomer = Crc16(dataNomer,len);
     dataNomer[4] = upperNomer;
     dataNomer[5] = lowerNomer;
+    dataQNomer = QByteArray(reinterpret_cast<char*>(dataNomer), sizeof(dataNomer));
     //-----------Конец формирования исходящего сообщения для БСШ-В (тип 34 - проверка номера МУКа)-----------
     timerVivod = new QTimer();
     timerReconnect = new QTimer();
@@ -628,6 +632,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
     connect(window,SIGNAL(hideError(bool)),this,SLOT(ErrorMessage(bool)));
 
+    connect(this, SIGNAL(writeToPort1(int,QByteArray,int)),PortMK1osn,SLOT(Exchange(int,QByteArray,int)));
+    connect(this, SIGNAL(writeToPort2(int,QByteArray,int)),PortMK2osn,SLOT(Exchange(int,QByteArray,int)));
+    connect(this, SIGNAL(writeToPort3(int,QByteArray,int)),PortMK3osn,SLOT(Exchange(int,QByteArray,int)));
+    connect(this, SIGNAL(writeToPort4(int,QByteArray,int)),PortMK1rez,SLOT(Exchange(int,QByteArray,int)));
+    connect(this, SIGNAL(writeToPort5(int,QByteArray,int)),PortMK2rez,SLOT(Exchange(int,QByteArray,int)));
+    connect(this, SIGNAL(writeToPort6(int,QByteArray,int)),PortMK3rez,SLOT(Exchange(int,QByteArray,int)));
+
     //connect(timerCloseErrorWindow,SIGNAL(timeout()),this,SLOT(CloseErrorWindow()));
     ui->tabWidget->setCurrentIndex(0);
     if (AdminTools==0){
@@ -665,7 +676,7 @@ void MainWindow:: OtpravkaZaprosaTelem()
         ListOfBSWVprov[i].otvetPoluchen=0;
         ListOfBSWVData[i].otvetPoluchen=0;
     }
-    QByteArray dataQ = QByteArray::fromRawData((char*)data,sizeof(data));
+//    QByteArray dataQ = QByteArray::fromRawData((char*)data,sizeof(data));
     //dataQ[0] = reinterpret_cast<QByteArray>(data[0].data());
     emit writeData1 (dataQ);
     emit writeData2 (dataQ);
@@ -725,7 +736,7 @@ void MainWindow::on_btnNomer_clicked()
 void MainWindow:: OtpravkaZaprosaTarir()
 {
 
-    QByteArray dataQt = QByteArray::fromRawData((char*)dataT,sizeof(dataT));
+    //QByteArray dataQt = QByteArray::fromRawData((char*)dataT,sizeof(dataT));
     //emit writeData (dataQt);
     emit writeData1 (dataQt);
     emit writeData2 (dataQt);
@@ -738,7 +749,7 @@ void MainWindow:: OtpravkaZaprosaTarir()
 void MainWindow::OtpravkaZaprosaNomer()
 {
 
-    QByteArray dataQNomer = QByteArray::fromRawData((char*)dataNomer,sizeof(dataNomer));
+    //QByteArray dataQNomer = QByteArray::fromRawData((char*)dataNomer,sizeof(dataNomer));
     //emit writeData (dataQNomer);
     emit writeData1 (dataQNomer);
     emit writeData2 (dataQNomer);
@@ -751,9 +762,7 @@ void MainWindow::OtpravkaZaprosaNomer()
 
 void MainWindow::OtpravkaZaprosaProv()
 {
-
-
-    QByteArray dataQProv = QByteArray::fromRawData((char*)dataProv,sizeof(dataProv));
+    //QByteArray dataQProv = QByteArray::fromRawData((char*)dataProv,sizeof(dataProv));
 //    emit writeData (dataQProv);
     emit writeData1 (dataQProv);
     emit writeData2 (dataQProv);
@@ -1852,6 +1861,25 @@ void MainWindow::on_pbReconnectRS485_clicked()
     ui->btnStart->setEnabled(true);
 
 }
+
+void MainWindow::RequestSender(int messageNumber)
+{
+    if (stopRequest!=1){
+        switch (messageNumber){
+            case 1:
+
+            break;
+            case 255:
+
+            break;
+
+
+
+        }
+    }
+}
+
+
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -1862,11 +1890,6 @@ MainWindow::~MainWindow()
     delete timerZaprosaProv;
     delete timerWriteInFile;
     delete timerCloseErrorWindow;
-    delete thread_MK1o;
-    delete thread_MK1r;
-    delete thread_MK2o;
-    delete thread_MK2r;
-    delete thread_MK3o;
-    delete thread_MK3r;
+
 
 }

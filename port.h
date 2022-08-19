@@ -39,6 +39,8 @@ public:
      void WriteToPortTestRS(QByteArray data);
      void ReadInPort(); //Слот чтения из порта по ReadyRead
 
+     void Exchange();
+
  private slots:
      void handleError(QSerialPort::SerialPortError error);//Слот обработки ошибок
 

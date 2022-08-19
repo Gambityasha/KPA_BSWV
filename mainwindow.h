@@ -109,19 +109,17 @@ private:
     Ui::MainWindow *ui;
     bool AdminTools;
     int timerDelay = 1000;
-    bool stopIfError = 0;
-    QThread* thread_MK1o = new QThread;
-    QThread* thread_MK1r = new QThread;
-    QThread* thread_MK2o = new QThread;
-    QThread* thread_MK2r = new QThread;
-    QThread* thread_MK3o = new QThread;
-    QThread* thread_MK3r = new QThread;
+    bool stopIfError = 0;    
     ErrorForm *window = new ErrorForm(this);    
     unsigned char data [6];
     unsigned char dataT [6];
     unsigned char dataProv [6];
     unsigned char dataNomer [6];
     unsigned char dataTestRS485 [8];
+    QByteArray dataQ;
+    QByteArray dataQProv;
+    QByteArray dataQNomer;
+    QByteArray dataQt;
     QString name;
     QString fname;    
     QString fACPname;
@@ -152,6 +150,9 @@ private:
     QString a;
     QByteArray otvet485data;
     QString otvet485name;
+
+    int currentMessageNumber=0;
+    bool stopRequest=false;
 
 
 
@@ -224,6 +225,9 @@ private slots:
    void on_tabWidget_currentChanged(int index);
    void on_pbReconnectRS485_clicked();
 
+
+   void RequestSender(int messageNumber);
+
 signals:
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void savesettings2(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
@@ -237,6 +241,14 @@ signals:
    void writeData4(QByteArray dataQ);
    void writeData5(QByteArray dataQ);
    void writeData6(QByteArray dataQ);
+
+   void writeToPort1(int messageNumber,QByteArray data, int otvetSize);
+   void writeToPort2(int messageNumber,QByteArray data, int otvetSize);
+   void writeToPort3(int messageNumber,QByteArray data, int otvetSize);
+   void writeToPort4(int messageNumber,QByteArray data, int otvetSize);
+   void writeToPort5(int messageNumber,QByteArray data, int otvetSize);
+   void writeToPort6(int messageNumber,QByteArray data, int otvetSize);
+
    void con1();void con2();void con3();void con4();void con5();void con6();
    void discon1();void discon2();void discon3();void discon4();void discon5();void discon6();
    void readyToAnalize(QByteArray otvet, QString comName);
