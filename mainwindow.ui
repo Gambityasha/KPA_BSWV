@@ -1037,6 +1037,19 @@
       </widget>
      </widget>
     </item>
+    <item row="2" column="0">
+     <widget class="QPushButton" name="btnStart_2">
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Начать обмен new</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">

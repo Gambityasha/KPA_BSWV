@@ -6,11 +6,8 @@
 #include <QObject>
 //#include "mainwindow.h"
 #include <QThread>
+#include <QTime>
 #pragma once //еще одна защита от повторного включения
-
-
-
-
 
 struct Settings
 {
@@ -29,6 +26,9 @@ public:
     explicit port(QObject *parent = nullptr);
      Settings SettingsPort;
     QSerialPort thisPort;
+    bool transactionInProgress=false;
+    int protocol_waiting_time=60;
+    int listening_time=100;
      ~port();
 
  public slots:
@@ -39,7 +39,7 @@ public:
      void WriteToPortTestRS(QByteArray data);
      void ReadInPort(); //Слот чтения из порта по ReadyRead
 
-     void Exchange();
+     void Exchange(int messageNumber,QByteArray data, int otvetSize, int chNumber);
 
  private slots:
      void handleError(QSerialPort::SerialPortError error);//Слот обработки ошибок
@@ -50,6 +50,7 @@ signals:
    void error_(QString err);//Сигнал ошибок порта
    void outPort (QString data); //Сигнал вывода полученных данных
    void errorMessage(QSerialPort::SerialPortError error,QString);
+   void nextMessage(int messageNumber, int chNumber);
 
 };
 

@@ -52,6 +52,9 @@ struct BSWVdata //создание структуры
     short otvetPoluchen; //0 - не получен, 1 - получен
     short errorStatus;//0 - нет ошибок порта, 1 - есть ошибки порта    
     bool on_off_status;
+    QTime timeOut;
+    QTime timeIn;
+    int pingMs;
 };
 
 struct BSWVtarir //создание структуры
@@ -67,6 +70,9 @@ struct BSWVtarir //создание структуры
     float tcorp1;//"Температура 1 корпуса прибора"
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
+    QTime timeOut;
+    QTime timeIn;
+    int pingMs;
 
 };
 struct BSWVprov //создание структуры
@@ -76,6 +82,9 @@ struct BSWVprov //создание структуры
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
     int dopPaket;
+    QTime timeOut;
+    QTime timeIn;
+    int pingMs;
 };
 struct BSWVnomerMK //создание структуры
 {
@@ -85,6 +94,9 @@ struct BSWVnomerMK //создание структуры
     QString nChan;//номер канала, 0 - основной, 1 - резервный
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
+    QTime timeOut;
+    QTime timeIn;
+    int pingMs;
 
 };
 
@@ -153,7 +165,7 @@ private:
 
     int currentMessageNumber=0;
     bool stopRequest=false;
-
+    bool firstStart=true;
 
 
 public:
@@ -216,6 +228,10 @@ public slots:
     void TimerWriteInFileStart();
     void CloseErrorWindow();
     void WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,int k);
+
+    void RequestSender(int messageNumber,int nextMessageChName);
+void NewObmen(int num);
+
 private slots:
    void on_btnNomer_clicked();
    void on_btnStart_clicked();
@@ -226,7 +242,7 @@ private slots:
    void on_pbReconnectRS485_clicked();
 
 
-   void RequestSender(int messageNumber);
+   void on_btnStart_2_clicked();
 
 signals:
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
@@ -242,12 +258,12 @@ signals:
    void writeData5(QByteArray dataQ);
    void writeData6(QByteArray dataQ);
 
-   void writeToPort1(int messageNumber,QByteArray data, int otvetSize);
-   void writeToPort2(int messageNumber,QByteArray data, int otvetSize);
-   void writeToPort3(int messageNumber,QByteArray data, int otvetSize);
-   void writeToPort4(int messageNumber,QByteArray data, int otvetSize);
-   void writeToPort5(int messageNumber,QByteArray data, int otvetSize);
-   void writeToPort6(int messageNumber,QByteArray data, int otvetSize);
+   void writeToPort1(int messageNumber,QByteArray data, int otvetSize, int chName);
+   void writeToPort2(int messageNumber,QByteArray data, int otvetSize, int chName);
+   void writeToPort3(int messageNumber,QByteArray data, int otvetSize, int chName);
+   void writeToPort4(int messageNumber,QByteArray data, int otvetSize, int chName);
+   void writeToPort5(int messageNumber,QByteArray data, int otvetSize, int chName);
+   void writeToPort6(int messageNumber,QByteArray data, int otvetSize, int chName);
 
    void con1();void con2();void con3();void con4();void con5();void con6();
    void discon1();void discon2();void discon3();void discon4();void discon5();void discon6();
