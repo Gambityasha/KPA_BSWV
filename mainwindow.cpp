@@ -644,11 +644,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK2rez, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
     connect(PortMK3rez, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
     connect(PortMK3osn, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
-
-
-
-
-    //connect(timerCloseErrorWindow,SIGNAL(timeout()),this,SLOT(CloseErrorWindow()));
     ui->tabWidget->setCurrentIndex(0);
     if (AdminTools==0){
         ui->consolTest->setVisible(false);
@@ -905,8 +900,8 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                  ListOfBSWVData[i].tcorp2 = float(buffer[8])*0.36+0;//"Температура 2 корпуса прибора"
                                  ListOfBSWVData[i].tcorp1 = float(buffer[9])*0.36+0;//"Температура 1 корпуса прибора"
                                  ListOfBSWVData[i].otvetPoluchen=1;
-                                 NewObmen(255);
-                                 ListOfBSWVData[i].timeIn=QTime::currentTime();
+//                                 NewObmen(255);
+
                                  //ListOfBSWVData[i].pingMs = int (ListOfBSWVData[i].timeIn-ListOfBSWVData[i].timeOut;
                             }
                             else {ListOfBSWVData[i].otvetPoluchen=0;
@@ -997,8 +992,8 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                unsigned char lowerCRCR = Crc16(buffer,le);
                                if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
                                     ListOfBSWVprov[i].otvetPoluchen=1;
-                                    ListOfBSWVprov[i].timeIn=QTime::currentTime();
-                                    NewObmen(1);
+
+                                    //NewObmen(1);
                                } else {
                                     ListOfBSWVprov[i].otvetPoluchen=0;
                                     Print("Не совпала контрольная сумма пакета 255 от "+ListOfBSWVprov[i].name);
@@ -1833,48 +1828,21 @@ void MainWindow::on_pbReconnectRS485_clicked()
 
 void MainWindow::RequestSender(int messageNumber, int nextMessageChName)
 {
-delay(1000);
-    if (stopRequest!=1){
+    delay(100);
+
+    if (stopRequest==true){
+        return;
+    }else{
         switch (messageNumber){
             case 1:
             if (AdminTools==1){
                 ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
                 ui->consolTest->moveCursor(QTextCursor::End);//Scroll
             }
-
-            //if ((ListOfBSWVprov.at(0).otvetPoluchen==1)&&(ListOfBSWVprov.at(1).otvetPoluchen==1)&&(ListOfBSWVprov.at(2).otvetPoluchen==1)&&
-              // (ListOfBSWVprov.at(3).otvetPoluchen==1)&&(ListOfBSWVprov.at(4).otvetPoluchen==1)&&(ListOfBSWVprov.at(5).otvetPoluchen==1)){
-            if (firstStart==true){
-                switch (nextMessageChName){
-                case 1:{
-                    emit writeToPort1 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
-                    break;
-//                case 2:
-//                    emit writeToPort2 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
-//                    break;
-//                case 3:
-//                    emit writeToPort3 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
-//                    break;
-//                case 4:
-//                    emit writeToPort4 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
-//                    break;
-//                case 5:
-//                    emit writeToPort5 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
-//                    break;
-//                case 6:
-//                    emit writeToPort6 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
-//                    break;
-                firstStart=false;
-                }
-                }
-
-                //ListOfBSWVData[nextMessageChName-1].timeOut=QTime::currentTime();
-
-            }else{
             switch (nextMessageChName){
-                case 1:
-                    emit writeToPort1 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
-                    break;
+            case 1:
+                 emit writeToPort1 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
+            break;
 //                case 2:
 //                    emit writeToPort2 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
 //                    break;
@@ -1890,30 +1858,16 @@ delay(1000);
 //                case 6:
 //                    emit writeToPort6 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
 //                    break;
-                }
-
-                //ListOfBSWVData[nextMessageChName-1].timeOut=QTime::currentTime();
-
-                if (AdminTools==1){
-                    ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
-                    ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-                }
-            //}else{
-
             }
-
-            break;
-        case 255:{
-//            if ((ListOfBSWVData.at(0).otvetPoluchen==1)&&(ListOfBSWVData.at(1).otvetPoluchen==1)&&(ListOfBSWVData.at(2).otvetPoluchen==1)&&
-//               (ListOfBSWVData.at(3).otvetPoluchen==1)&&(ListOfBSWVData.at(4).otvetPoluchen==1)&&(ListOfBSWVData.at(5).otvetPoluchen==1)){
+            case 255:
             if (AdminTools==1){
                 ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
                 ui->consolTest->moveCursor(QTextCursor::End);//Scroll
             }
-                switch (nextMessageChName){
-                case 1:
-                    emit writeToPort1 (messageNumber,dataQProv,otvetProvSize,nextMessageChName);
-                    break;
+            switch (nextMessageChName){
+            case 1:
+                emit writeToPort1 (messageNumber,dataQProv,otvetProvSize,nextMessageChName);
+            break;
 //                case 2:
 //                    emit writeToPort2 (messageNumber,dataQProv,otvetProvSize,nextMessageChName);
 //                    break;
@@ -1929,58 +1883,39 @@ delay(1000);
 //                case 6:
 //                    emit writeToPort6 (messageNumber,dataQProv,otvetProvSize,nextMessageChName);
 //                    break;
-                }
-
-                //ListOfBSWVprov[nextMessageChName-1].timeOut=QTime::currentTime();
+            }
 
 
             break;
-            }
         }
     }
 }
 
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-    delete window;
-    delete timerVivod;
-    delete timerReconnect;
-    delete timerZaprosaTelem;
-    delete timerZaprosaProv;
-    delete timerWriteInFile;
-    delete timerCloseErrorWindow;
-
-
-}
-
 void MainWindow::on_btnStart_2_clicked()
 {
-    NewObmen(1);
+    //NewObmen(1);
 }
 
 void MainWindow::NewObmen(int num)
 {
-    switch (num){
-    case 1:
-        ListOfBSWVData[0].timeOut = QTime::currentTime();
-        emit writeData1(dataQ);
-        break;
-    case 255:
-        ListOfBSWVprov[0].timeOut = QTime::currentTime();
-        emit writeData1(dataQProv);
-    }
+//    switch (num){
+//    case 1:
+//        ListOfBSWVData[0].timeOut = QTime::currentTime();
+//        emit writeData1(dataQ);
+//        break;
+//    case 255:
+//        ListOfBSWVprov[0].timeOut = QTime::currentTime();
+//        emit writeData1(dataQProv);
+//    }
 }
 
 void MainWindow::on_btnStart_clicked()
 {
-
-    for (int i=0;i<ListOfBSWVData.size();i++) ListOfBSWVData[i].otvetBuffer.clear();
+    //for (int i=0;i<ListOfBSWVData.size();i++) ListOfBSWVData[i].otvetBuffer.clear();
    // if (timerZaprosaTelem->isActive()){
     if (firstStart==false){
         firstStart=true;
-        stopRequest=1;
+        stopRequest=true;
         ui->btnStart->setEnabled(false);
         ui->tblBSWV->setEnabled(false);
         ui->tabWidget->setTabEnabled(0,true);
@@ -2005,15 +1940,54 @@ void MainWindow::on_btnStart_clicked()
         ui->redMK3r->setVisible(true);
         ui->btnStart->setEnabled(true);
     } else {
-        stopRequest=0;
-        RequestSender(1,1);
+        firstStart=false;
+        stopRequest=false;
         ui->tblBSWV->setEnabled(true);
         ui->tabWidget->setTabEnabled(0,false);
         ui->tabWidget->setTabEnabled(3,false);
         ui->tabWidget->setTabEnabled(2,false);
         ui->btnStart->setText("Закончить обмен");
+        RequestSender(1,1);
 //        timerZaprosaTelem->start(timerDelay);
 //        QTimer::singleShot(timerDelay*0.2,this,SLOT(TimerProvStart()));
 //        QTimer::singleShot(timerDelay*0.4,this,SLOT(TimerWriteInFileStart()));//потом проверить правильность записи в файл!!!
         }
 }
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+    //delete window;
+    window->deleteLater();
+    //delete timerVivod;
+    timerVivod->deleteLater();
+    timerReconnect->stop();
+    //delete timerReconnect;
+    timerReconnect->deleteLater();
+    //delete timerZaprosaTelem;
+    timerZaprosaTelem->deleteLater();
+    //delete timerZaprosaProv;
+    timerZaprosaProv->deleteLater();
+    //delete timerWriteInFile;
+    timerWriteInFile->deleteLater();
+    //delete timerCloseErrorWindow;
+    timerCloseErrorWindow->deleteLater();
+PortMK1osn->DisconnectPort();
+PortMK2osn->DisconnectPort();
+PortMK3osn->DisconnectPort();
+PortMK1rez->DisconnectPort();
+PortMK2rez->DisconnectPort();
+PortMK1rez->DisconnectPort();
+    PortMK1osn->deleteLater();
+    PortMK1rez->deleteLater();
+    PortMK2osn->deleteLater();
+    PortMK2rez->deleteLater();
+    PortMK3osn->deleteLater();
+    PortMK3rez->deleteLater();
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    ui->consolTest->clear();
+}
+

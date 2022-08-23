@@ -52,9 +52,7 @@ struct BSWVdata //создание структуры
     short otvetPoluchen; //0 - не получен, 1 - получен
     short errorStatus;//0 - нет ошибок порта, 1 - есть ошибки порта    
     bool on_off_status;
-    QTime timeOut;
-    QTime timeIn;
-    int pingMs;
+
 };
 
 struct BSWVtarir //создание структуры
@@ -70,9 +68,7 @@ struct BSWVtarir //создание структуры
     float tcorp1;//"Температура 1 корпуса прибора"
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
-    QTime timeOut;
-    QTime timeIn;
-    int pingMs;
+
 
 };
 struct BSWVprov //создание структуры
@@ -82,9 +78,7 @@ struct BSWVprov //создание структуры
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
     int dopPaket;
-    QTime timeOut;
-    QTime timeIn;
-    int pingMs;
+
 };
 struct BSWVnomerMK //создание структуры
 {
@@ -94,9 +88,7 @@ struct BSWVnomerMK //создание структуры
     QString nChan;//номер канала, 0 - основной, 1 - резервный
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
-    QTime timeOut;
-    QTime timeIn;
-    int pingMs;
+
 
 };
 
@@ -112,17 +104,18 @@ public:
 
 
 private:
+    Ui::MainWindow *ui;
+    ErrorForm *window = new ErrorForm(this);
     port *PortMK1osn = new port();
     port *PortMK1rez = new port();
     port *PortMK2osn = new port();
     port *PortMK2rez = new port();
     port *PortMK3osn = new port();
-    port *PortMK3rez = new port();
-    Ui::MainWindow *ui;
+    port *PortMK3rez = new port();    
     bool AdminTools;
     int timerDelay = 1000;
     bool stopIfError = 0;    
-    ErrorForm *window = new ErrorForm(this);    
+
     unsigned char data [6];
     unsigned char dataT [6];
     unsigned char dataProv [6];
@@ -243,6 +236,8 @@ private slots:
 
 
    void on_btnStart_2_clicked();
+
+   void on_pushButton_2_clicked();
 
 signals:
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
