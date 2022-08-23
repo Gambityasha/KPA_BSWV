@@ -500,7 +500,8 @@ MainWindow::MainWindow(QWidget *parent)
 //  unsigned char lower = lower1>>8; //получение младшего байта контрольной суммы
     data[4] = upper;
     data[5] = lower;
-    dataQ = QByteArray(reinterpret_cast<char*>(data), sizeof(data));
+    //dataQ = QByteArray(reinterpret_cast<char*>(data), sizeof(data));
+    dataQ = QByteArray::fromRawData((char*)data,sizeof(data));
 //  unsigned short full = (upper*256)+lower; // получение общего значения контрольной суммы из старшего и младшего байтов
 // unsigned short full = (unsigned short) (upper<<8) | lower; // получение общего значения контрольной суммы из старшего и младшего байтов с помощью побитового сложения
 //-----------Конец формирования исходящего сообщения для БСШ-В (тип 1 - телеметрия)-----------
@@ -524,7 +525,8 @@ MainWindow::MainWindow(QWidget *parent)
     unsigned char lowerProv = Crc16(dataProv,len);
     dataProv[4] = upperProv;
     dataProv[5] = lowerProv;
-    dataQProv = QByteArray(reinterpret_cast<char*>(dataProv), sizeof(dataProv));
+    //dataQProv = QByteArray(reinterpret_cast<char*>(dataProv), sizeof(dataProv));
+    dataQProv = QByteArray::fromRawData((char*)dataProv,sizeof(dataProv));
 //-----------Конец формирования исходящего сообщения для БСШ-В (тип 255 - проверка связи)-----------
 //-----------Формирование исходящего сообщения для БСШ-В (тип 34 - проверка номера МУКа)--------
     dataNomer[0] = startByte;
@@ -632,18 +634,24 @@ MainWindow::MainWindow(QWidget *parent)
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
     connect(window,SIGNAL(hideError(bool)),this,SLOT(ErrorMessage(bool)));
 
-    connect(this, SIGNAL(writeToPort1(int,QByteArray,int,int)),PortMK1osn,SLOT(Exchange(int,QByteArray,int,int)));
-    connect(this, SIGNAL(writeToPort2(int,QByteArray,int,int)),PortMK1rez,SLOT(Exchange(int,QByteArray,int,int)));
-    connect(this, SIGNAL(writeToPort3(int,QByteArray,int,int)),PortMK2osn,SLOT(Exchange(int,QByteArray,int,int)));
-    connect(this, SIGNAL(writeToPort4(int,QByteArray,int,int)),PortMK2rez,SLOT(Exchange(int,QByteArray,int,int)));
-    connect(this, SIGNAL(writeToPort5(int,QByteArray,int,int)),PortMK3osn,SLOT(Exchange(int,QByteArray,int,int)));
-    connect(this, SIGNAL(writeToPort6(int,QByteArray,int,int)),PortMK3rez,SLOT(Exchange(int,QByteArray,int,int)));
-    connect(PortMK1osn, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
-    connect(PortMK1rez, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
-    connect(PortMK2osn, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
-    connect(PortMK2rez, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
-    connect(PortMK3rez, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
-    connect(PortMK3osn, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
+    connect(this, SIGNAL(writeToPort1(int,QByteArray,int)),PortMK1osn,SLOT(Exchange(int,QByteArray,int)));
+    connect(this, SIGNAL(writeToPort2(int,QByteArray,int)),PortMK1rez,SLOT(Exchange(int,QByteArray,int)));
+    connect(this, SIGNAL(writeToPort3(int,QByteArray,int)),PortMK2osn,SLOT(Exchange(int,QByteArray,int)));
+    connect(this, SIGNAL(writeToPort4(int,QByteArray,int)),PortMK2rez,SLOT(Exchange(int,QByteArray,int)));
+    connect(this, SIGNAL(writeToPort5(int,QByteArray,int)),PortMK3osn,SLOT(Exchange(int,QByteArray,int)));
+    connect(this, SIGNAL(writeToPort6(int,QByteArray,int)),PortMK3rez,SLOT(Exchange(int,QByteArray,int)));
+//    connect(PortMK1osn, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
+//    connect(PortMK1rez, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
+//    connect(PortMK2osn, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
+//    connect(PortMK2rez, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
+//    connect(PortMK3rez, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
+//    connect(PortMK3osn, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
+    connect(PortMK1osn, SIGNAL(nextMessage(int,QString)),this,SLOT(RequestSender(int,QString)));
+    connect(PortMK1rez, SIGNAL(nextMessage(int,QString)),this,SLOT(RequestSender(int,QString)));
+    connect(PortMK2osn, SIGNAL(nextMessage(int,QString)),this,SLOT(RequestSender(int,QString)));
+    connect(PortMK2rez, SIGNAL(nextMessage(int,QString)),this,SLOT(RequestSender(int,QString)));
+    connect(PortMK3rez, SIGNAL(nextMessage(int,QString)),this,SLOT(RequestSender(int,QString)));
+    connect(PortMK3osn, SIGNAL(nextMessage(int,QString)),this,SLOT(RequestSender(int,QString)));
     ui->tabWidget->setCurrentIndex(0);
     if (AdminTools==0){
         ui->consolTest->setVisible(false);
@@ -1826,23 +1834,24 @@ void MainWindow::on_pbReconnectRS485_clicked()
 
 }
 
-void MainWindow::RequestSender(int messageNumber, int nextMessageChName)
+//void MainWindow::RequestSender(int messageNumber, int nextMessageChName)
+void MainWindow::RequestSender(int messageNumber, QString comName)
 {
-    delay(100);
+//    delay(100);
 
-    if (stopRequest==true){
-        return;
-    }else{
-        switch (messageNumber){
-            case 1:
-            if (AdminTools==1){
-                ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
-                ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-            }
-            switch (nextMessageChName){
-            case 1:
-                 emit writeToPort1 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
-            break;
+//    if (stopRequest==true){
+//        return;
+//    }else{
+//        switch (messageNumber){
+//            case 1:
+//            if (AdminTools==1){
+//                ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
+//                ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+//            }
+//            switch (nextMessageChName){
+//            case 1:
+//                 emit writeToPort1 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
+//            break;
 //                case 2:
 //                    emit writeToPort2 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
 //                    break;
@@ -1858,16 +1867,16 @@ void MainWindow::RequestSender(int messageNumber, int nextMessageChName)
 //                case 6:
 //                    emit writeToPort6 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
 //                    break;
-            }
-            case 255:
-            if (AdminTools==1){
-                ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
-                ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-            }
-            switch (nextMessageChName){
-            case 1:
-                emit writeToPort1 (messageNumber,dataQProv,otvetProvSize,nextMessageChName);
-            break;
+//            }
+//            case 255:
+//            if (AdminTools==1){
+//                ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
+//                ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+//            }
+//            switch (nextMessageChName){
+//            case 1:
+//                emit writeToPort1 (messageNumber,dataQProv,otvetProvSize,nextMessageChName);
+//            break;
 //                case 2:
 //                    emit writeToPort2 (messageNumber,dataQProv,otvetProvSize,nextMessageChName);
 //                    break;
@@ -1883,12 +1892,123 @@ void MainWindow::RequestSender(int messageNumber, int nextMessageChName)
 //                case 6:
 //                    emit writeToPort6 (messageNumber,dataQProv,otvetProvSize,nextMessageChName);
 //                    break;
+//            }
+//            break;
+//        }
+//    }
+
+    if (stopRequest==true){
+        return;
+    }else{
+        delay(100);
+        int MessageChName;
+        for (int i=0;i<ListOfBSWVData.size();i++){
+            if (ListOfBSWVData.at(i).namePort==comName) {
+                MessageChName=i+1;
             }
-
-
-            break;
         }
-    }
+            switch (messageNumber){
+                case 1:
+                if (AdminTools==1){
+                    ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
+                    ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+                }
+                switch (MessageChName){
+                    case 6:
+                    T1:
+                        if (ListOfBSWVData.at(0).on_off_status==0){
+                            goto T2;
+                        }
+                        emit writeToPort1 (messageNumber,dataQ,otvetTelemSize);
+                    break;
+                    case 1:
+                    T2:
+                        if (ListOfBSWVData.at(1).on_off_status==0){
+                            goto T3;
+                    }
+                        emit writeToPort2 (messageNumber,dataQ,otvetTelemSize);
+                        break;
+                    case 2:
+                    T3:
+                        if (ListOfBSWVData.at(2).on_off_status==0){
+                            goto T4;
+                        }
+                        emit writeToPort3 (messageNumber,dataQ,otvetTelemSize);
+                        break;
+                    case 3:
+                    T4:
+                        if (ListOfBSWVData.at(3).on_off_status==0){
+                            goto T5;
+                        }
+                        emit writeToPort4 (messageNumber,dataQ,otvetTelemSize);
+                        break;
+                    case 4:
+                    T5:
+                        if (ListOfBSWVData.at(4).on_off_status==0){
+                            goto T6;
+                        }
+                        emit writeToPort5 (messageNumber,dataQ,otvetTelemSize);
+                        break;
+                    case 5:
+                    T6:
+                        if (ListOfBSWVData.at(5).on_off_status==0){
+                            goto T1;
+                        }
+                        emit writeToPort6 (messageNumber,dataQ,otvetTelemSize);
+                        break;
+                }
+                break;
+                case 255:
+                if (AdminTools==1){
+                    ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
+                    ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+                }
+                switch (MessageChName){
+                    case 6:
+                        if (ListOfBSWVData.at(5).on_off_status==0){
+                            goto P1;
+                        }
+                        emit  writeToPort6(messageNumber,dataQProv,otvetProvSize);
+                        break;
+                    case 1:
+                    P1:
+                        if (ListOfBSWVData.at(0).on_off_status==0){
+                            goto P2;
+                        }
+                        emit writeToPort1 (messageNumber,dataQProv,otvetProvSize);
+                        break;
+                    case 2:
+                    P2:
+                        if (ListOfBSWVData.at(1).on_off_status==0){
+                            goto P3;
+                        }
+                        emit writeToPort2 (messageNumber,dataQProv,otvetProvSize);
+                        break;
+                    case 3:
+                    P3:
+                    if (ListOfBSWVData.at(2).on_off_status==0){
+                        goto P4;
+                    }
+                        emit writeToPort3 (messageNumber,dataQProv,otvetProvSize);
+                        break;
+                    case 4:
+                    P4:
+                    if (ListOfBSWVData.at(3).on_off_status==0){
+                        goto P5;
+                    }
+                        emit writeToPort4 (messageNumber,dataQProv,otvetProvSize);
+                        break;
+                    case 5:
+                    P5:
+                    if (ListOfBSWVData.at(4).on_off_status==0){
+                        goto P1;
+                    }
+                        emit writeToPort5 (messageNumber,dataQProv,otvetProvSize);
+                        break;
+                }
+                break;
+            }
+        }
 }
 
 void MainWindow::on_btnStart_2_clicked()
@@ -1947,7 +2067,9 @@ void MainWindow::on_btnStart_clicked()
         ui->tabWidget->setTabEnabled(3,false);
         ui->tabWidget->setTabEnabled(2,false);
         ui->btnStart->setText("Закончить обмен");
-        RequestSender(1,1);
+        //RequestSender(1,ListOfBSWVData.at(0).namePort);
+        //RequestSender(1,1);
+        emit writeToPort1 (1,dataQ,otvetTelemSize);
 //        timerZaprosaTelem->start(timerDelay);
 //        QTimer::singleShot(timerDelay*0.2,this,SLOT(TimerProvStart()));
 //        QTimer::singleShot(timerDelay*0.4,this,SLOT(TimerWriteInFileStart()));//потом проверить правильность записи в файл!!!

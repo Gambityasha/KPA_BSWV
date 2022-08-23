@@ -21,6 +21,7 @@
 #include <QMessageBox>
 #include <errorform.h>
 #include <QThread>
+#include <stdio.h>
 
 //#define timerDelay 1000
 #define errorDelay 100
@@ -222,7 +223,8 @@ public slots:
     void CloseErrorWindow();
     void WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,int k);
 
-    void RequestSender(int messageNumber,int nextMessageChName);
+    //void RequestSender(int messageNumber,int nextMessageChName);
+    void RequestSender(int messageNumber, QString comName);
 void NewObmen(int num);
 
 private slots:
@@ -253,12 +255,18 @@ signals:
    void writeData5(QByteArray dataQ);
    void writeData6(QByteArray dataQ);
 
-   void writeToPort1(int messageNumber,QByteArray data, int otvetSize, int chName);
-   void writeToPort2(int messageNumber,QByteArray data, int otvetSize, int chName);
-   void writeToPort3(int messageNumber,QByteArray data, int otvetSize, int chName);
-   void writeToPort4(int messageNumber,QByteArray data, int otvetSize, int chName);
-   void writeToPort5(int messageNumber,QByteArray data, int otvetSize, int chName);
-   void writeToPort6(int messageNumber,QByteArray data, int otvetSize, int chName);
+//   void writeToPort1(int messageNumber,QByteArray data, int otvetSize, int chName);
+//   void writeToPort2(int messageNumber,QByteArray data, int otvetSize, int chName);
+//   void writeToPort3(int messageNumber,QByteArray data, int otvetSize, int chName);
+//   void writeToPort4(int messageNumber,QByteArray data, int otvetSize, int chName);
+//   void writeToPort5(int messageNumber,QByteArray data, int otvetSize, int chName);
+//   void writeToPort6(int messageNumber,QByteArray data, int otvetSize, int chName);
+   void writeToPort1(int messageNumber,QByteArray data, int otvetSize);
+   void writeToPort2(int messageNumber,QByteArray data, int otvetSize);
+   void writeToPort3(int messageNumber,QByteArray data, int otvetSize);
+   void writeToPort4(int messageNumber,QByteArray data, int otvetSize);
+   void writeToPort5(int messageNumber,QByteArray data, int otvetSize);
+   void writeToPort6(int messageNumber,QByteArray data, int otvetSize);
 
    void con1();void con2();void con3();void con4();void con5();void con6();
    void discon1();void discon2();void discon3();void discon4();void discon5();void discon6();

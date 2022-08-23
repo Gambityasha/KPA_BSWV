@@ -39,7 +39,8 @@ public:
      void WriteToPortTestRS(QByteArray data);
      void ReadInPort(); //Слот чтения из порта по ReadyRead
 
-     void Exchange(int messageNumber,QByteArray data, int otvetSize, int chNumber);
+    // void Exchange(int messageNumber,QByteArray data, int otvetSize, int chNumber);
+void Exchange(int messageNumber,QByteArray data, int otvetSize);
 
  private slots:
      void handleError(QSerialPort::SerialPortError error);//Слот обработки ошибок
@@ -50,8 +51,8 @@ signals:
    void error_(QString err);//Сигнал ошибок порта
    void outPort (QString data); //Сигнал вывода полученных данных
    void errorMessage(QSerialPort::SerialPortError error,QString);
-   void nextMessage(int messageNumber, int chNumber);
-
+   //void nextMessage(int messageNumber, int chNumber);
+void nextMessage(int messageNumber, QString comName);
 };
 
 #endif // PORT_H

@@ -4,7 +4,6 @@ port::port(QObject *parent) : QObject(parent)
 {
     connect(&thisPort,SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError))); // подключаем проверку ошибок порта
     //connect(&thisPort, SIGNAL(readyRead()),this,SLOT(ReadInPort()));
-    thisPort.clear();
 
 }
 
@@ -135,7 +134,8 @@ void port :: ReadInPort(){//Чтение данных из порта
     //((QString)(adr.toInt())).toLatin1().toHex()
 }
 
-void port::Exchange(int messageNumber, QByteArray data, int otvetSize, int chNumber)
+//void port::Exchange(int messageNumber, QByteArray data, int otvetSize, int chNumber)
+void port::Exchange(int messageNumber, QByteArray data, int otvetSize)
 {
     int nextMessageChName;
     QString comName = thisPort.portName();
@@ -198,42 +198,53 @@ void port::Exchange(int messageNumber, QByteArray data, int otvetSize, int chNum
             emit error_("пытаемся совершать посылку в порт, который не удалось открыть");
         }
 
-    switch (chNumber){
-    case 1:
-        nextMessageChName=1;
-        break;
-    case 2:
-        nextMessageChName=1;
-        break;
-    case 3:
-        nextMessageChName=1;
-        break;
-    case 4:
-        nextMessageChName=1;
-        break;
-    case 5:
-        nextMessageChName=1;
-        break;
-    case 6:
-        nextMessageChName=1;
-        break;
-    }
+//    switch (chNumber){
+//    case 1:
+//        nextMessageChName=1;
+//        break;
+//    case 2:
+//        nextMessageChName=1;
+//        break;
+//    case 3:
+//        nextMessageChName=1;
+//        break;
+//    case 4:
+//        nextMessageChName=1;
+//        break;
+//    case 5:
+//        nextMessageChName=1;
+//        break;
+//    case 6:
+//        nextMessageChName=1;
+//        break;
+//    }
+//    if (responseData!="") emit sendBSWVtm(responseData,comName);
+//    transactionInProgress = false;
+//    switch (messageNumber) {
+//    case 1:
+//        if (nextMessageChName==1){
+//            emit nextMessage(255,nextMessageChName);
+//        }else{
+//            emit nextMessage(1,nextMessageChName);
+//        }
+//        break;
+//    case 255:
+//        if (nextMessageChName==1){
+//            emit nextMessage(1,nextMessageChName);
+//        }else{
+//            emit nextMessage(255,nextMessageChName);
+//        }
+//        break;
+//    }
+
     if (responseData!="") emit sendBSWVtm(responseData,comName);
     transactionInProgress = false;
     switch (messageNumber) {
     case 1:
-        if (nextMessageChName==1){
-            emit nextMessage(255,nextMessageChName);
-        }else{
-            emit nextMessage(1,nextMessageChName);
-        }
+        emit nextMessage(255,comName);
         break;
     case 255:
-        if (nextMessageChName==1){
-            emit nextMessage(1,nextMessageChName);
-        }else{
-            emit nextMessage(255,nextMessageChName);
-        }
+            emit nextMessage(1,comName);
         break;
     }
 }
