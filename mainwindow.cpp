@@ -882,6 +882,142 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
     }
 }
 
+//void MainWindow::Analize(QByteArray otvet,QString comName)
+//{
+//    unsigned char buffer [otvet.size()];
+//    memcpy( buffer, otvet.data(), otvet.size());
+//    unsigned char upperCRC = buffer[otvet.size()-2];
+//    unsigned char lowerCRC = buffer[otvet.size()-1];
+//    unsigned short le = otvet.size()-2;
+//    switch (buffer[1]){
+//    case 2:
+//           switch (buffer[2]){
+//           case 1:
+//                switch (buffer[3]){
+//                case 1:
+//                    for (int i=0;i<ListOfBSWVData.size();i++){
+//                        if (ListOfBSWVData.at(i).namePort == comName){
+//                            // unsigned short fullCRC = (unsigned short) (upperCRC<<8) | lowerCRC;
+//                            unsigned char upperCRCR = Crc16(buffer,le)>>8;
+//                            unsigned char lowerCRCR = Crc16(buffer,le);
+//                            if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
+//                                 ListOfBSWVData[i].icap2 = float(buffer[4])*1+0; //"Суммарный ток нагрузки 2"
+//                                 ListOfBSWVData[i].icap1 = float(buffer[5])*1+0;//"Суммарный ток нагрузки 1"
+//                                 ListOfBSWVData[i].u2 = float(buffer[6])*0.2+85;//"Напряжение на силовых шинах 2"
+//                                 ListOfBSWVData[i].u1 = float(buffer[7])*0.2+85;//"Напряжение на силовых шинах 1"
+//                                 ListOfBSWVData[i].tcorp2 = float(buffer[8])*0.36+0;//"Температура 2 корпуса прибора"
+//                                 ListOfBSWVData[i].tcorp1 = float(buffer[9])*0.36+0;//"Температура 1 корпуса прибора"
+//                                 ListOfBSWVData[i].otvetPoluchen=1;
+
+
+//                                 //ListOfBSWVData[i].pingMs = int (ListOfBSWVData[i].timeIn-ListOfBSWVData[i].timeOut;
+//                            }
+//                            else {ListOfBSWVData[i].otvetPoluchen=0;
+//                                  ListOfBSWVData[i].icap2 = 0.0;
+//                                  ListOfBSWVData[i].icap1 = 0.0;
+//                                  ListOfBSWVData[i].u2 = 0.0;
+//                                  ListOfBSWVData[i].u1 = 0.0;
+//                                  ListOfBSWVData[i].tcorp2 = 0.0;
+//                                  ListOfBSWVData[i].tcorp1 = 0.0;
+//                                  Print("Не совпала контрольная сумма пакета 1 от "+ListOfBSWVData[i].name);
+//                            }
+//                        }
+//                     }
+//                 break;
+//                 case 17:
+//                    for (int i=0;i<ListOfBSWVt.size();i++){
+//                        if (ListOfBSWVt.at(i).namePort == comName){
+//                            unsigned char upperCRCR = Crc16(buffer,le)>>8;
+//                            unsigned char lowerCRCR = Crc16(buffer,le);
+//                            if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
+//                                ListOfBSWVt[i].uref = float((unsigned short) (buffer[4]<<8) | buffer[5]);
+//                                ListOfBSWVt[i].icap2 =  float((unsigned short) (buffer[8]<<8) | buffer[9]);//"Суммарный ток нагрузки 2"
+//                                ListOfBSWVt[i].icap1 = float((unsigned short) (buffer[10]<<8) | buffer[11]);//"Суммарный ток нагрузки 1"
+//                                ListOfBSWVt[i].u2 = float((unsigned short) (buffer[12]<<8) | buffer[13]);//"Напряжение на силовых шинах 2"
+//                                ListOfBSWVt[i].u1 = float((unsigned short) (buffer[14]<<8) | buffer[15]);//"Напряжение на силовых шинах 1"
+//                                ListOfBSWVt[i].tcorp2 =float((unsigned short) (buffer[16]<<8) | buffer[17]); //"Температура 2 корпуса прибора"
+//                                ListOfBSWVt[i].tcorp1 = float((unsigned short) (buffer[18]<<8) | buffer[19]);//"Температура 1 корпуса прибора"
+//                                ListOfBSWVt[i].otvetPoluchen=1;
+//                            }else{
+//                                ListOfBSWVt[i].otvetPoluchen=0;
+//                                ListOfBSWVt[i].uref = 0.0;
+//                                ListOfBSWVt[i].icap2 = 0.0;
+//                                ListOfBSWVt[i].icap1 = 0.0;
+//                                ListOfBSWVt[i].u2 = 0.0;
+//                                ListOfBSWVt[i].u1 = 0.0;
+//                                ListOfBSWVt[i].tcorp2 = 0.0;
+//                                ListOfBSWVt[i].tcorp1 = 0.0;
+//                                Print("Не совпала контрольная сумма пакета 17 от "+ListOfBSWVt[i].name);
+//                            }
+//                        }
+//                    }
+//                 break;
+//                 case 34:
+//                      for (int i=0;i<ListOfBSWVnomer.size();i++){
+//                          if (ListOfBSWVnomer.at(i).namePort == comName){
+//                              unsigned char upperCRCR = Crc16(buffer,le)>>8;
+//                              unsigned char lowerCRCR = Crc16(buffer,le);
+//                              if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
+//                                   unsigned char nMK = buffer[4]>>4;
+//                                   switch (nMK){
+//                                          //case 0b0001://номер МУКа, 0b0001 - 1 МК, 0b0010- 2 МК, 0b0011 - 3 МК
+//                                   case 1:
+//                                          ListOfBSWVnomer[i].nMK = "MK1";
+//                                   break;
+//                                          //case 0b0010:
+//                                   case 2:
+//                                          ListOfBSWVnomer[i].nMK = "MK2";
+//                                   break;
+//                                          //case 0b0011:
+//                                   case 3:
+//                                          ListOfBSWVnomer[i].nMK = "MK3";
+//                                   break;
+//                                   }
+//                                   unsigned char bufferChan = buffer[4]<<4;
+//                                   unsigned char nChan = bufferChan>>4;
+//                                   // if ((buffer[4]>>4)==0){ //номер канала 0b0000 - основной, 0b0001 -резервный;
+//                                   if (nChan==0){ //номер канала 0b0000 - основной, 0b0001 -резервный;
+//                                       ListOfBSWVnomer[i].nChan = "-основной";
+//                                   }
+//                                    //if ((buffer[4]>>4)==1)
+//                                   if (nChan==1){
+//                                       ListOfBSWVnomer[i].nChan = "-резервный";
+//                                   }
+//                                   ListOfBSWVnomer[i].otvetPoluchen=1;
+//                              }else{
+//                                   ListOfBSWVnomer[i].otvetPoluchen=0;
+//                                   ListOfBSWVnomer[i].nMK = "-";
+//                                   ListOfBSWVnomer[i].nChan = "-";
+//                                   Print("Не совпала контрольная сумма пакета 34 от "+ListOfBSWVnomer[i].name);
+//                              }
+//                          }
+//                      }
+//                 break;
+//                 case 255:
+//                      for (int i=0;i<ListOfBSWVprov.size();i++){
+//                           if (ListOfBSWVprov.at(i).namePort == comName){
+//                               unsigned char upperCRCR = Crc16(buffer,le)>>8;
+//                               unsigned char lowerCRCR = Crc16(buffer,le);
+//                               if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
+//                                    ListOfBSWVprov[i].otvetPoluchen=1;
+
+//                                    //NewObmen(1);
+//                               } else {
+//                                    ListOfBSWVprov[i].otvetPoluchen=0;
+//                                    Print("Не совпала контрольная сумма пакета 255 от "+ListOfBSWVprov[i].name);
+//                               }
+//                          }
+//                      }
+//                 break;
+//                 }
+//             break;
+//             }
+//   break;
+//    }
+
+//}
+
+
 void MainWindow::Analize(QByteArray otvet,QString comName)
 {
     unsigned char buffer [otvet.size()];
@@ -908,9 +1044,19 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                  ListOfBSWVData[i].tcorp2 = float(buffer[8])*0.36+0;//"Температура 2 корпуса прибора"
                                  ListOfBSWVData[i].tcorp1 = float(buffer[9])*0.36+0;//"Температура 1 корпуса прибора"
                                  ListOfBSWVData[i].otvetPoluchen=1;
-//                                 NewObmen(255);
-
-                                 //ListOfBSWVData[i].pingMs = int (ListOfBSWVData[i].timeIn-ListOfBSWVData[i].timeOut;
+                                 QTableWidgetItem *itm0_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVData.at(i).icap2)); //создание итема таблицы для заполнения
+                                 ui->tblBSWV->setItem(0,i,itm0_0); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
+                                 QTableWidgetItem *itm1_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVData.at(i).icap1));
+                                 ui->tblBSWV->setItem(1,i,itm1_0);
+                                 QTableWidgetItem *itm2_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVData.at(i).u2));
+                                 ui->tblBSWV->setItem(2,i,itm2_0);
+                                 QTableWidgetItem *itm3_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVData.at(i).u1));
+                                 ui->tblBSWV->setItem(3,i,itm3_0);
+                                 QTableWidgetItem *itm4_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVData.at(i).tcorp2));
+                                 ui->tblBSWV->setItem(4,i,itm4_0);
+                                 QTableWidgetItem *itm5_0 = new QTableWidgetItem(tr("%1").arg(ListOfBSWVData.at(i).tcorp1));
+                                 ui->tblBSWV->setItem(5,i,itm5_0);
+                                 ListOfBSWVData[i].otvetPoluchen=0;
                             }
                             else {ListOfBSWVData[i].otvetPoluchen=0;
                                   ListOfBSWVData[i].icap2 = 0.0;
@@ -920,6 +1066,25 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                   ListOfBSWVData[i].tcorp2 = 0.0;
                                   ListOfBSWVData[i].tcorp1 = 0.0;
                                   Print("Не совпала контрольная сумма пакета 1 от "+ListOfBSWVData[i].name);
+                                  if (ListOfBSWVData.at(i).on_off_status == 1){
+                                      //error = "Ответ на сообщение 1 от "+ListOfBSWVData.at(i).name+" не получен";
+                                      if (stopIfError==1){
+                                          ui->btnStart->click();
+                                      }
+                                      emit errorMessage (error);
+                                      QTableWidgetItem *itm91_91 = new QTableWidgetItem("-");
+                                      QTableWidgetItem *itm92_92 = new QTableWidgetItem("-");
+                                      QTableWidgetItem *itm93_93 = new QTableWidgetItem("-");
+                                      QTableWidgetItem *itm94_94 = new QTableWidgetItem("-");
+                                      QTableWidgetItem *itm95_95 = new QTableWidgetItem("-");
+                                      QTableWidgetItem *itm96_96 = new QTableWidgetItem("-");
+                                      ui->tblBSWV->setItem(0,i,itm91_91); //заполнение указанной ячейки (строки, столбцы,итем для заполнения)
+                                      ui->tblBSWV->setItem(1,i,itm92_92);
+                                      ui->tblBSWV->setItem(2,i,itm93_93);
+                                      ui->tblBSWV->setItem(3,i,itm94_94);
+                                      ui->tblBSWV->setItem(4,i,itm95_95);
+                                      ui->tblBSWV->setItem(5,i,itm96_96);
+                                  }
                             }
                         }
                      }
@@ -1000,10 +1165,65 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                unsigned char lowerCRCR = Crc16(buffer,le);
                                if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
                                     ListOfBSWVprov[i].otvetPoluchen=1;
+                                    if (ListOfBSWVprov.at(i).name=="MK1-osn"){
+                                        ui->greenMK1o->setVisible(true);
+                                        ui->redMK1o->setVisible(false);
+                                    }
+                                    if (ListOfBSWVprov.at(i).name=="MK1-rez"){
+                                        ui->greenMK1r->setVisible(true);
+                                        ui->redMK1r->setVisible(false);
+                                    }
+                                    if (ListOfBSWVprov.at(i).name=="MK2-osn"){
+                                        ui->greenMK2o->setVisible(true);
+                                        ui->redMK2o->setVisible(false);
+                                    }
+                                    if (ListOfBSWVprov.at(i).name=="MK2-rez"){
+                                        ui->greenMK2r->setVisible(true);
+                                        ui->redMK2r->setVisible(false);
+                                    }
+                                    if (ListOfBSWVprov.at(i).name=="MK3-osn"){
+                                        ui->greenMK3o->setVisible(true);
+                                        ui->redMK3o->setVisible(false);
+                                    }
+                                    if (ListOfBSWVprov.at(i).name=="MK3-rez"){
+                                        ui->greenMK3r->setVisible(true);
+                                        ui->redMK3r->setVisible(false);
+                                    }
 
-                                    //NewObmen(1);
                                } else {
                                     ListOfBSWVprov[i].otvetPoluchen=0;
+                                    if (ListOfBSWVprov.at(i).name=="MK1-osn"){
+                                        ui->greenMK1o->setVisible(false);
+                                        ui->redMK1o->setVisible(true);
+                                    }
+                                    if (ListOfBSWVprov.at(i).name=="MK1-rez"){
+                                        ui->greenMK1r->setVisible(false);
+                                        ui->redMK1r->setVisible(true);
+                                    }
+                                    if (ListOfBSWVprov.at(i).name=="MK2-osn"){
+                                        ui->greenMK2o->setVisible(false);
+                                        ui->redMK2o->setVisible(true);
+                                    }
+                                    if (ListOfBSWVprov.at(i).name=="MK2-rez"){
+                                        ui->greenMK2r->setVisible(false);
+                                        ui->redMK2r->setVisible(true);
+                                    }
+                                    if (ListOfBSWVprov.at(i).name=="MK3-osn"){
+                                        ui->greenMK3o->setVisible(false);
+                                        ui->redMK3o->setVisible(true);
+                                    }
+                                    if (ListOfBSWVprov.at(i).name=="MK3-rez"){
+                                        ui->greenMK3r->setVisible(false);
+                                        ui->redMK3r->setVisible(true);
+                                    }
+                                    if (ListOfBSWVData[i].on_off_status == 1){
+                                        error = "Ответ на сообщение 255 от "+ListOfBSWVprov.at(i).name + " не получен";
+                                        emit errorMessage (error);
+                                        if (stopIfError==1){
+                                            ui->btnStart->click();
+                                        }
+                                    }
+
                                     Print("Не совпала контрольная сумма пакета 255 от "+ListOfBSWVprov[i].name);
                                }
                           }
@@ -1016,6 +1236,7 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
     }
 
 }
+
 
 void MainWindow::ChangeColor()
 {
@@ -1493,11 +1714,8 @@ void MainWindow::Vivod_1()
                 ui->tblBSWV->setItem(4,i,itm95_95);
                 ui->tblBSWV->setItem(5,i,itm96_96);
             }
-
         }
-
     }
-
 }
 
 void MainWindow::Vivod_255()
@@ -1898,6 +2116,18 @@ void MainWindow::RequestSender(int messageNumber, QString comName)
 //    }
 
     if (stopRequest==true){
+        ui->greenMK1o->setVisible(false);
+        ui->redMK1o->setVisible(true);
+        ui->greenMK1r->setVisible(false);
+        ui->redMK1r->setVisible(true);
+        ui->greenMK2o->setVisible(false);
+        ui->redMK2o->setVisible(true);
+        ui->greenMK2r->setVisible(false);
+        ui->redMK2r->setVisible(true);
+        ui->greenMK3o->setVisible(false);
+        ui->redMK3o->setVisible(true);
+        ui->greenMK3r->setVisible(false);
+        ui->redMK3r->setVisible(true);
         return;
     }else{
         delay(100);
@@ -1919,6 +2149,7 @@ void MainWindow::RequestSender(int messageNumber, QString comName)
                         if (ListOfBSWVData.at(0).on_off_status==0){
                             goto T2;
                         }
+
                         emit writeToPort1 (messageNumber,dataQ,otvetTelemSize);
                     break;
                     case 1:
@@ -1968,6 +2199,8 @@ void MainWindow::RequestSender(int messageNumber, QString comName)
                         if (ListOfBSWVData.at(5).on_off_status==0){
                             goto P1;
                         }
+                        ui->greenMK3r->setVisible(false);
+                        ui->redMK3r->setVisible(true);
                         emit  writeToPort6(messageNumber,dataQProv,otvetProvSize);
                         break;
                     case 1:
@@ -1975,6 +2208,8 @@ void MainWindow::RequestSender(int messageNumber, QString comName)
                         if (ListOfBSWVData.at(0).on_off_status==0){
                             goto P2;
                         }
+                        ui->greenMK1o->setVisible(false);
+                        ui->redMK1o->setVisible(true);
                         emit writeToPort1 (messageNumber,dataQProv,otvetProvSize);
                         break;
                     case 2:
@@ -1982,6 +2217,8 @@ void MainWindow::RequestSender(int messageNumber, QString comName)
                         if (ListOfBSWVData.at(1).on_off_status==0){
                             goto P3;
                         }
+                        ui->greenMK1r->setVisible(false);
+                        ui->redMK1r->setVisible(true);
                         emit writeToPort2 (messageNumber,dataQProv,otvetProvSize);
                         break;
                     case 3:
@@ -1989,6 +2226,8 @@ void MainWindow::RequestSender(int messageNumber, QString comName)
                     if (ListOfBSWVData.at(2).on_off_status==0){
                         goto P4;
                     }
+                        ui->greenMK2o->setVisible(false);
+                        ui->redMK2o->setVisible(true);
                         emit writeToPort3 (messageNumber,dataQProv,otvetProvSize);
                         break;
                     case 4:
@@ -1996,6 +2235,8 @@ void MainWindow::RequestSender(int messageNumber, QString comName)
                     if (ListOfBSWVData.at(3).on_off_status==0){
                         goto P5;
                     }
+                        ui->greenMK2r->setVisible(false);
+                        ui->redMK2r->setVisible(true);
                         emit writeToPort4 (messageNumber,dataQProv,otvetProvSize);
                         break;
                     case 5:
@@ -2003,6 +2244,8 @@ void MainWindow::RequestSender(int messageNumber, QString comName)
                     if (ListOfBSWVData.at(4).on_off_status==0){
                         goto P1;
                     }
+                        ui->greenMK3o->setVisible(false);
+                        ui->redMK3o->setVisible(true);
                         emit writeToPort5 (messageNumber,dataQProv,otvetProvSize);
                         break;
                 }
@@ -2045,7 +2288,8 @@ void MainWindow::on_btnStart_clicked()
 //        timerZaprosaTelem->stop();
 //        timerZaprosaProv->stop();
 //        timerWriteInFile->stop();
-        delay(1000);
+        delay(500);
+        delay(500);
         ui->greenMK1o->setVisible(false);
         ui->redMK1o->setVisible(true);
         ui->greenMK1r->setVisible(false);
@@ -2058,7 +2302,7 @@ void MainWindow::on_btnStart_clicked()
         ui->redMK3o->setVisible(true);
         ui->greenMK3r->setVisible(false);
         ui->redMK3r->setVisible(true);
-        ui->btnStart->setEnabled(true);
+        ui->btnStart->setEnabled(true);        
     } else {
         firstStart=false;
         stopRequest=false;
