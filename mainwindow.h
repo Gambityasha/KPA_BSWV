@@ -112,7 +112,13 @@ private:
     port *PortMK2osn = new port();
     port *PortMK2rez = new port();
     port *PortMK3osn = new port();
-    port *PortMK3rez = new port();    
+    port *PortMK3rez = new port();
+    QThread* thread_MK1osn = new QThread;//Создаем поток для порта
+    QThread* thread_MK1rez = new QThread;
+    QThread* thread_MK2osn = new QThread;
+    QThread* thread_MK2rez = new QThread;
+    QThread* thread_MK3osn = new QThread;
+    QThread* thread_MK3rez = new QThread;
     bool AdminTools=true;
     int timerDelay = 1000;
     bool stopIfError = 0;

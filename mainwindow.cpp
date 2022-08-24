@@ -245,7 +245,7 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
 {
 
 //    if ((error!=0)||(error!=12)){
-//
+
 //        for (int i=0;i<ListOfBSWVData.size();i++){
 //            if (ListOfBSWVData[i].namePort==portName){
 //                ListOfBSWVData[i].errorStatus=1;
@@ -262,7 +262,7 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
 //                window->open();
 //            }
 //        }
-//    }else {if (error==0)||(error==12) {
+//    }else {if ((error==0)||(error==12)) {
 //        for (int i=0;i<ListOfBSWVData.size();i++){
 //            if (ListOfBSWVData[i].namePort==portName){
 //                ListOfBSWVData[i].errorStatus=0;
@@ -277,6 +277,7 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
 //           ui->lblError->setVisible(false);
 //        }
 //    }
+//}
 }
 
 void MainWindow::Reconnect( )
@@ -366,7 +367,22 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {    
     ui->setupUi(this);
-    setWindowIcon(QIcon("KPABSWV.png"));    
+    setWindowIcon(QIcon("KPABSWV.png"));
+
+    PortMK1osn->moveToThread(thread_MK1osn);
+    PortMK2osn->moveToThread(thread_MK2osn);
+    PortMK3osn->moveToThread(thread_MK3osn);
+    PortMK1rez->moveToThread(thread_MK1rez);
+    PortMK2rez->moveToThread(thread_MK2rez);
+    PortMK3rez->moveToThread(thread_MK3rez);
+
+    thread_MK1osn->start(QThread::TimeCriticalPriority);//Создаем поток для порта
+    thread_MK1rez->start(QThread::TimeCriticalPriority);
+    thread_MK2osn->start(QThread::TimeCriticalPriority);
+    thread_MK2rez->start(QThread::TimeCriticalPriority);
+    thread_MK3osn->start(QThread::TimeCriticalPriority);
+    thread_MK3rez->start(QThread::TimeCriticalPriority);
+
     ui->tabWidget->setTabEnabled(0,true);
     ui->lblError->setVisible(false);
     ui->tblBSWV->setEnabled(false);
@@ -628,18 +644,33 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(writeToPort4(int,QByteArray,int)),PortMK2rez,SLOT(Exchange(int,QByteArray,int)));
     connect(this, SIGNAL(writeToPort5(int,QByteArray,int)),PortMK3osn,SLOT(Exchange(int,QByteArray,int)));
     connect(this, SIGNAL(writeToPort6(int,QByteArray,int)),PortMK3rez,SLOT(Exchange(int,QByteArray,int)));
-//    connect(PortMK1osn, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
-//    connect(PortMK1rez, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
-//    connect(PortMK2osn, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
-//    connect(PortMK2rez, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
-//    connect(PortMK3rez, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
-//    connect(PortMK3osn, SIGNAL(nextMessage(int,int)),this,SLOT(RequestSender(int,int)));
+
     connect(PortMK1osn, SIGNAL(nextMessage(int,QString)),this,SLOT(RequestSender(int,QString)),Qt::QueuedConnection);
     connect(PortMK1rez, SIGNAL(nextMessage(int,QString)),this,SLOT(RequestSender(int,QString)),Qt::QueuedConnection);
     connect(PortMK2osn, SIGNAL(nextMessage(int,QString)),this,SLOT(RequestSender(int,QString)),Qt::QueuedConnection);
     connect(PortMK2rez, SIGNAL(nextMessage(int,QString)),this,SLOT(RequestSender(int,QString)),Qt::QueuedConnection);
     connect(PortMK3rez, SIGNAL(nextMessage(int,QString)),this,SLOT(RequestSender(int,QString)),Qt::QueuedConnection);
     connect(PortMK3osn, SIGNAL(nextMessage(int,QString)),this,SLOT(RequestSender(int,QString)),Qt::QueuedConnection);
+    connect(thread_MK1osn,SIGNAL(finished()),thread_MK1osn,SLOT(deleteLater()));
+    connect(thread_MK2osn,SIGNAL(finished()),thread_MK2osn,SLOT(deleteLater()));
+    connect(thread_MK3osn,SIGNAL(finished()),thread_MK3osn,SLOT(deleteLater()));
+    connect(thread_MK1rez,SIGNAL(finished()),thread_MK1rez,SLOT(deleteLater()));
+    connect(thread_MK2rez,SIGNAL(finished()),thread_MK2rez,SLOT(deleteLater()));
+    connect(thread_MK3rez,SIGNAL(finished()),thread_MK3rez,SLOT(deleteLater()));
+    connect(thread_MK1osn,SIGNAL(finished()),PortMK1osn,SLOT(deleteLater()));
+    connect(thread_MK2osn,SIGNAL(finished()),PortMK2osn,SLOT(deleteLater()));
+    connect(thread_MK3osn,SIGNAL(finished()),PortMK3osn,SLOT(deleteLater()));
+    connect(thread_MK1rez,SIGNAL(finished()),PortMK1rez,SLOT(deleteLater()));
+    connect(thread_MK2rez,SIGNAL(finished()),PortMK2rez,SLOT(deleteLater()));
+    connect(thread_MK3rez,SIGNAL(finished()),PortMK3rez,SLOT(deleteLater()));
+    connect(PortMK1osn, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
+    connect(PortMK1rez, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
+    connect(PortMK2osn, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
+    connect(PortMK2rez, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
+    connect(PortMK3rez, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
+    connect(PortMK3osn, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
+
+
     ui->tabWidget->setCurrentIndex(0);
     if (AdminTools==0){
         ui->consolTest->setVisible(false);
@@ -2038,65 +2069,7 @@ void MainWindow::tblBSWVSetDeafault(int numberOfRows, int column)
 //void MainWindow::RequestSender(int messageNumber, int nextMessageChName)
 void MainWindow::RequestSender(int messageNumber, QString comName)
 {
-//    delay(100);
 
-//    if (stopRequest==true){
-//        return;
-//    }else{
-//        switch (messageNumber){
-//            case 1:
-//            if (AdminTools==1){
-//                ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
-//                ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-//            }
-//            switch (nextMessageChName){
-//            case 1:
-//                 emit writeToPort1 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
-//            break;
-//                case 2:
-//                    emit writeToPort2 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
-//                    break;
-//                case 3:
-//                    emit writeToPort3 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
-//                    break;
-//                case 4:
-//                    emit writeToPort4 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
-//                    break;
-//                case 5:
-//                    emit writeToPort5 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
-//                    break;
-//                case 6:
-//                    emit writeToPort6 (messageNumber,dataQ,otvetTelemSize,nextMessageChName);
-//                    break;
-//            }
-//            case 255:
-//            if (AdminTools==1){
-//                ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
-//                ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-//            }
-//            switch (nextMessageChName){
-//            case 1:
-//                emit writeToPort1 (messageNumber,dataQProv,otvetProvSize,nextMessageChName);
-//            break;
-//                case 2:
-//                    emit writeToPort2 (messageNumber,dataQProv,otvetProvSize,nextMessageChName);
-//                    break;
-//                case 3:
-//                    emit writeToPort3 (messageNumber,dataQProv,otvetProvSize,nextMessageChName);
-//                    break;
-//                case 4:
-//                    emit writeToPort4 (messageNumber,dataQProv,otvetProvSize,nextMessageChName);
-//                    break;
-//                case 5:
-//                    emit writeToPort5 (messageNumber,dataQProv,otvetProvSize,nextMessageChName);
-//                    break;
-//                case 6:
-//                    emit writeToPort6 (messageNumber,dataQProv,otvetProvSize,nextMessageChName);
-//                    break;
-//            }
-//            break;
-//        }
-//    }
     if (AdminTools==1) {
         numberOfRowsTestConsole++;
         if (numberOfRowsTestConsole>100){
