@@ -78,7 +78,7 @@ struct BSWVprov //создание структуры
     QString namePort; //присвоенное имя порта
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
-    int dopPaket;
+
 
 };
 struct BSWVnomerMK //создание структуры
@@ -113,9 +113,10 @@ private:
     port *PortMK2rez = new port();
     port *PortMK3osn = new port();
     port *PortMK3rez = new port();    
-    bool AdminTools;
+    bool AdminTools=true;
     int timerDelay = 1000;
-    bool stopIfError = 0;    
+    bool stopIfError = 0;
+    int numberOfRowsTestConsole=0;
 
     unsigned char data [6];
     unsigned char dataT [6];
@@ -160,6 +161,7 @@ private:
     int currentMessageNumber=0;
     bool stopRequest=false;
     bool firstStart=true;
+
 
 
 public:
@@ -225,7 +227,6 @@ public slots:
 
     //void RequestSender(int messageNumber,int nextMessageChName);
     void RequestSender(int messageNumber, QString comName);
-void NewObmen(int num);
 
 private slots:
    void on_btnNomer_clicked();
@@ -235,9 +236,7 @@ private slots:
    void on_pushButton_clicked();   
    void on_tabWidget_currentChanged(int index);
    void on_pbReconnectRS485_clicked();
-
-
-   void on_btnStart_2_clicked();
+   void tblBSWVSetDeafault(int numberOfRows, int column);
 
    void on_pushButton_2_clicked();
 

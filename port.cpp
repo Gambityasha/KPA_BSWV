@@ -137,7 +137,7 @@ void port :: ReadInPort(){//Чтение данных из порта
 //void port::Exchange(int messageNumber, QByteArray data, int otvetSize, int chNumber)
 void port::Exchange(int messageNumber, QByteArray data, int otvetSize)
 {
-    int nextMessageChName;
+    //int nextMessageChName;
     QString comName = thisPort.portName();
     int numofread = 0; //количество принятых байт
     QByteArray responseData;
@@ -155,7 +155,7 @@ void port::Exchange(int messageNumber, QByteArray data, int otvetSize)
     if (thisPort.isOpen()) {
         thisPort.write(data,data.size());
         thisPort.flush();
-        if (thisPort.waitForBytesWritten(30)) { //отправляем запрос //10мс выбрано "наугад", при 1 иногда получали ошибку
+        if (thisPort.waitForBytesWritten(10)) { //отправляем запрос //10мс выбрано "наугад", при 1 иногда получали ошибку
 
             QTime protocol_waiting_dieTime = QTime::currentTime().addMSecs(protocol_waiting_time); //рассчитываем время, по достижению которого мы понимаем, что нам не успели ответить по протоколу
             QTime listening_dieTime = QTime::currentTime().addMSecs(listening_time); //рассчитываем время, по достижению которого мы понимаем, что нам не отвечают даже с учетом "запасного" времени
@@ -163,7 +163,7 @@ void port::Exchange(int messageNumber, QByteArray data, int otvetSize)
 
 
             do {//сначала ждем ответа по протоколу (оцениваем, ответили ли нам вовремя)
-                thisPort.waitForReadyRead(60); //ждем ответа
+                thisPort.waitForReadyRead(10); //ждем ответа
                 responseData += thisPort.readAll();
                 numofread = responseData.size();
                 if (QTime::currentTime() >= protocol_waiting_dieTime)
@@ -176,7 +176,7 @@ void port::Exchange(int messageNumber, QByteArray data, int otvetSize)
                 error_(QString("не удалось за отведенное время (%1мс) принять необходимое количество байт: приняли %2 из %3").arg(protocol_waiting_time).arg(numofread).arg(otvetSize)); //начинаем формировать строку ошибки
 
                 do {//теперь продолжаем слушать канал, но уже до истечения времени listening_time, либо до принятия необходимого количества байт
-                   thisPort.waitForReadyRead(60); //ждем ответа
+                   thisPort.waitForReadyRead(10); //ждем ответа
                    responseData += thisPort.readAll();
                    numofread = responseData.size();
                    if (QTime::currentTime() >= listening_dieTime) listening_timeout = true;
@@ -238,7 +238,7 @@ void port::Exchange(int messageNumber, QByteArray data, int otvetSize)
 //    }
 
     if (responseData!="") emit sendBSWVtm(responseData,comName);
-    transactionInProgress = false;
+
     switch (messageNumber) {
     case 1:
         emit nextMessage(255,comName);
@@ -247,10 +247,15 @@ void port::Exchange(int messageNumber, QByteArray data, int otvetSize)
             emit nextMessage(1,comName);
         break;
     }
+    transactionInProgress = false;
+//    if (messageNumber==1) emit nextMessage(255,comName);
+//    if (messageNumber==255) emit nextMessage(1,comName);
+
+
 }
 
 port::~port()
 {    
-    thisPort.close();
-    thisPort.deleteLater();
+   thisPort.close();
+   thisPort.deleteLater();
 }
