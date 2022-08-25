@@ -53,6 +53,7 @@ struct BSWVdata //создание структуры
     short otvetPoluchen; //0 - не получен, 1 - получен
     short errorStatus;//0 - нет ошибок порта, 1 - есть ошибки порта    
     bool on_off_status;
+    bool readyToSend = false;
 
 };
 
@@ -69,7 +70,7 @@ struct BSWVtarir //создание структуры
     float tcorp1;//"Температура 1 корпуса прибора"
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
-
+    bool readyToSend = false;
 
 };
 struct BSWVprov //создание структуры
@@ -78,7 +79,7 @@ struct BSWVprov //создание структуры
     QString namePort; //присвоенное имя порта
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
-
+    bool readyToSend = false;
 
 };
 struct BSWVnomerMK //создание структуры
@@ -89,7 +90,7 @@ struct BSWVnomerMK //создание структуры
     QString nChan;//номер канала, 0 - основной, 1 - резервный
     QByteArray otvet;
     short otvetPoluchen; //0 - не получен, 1 - получен
-
+    bool readyToSend = false;
 
 };
 
@@ -232,7 +233,8 @@ public slots:
     void WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,int k);
 
     //void RequestSender(int messageNumber,int nextMessageChName);
-    void RequestSender(int messageNumber, QString comName);
+    void RequestSender(int messageNumber);
+    void ExchangeErrorAnalizer(QString channelName, int messageNumber, QString errorText,bool paramsNull);
 
 private slots:
    void on_btnNomer_clicked();

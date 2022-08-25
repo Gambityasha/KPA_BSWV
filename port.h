@@ -27,15 +27,24 @@ public:
      Settings SettingsPort;
     QSerialPort thisPort;
     bool transactionInProgress=false;
-    int protocol_waiting_time=60;
-    int listening_time=100;
-     ~port();
+    int protocol_waiting_time=70;
+    int listening_time=150;
+    QTime sendingTime;
+    QTime gettingTime;
+    QTime gettingTime_die;
+    QString errorText;
+    int currentMessageNumber=0;
+    int currentOtvetSize;
+    QByteArray otvetBuffer;
+    bool paramsNull=false;
+ ~port();
 
  public slots:
      void  DisconnectPort();
      void ConnectPort(void);
      void Write_Settings_Port(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
      void WriteToPort(QByteArray data);
+     void WriteToPort(int messageNumber,QByteArray data, int otvetSize);
      void WriteToPortTestRS(QByteArray data);
      void ReadInPort(); //Слот чтения из порта по ReadyRead
 
@@ -44,15 +53,22 @@ void Exchange(int messageNumber,QByteArray data, int otvetSize);
 
  private slots:
      void handleError(QSerialPort::SerialPortError error);//Слот обработки ошибок
+     void DataAnalizer(QByteArray data);
 
 signals:
    void finished_Port(); //Сигнал закрытия класса
    void sendBSWVtm(QByteArray,QString);
+   void sendBSWVtm(QByteArray,QString,int);
    void error_(QString err);//Сигнал ошибок порта
    void outPort (QString data); //Сигнал вывода полученных данных
    void errorMessage(QSerialPort::SerialPortError error,QString);
    //void nextMessage(int messageNumber, int chNumber);
-void nextMessage(int messageNumber, QString comName);
+    void nextMessage(int messageNumber);
+    void errorExchange(QString channelName, int messageNumber, QString errorText,bool paramsNull);
+    void dataForAnalize(QByteArray data);
+
+
+
 };
 
 #endif // PORT_H
