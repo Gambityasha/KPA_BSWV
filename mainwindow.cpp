@@ -367,22 +367,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {    
     ui->setupUi(this);
+
+
+
     setWindowIcon(QIcon("KPABSWV.png"));
-
-    PortMK1osn->moveToThread(thread_MK1osn);
-    PortMK2osn->moveToThread(thread_MK2osn);
-    PortMK3osn->moveToThread(thread_MK3osn);
-    PortMK1rez->moveToThread(thread_MK1rez);
-    PortMK2rez->moveToThread(thread_MK2rez);
-    PortMK3rez->moveToThread(thread_MK3rez);
-
-    thread_MK1osn->start(QThread::TimeCriticalPriority);//Создаем поток для порта
-    thread_MK1rez->start(QThread::TimeCriticalPriority);
-    thread_MK2osn->start(QThread::TimeCriticalPriority);
-    thread_MK2rez->start(QThread::TimeCriticalPriority);
-    thread_MK3osn->start(QThread::TimeCriticalPriority);
-    thread_MK3rez->start(QThread::TimeCriticalPriority);
-
     ui->tabWidget->setTabEnabled(0,true);
     ui->lblError->setVisible(false);
     ui->tblBSWV->setEnabled(false);
@@ -543,6 +531,8 @@ MainWindow::MainWindow(QWidget *parent)
     dataNomer[5] = lowerNomer;
     dataQNomer = QByteArray(reinterpret_cast<char*>(dataNomer), sizeof(dataNomer));
     //-----------Конец формирования исходящего сообщения для БСШ-В (тип 34 - проверка номера МУКа)-----------
+//    timerExchange = new QTimer();
+//    timerExchange->setInterval(timerDelay);
     timerVivod = new QTimer();
     timerReconnect = new QTimer();
     timerReconnect->setInterval(1500);
@@ -573,6 +563,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(timerZaprosaTelem, SIGNAL(timeout()), this, SLOT(OtpravkaZaprosaTelem()));
     connect(timerZaprosaProv,SIGNAL(timeout()), this,SLOT(OtpravkaZaprosaProv()));
     connect(timerZaprosaTelem,SIGNAL(timeout()),this, SLOT(ChangeColor()));
+
     connect(this, SIGNAL(savesettings1(QString,int,int,int,int,int)),PortMK1osn,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
     connect(this, SIGNAL(savesettings2(QString,int,int,int,int,int)),PortMK1rez,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
     connect(this, SIGNAL(savesettings3(QString,int,int,int,int,int)),PortMK2osn,SLOT(Write_Settings_Port(QString,int,int,int,int,int)));//Слот - ввод настроек!
@@ -586,13 +577,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(writeData4(QByteArray)),PortMK1rez,SLOT(WriteToPort(QByteArray)));
     connect(this, SIGNAL(writeData5(QByteArray)),PortMK2rez,SLOT(WriteToPort(QByteArray)));
     connect(this, SIGNAL(writeData6(QByteArray)),PortMK3rez,SLOT(WriteToPort(QByteArray)));
+
     connect(this, SIGNAL(testRSMK1o(QByteArray)),PortMK1osn,SLOT(WriteToPortTestRS(QByteArray)));
     connect(this, SIGNAL(testRSMK2o(QByteArray)),PortMK2osn,SLOT(WriteToPortTestRS(QByteArray)));
     connect(this, SIGNAL(testRSMK3o(QByteArray)),PortMK3osn,SLOT(WriteToPortTestRS(QByteArray)));
     connect(this, SIGNAL(testRSMK1r(QByteArray)),PortMK1rez,SLOT(WriteToPortTestRS(QByteArray)));
     connect(this, SIGNAL(testRSMK2r(QByteArray)),PortMK2rez,SLOT(WriteToPortTestRS(QByteArray)));
     connect(this, SIGNAL(testRSMK3r(QByteArray)),PortMK3rez,SLOT(WriteToPortTestRS(QByteArray)));
-    connect(this, SIGNAL(msgTestRS485(QByteArray,QString)),this,SLOT(AnalizeRS485(QByteArray,QString)));
+    //connect(this, SIGNAL(msgTestRS485(QByteArray,QString)),this,SLOT(AnalizeRS485(QByteArray,QString)));
     connect(this, SIGNAL(con1()),PortMK1osn,SLOT(ConnectPort()));
     connect(this, SIGNAL(con2()),PortMK1rez,SLOT(ConnectPort()));
     connect(this, SIGNAL(con3()),PortMK2osn,SLOT(ConnectPort()));
@@ -605,23 +597,40 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(discon4()),PortMK2rez,SLOT(DisconnectPort()));
     connect(this, SIGNAL(discon5()),PortMK3osn,SLOT(DisconnectPort()));
     connect(this, SIGNAL(discon6()),PortMK3rez,SLOT(DisconnectPort()));
-    connect(PortMK1osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//Лог ошибок соединения
-    connect(PortMK2osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
-    connect(PortMK3osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
-    connect(PortMK1rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
-    connect(PortMK2rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
-    connect(PortMK3rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));
+    connect(PortMK1osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//,Qt::QueuedConnection);//Лог ошибок соединения
+    connect(PortMK2osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//,Qt::QueuedConnection);
+    connect(PortMK3osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//,Qt::QueuedConnection);
+    connect(PortMK1rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//,Qt::QueuedConnection);
+    connect(PortMK2rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//,Qt::QueuedConnection);
+    connect(PortMK3rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//,Qt::QueuedConnection);
     LoadSettings();
-    connect(PortMK1osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
-    connect(PortMK1rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
-    connect(PortMK2osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
-    connect(PortMK2rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
-    connect(PortMK3rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
-    connect(PortMK3osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)));
+
+
+    PortMK1osn->moveToThread(thread_MK1osn);
+    PortMK2osn->moveToThread(thread_MK2osn);
+    PortMK3osn->moveToThread(thread_MK3osn);
+    PortMK1rez->moveToThread(thread_MK1rez);
+    PortMK2rez->moveToThread(thread_MK2rez);
+    PortMK3rez->moveToThread(thread_MK3rez);
+
+    thread_MK1osn->start();//(QThread::TimeCriticalPriority);//Создаем поток для порта
+    thread_MK1rez->start();//(QThread::TimeCriticalPriority);
+    thread_MK2osn->start();//(QThread::TimeCriticalPriority);
+    thread_MK2rez->start();//(QThread::TimeCriticalPriority);
+    thread_MK3osn->start();//(QThread::TimeCriticalPriority);
+    thread_MK3rez->start();//(QThread::TimeCriticalPriority);
+
+
+    connect(PortMK1osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);
+    connect(PortMK1rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);
+    connect(PortMK2osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);
+    connect(PortMK2rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);
+    connect(PortMK3rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);
+    connect(PortMK3osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);
     //connect(timerVivod, SIGNAL(timeout()), this, SLOT(Vivod()));
     connect(this, SIGNAL(readyToAnalize(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
-    connect(this, SIGNAL(errorMessage(QString)), this,SLOT(Print(QString))); //Не тот же эррор месадж, что от порта
-    connect(this, SIGNAL(errorMessage(QString)), this,SLOT(WriteInFileError(QString)));
+    connect(this, SIGNAL(errorMessageThis(QString)), this,SLOT(Print(QString)),Qt::QueuedConnection); //Не тот же эррор месадж, что от порта
+    connect(this, SIGNAL(errorMessageThis(QString)), this,SLOT(WriteInFileError(QString)));
     //connect(timerVivod, SIGNAL(timeout()), this, SLOT(WriteInFile()));
     connect(timerWriteInFile, SIGNAL(timeout()), this, SLOT(WriteInFile()));
 //    connect(PortMK1osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
@@ -638,7 +647,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    connect(this, SIGNAL(writeToPort3(int,QByteArray,int)),PortMK2osn,SLOT(Exchange(int,QByteArray,int)),Qt::QueuedConnection);
 //    connect(this, SIGNAL(writeToPort4(int,QByteArray,int)),PortMK2rez,SLOT(Exchange(int,QByteArray,int)),Qt::QueuedConnection);
 //    connect(this, SIGNAL(writeToPort5(int,QByteArray,int)),PortMK3osn,SLOT(Exchange(int,QByteArray,int)),Qt::QueuedConnection);
-//    connect(this, SIGNAL(writeToPort6(int,QByteArray,int)),PortMK3rez,SLOT(Exchange(int,QByteArray,int)),Qt::QueuedConnection);
+//    connect(this, SIGNAL(writeToPort6(int,QByteArray,int)),PortMK3rez,SLOT(Exchange(int,QByteArray,int)),Qt::QueuedConnection);//, Qt::DirectConnection
     connect(this, SIGNAL(writeToPort1(int,QByteArray,int)),PortMK1osn,SLOT(WriteToPort(int,QByteArray,int)));
     connect(this, SIGNAL(writeToPort2(int,QByteArray,int)),PortMK1rez,SLOT(WriteToPort(int,QByteArray,int)));
     connect(this, SIGNAL(writeToPort3(int,QByteArray,int)),PortMK2osn,SLOT(WriteToPort(int,QByteArray,int)));
@@ -652,13 +661,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK2rez, SIGNAL(nextMessage(int)),this,SLOT(RequestSender(int)),Qt::QueuedConnection);
     connect(PortMK3rez, SIGNAL(nextMessage(int)),this,SLOT(RequestSender(int)),Qt::QueuedConnection);
     connect(PortMK3osn, SIGNAL(nextMessage(int)),this,SLOT(RequestSender(int)),Qt::QueuedConnection);
-    connect(PortMK1osn, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)));
-    connect(PortMK1rez, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)));
-    connect(PortMK2osn, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)));
-    connect(PortMK2rez, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)));
-    connect(PortMK3rez, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)));
-    connect(PortMK3osn, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)));
-
+    connect(PortMK1osn, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)),Qt::QueuedConnection);
+    connect(PortMK1rez, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)),Qt::QueuedConnection);
+    connect(PortMK2osn, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)),Qt::QueuedConnection);
+    connect(PortMK2rez, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)),Qt::QueuedConnection);
+    connect(PortMK3rez, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)),Qt::QueuedConnection);
+    connect(PortMK3osn, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)),Qt::QueuedConnection);
+//    connect(PortMK1osn, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
+//    connect(PortMK1rez, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
+//    connect(PortMK2osn, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
+//    connect(PortMK2rez, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
+//    connect(PortMK3rez, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
+//    connect(PortMK3osn, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
 //    connect(thread_MK1osn,SIGNAL(finished()),thread_MK1osn,SLOT(deleteLater()));
 //    connect(thread_MK2osn,SIGNAL(finished()),thread_MK2osn,SLOT(deleteLater()));
 //    connect(thread_MK3osn,SIGNAL(finished()),thread_MK3osn,SLOT(deleteLater()));
@@ -671,13 +685,6 @@ MainWindow::MainWindow(QWidget *parent)
 //    connect(thread_MK1rez,SIGNAL(finished()),PortMK1rez,SLOT(deleteLater()));
 //    connect(thread_MK2rez,SIGNAL(finished()),PortMK2rez,SLOT(deleteLater()));
 //    connect(thread_MK3rez,SIGNAL(finished()),PortMK3rez,SLOT(deleteLater()));
-//    connect(PortMK1osn, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
-//    connect(PortMK1rez, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
-//    connect(PortMK2osn, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
-//    connect(PortMK2rez, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
-//    connect(PortMK3rez, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
-//    connect(PortMK3osn, SIGNAL(finished_Port()),thread_MK1osn,SLOT(quit()));
-
 
     ui->tabWidget->setCurrentIndex(0);
     if (AdminTools==0){
@@ -1097,7 +1104,7 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                       if (stopIfError==1){
                                           ui->btnStart->click();
                                       }
-                                      emit errorMessage (error);
+                                      emit errorMessageThis (error);
                                       tblBSWVSetDeafault(6, i);
                                   }
                             }
@@ -1236,7 +1243,7 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                     }
                                     if (ListOfBSWVData[i].on_off_status == 1){
                                         error = "Ответ на сообщение 255 от "+ListOfBSWVprov.at(i).name + " не получен";
-                                        emit errorMessage (error);
+                                        emit errorMessageThis (error);
                                         if (stopIfError==1){
                                             ui->btnStart->click();
                                         }
@@ -1308,7 +1315,7 @@ void MainWindow::ProverkaNomera(){
         else {
             if (ListOfBSWVData[f].on_off_status == 1){
             error = "Ответ на сообщение 34 от "+ ListOfBSWVprov.at(f).name +" не получен";
-            emit errorMessage (error);
+            emit errorMessageThis (error);
             }
         }        
     }
@@ -1515,7 +1522,7 @@ for (int i=0;i<ListOfBSWVData.size();i++){
     else {
         if (ListOfBSWVData.at(i).on_off_status == 1){
             error = "Ответ на сообщение 1 от "+ListOfBSWVData.at(i).name+" не получен";
-            emit errorMessage (error);
+            emit errorMessageThis (error);
             QTableWidgetItem *itm91_91 = new QTableWidgetItem("-");
             QTableWidgetItem *itm92_92 = new QTableWidgetItem("-");
             QTableWidgetItem *itm93_93 = new QTableWidgetItem("-");
@@ -1564,7 +1571,7 @@ for (int k=0;k<ListOfBSWVprov.size();k++){
         }
         if (ListOfBSWVData[k].on_off_status == 1){
             error = "Ответ на сообщение 255 от "+ListOfBSWVprov.at(k).name + " не получен";
-            emit errorMessage (error);
+            emit errorMessageThis (error);
         }
     }
     if (ListOfBSWVprov.at(k).otvetPoluchen==1){
@@ -1618,7 +1625,7 @@ void MainWindow::VivodACP()
         }else{
             if (ListOfBSWVData[j].on_off_status == 1){
             error = "Ответ на сообщение 17 от "+ ListOfBSWVt.at(j).name +" не получен";
-            emit errorMessage (error);
+            emit errorMessageThis (error);
             QTableWidgetItem *itm91_91 = new QTableWidgetItem("-");
             QTableWidgetItem *itm92_92 = new QTableWidgetItem("-");
             QTableWidgetItem *itm93_93 = new QTableWidgetItem("-");
@@ -1718,7 +1725,7 @@ void MainWindow::Vivod_1()
                 if (stopIfError==1){
                     ui->btnStart->click();
                 }
-                emit errorMessage (error);
+                emit errorMessageThis (error);
                 QTableWidgetItem *itm91_91 = new QTableWidgetItem("-");
                 QTableWidgetItem *itm92_92 = new QTableWidgetItem("-");
                 QTableWidgetItem *itm93_93 = new QTableWidgetItem("-");
@@ -1766,7 +1773,7 @@ void MainWindow::Vivod_255()
                 }
                 if (ListOfBSWVData[k].on_off_status == 1){
                     error = "Ответ на сообщение 255 от "+ListOfBSWVprov.at(k).name + " не получен";
-                    emit errorMessage (error);
+                    emit errorMessageThis (error);
                     if (stopIfError==1){
                         ui->btnStart->click();
                     }
@@ -2078,9 +2085,9 @@ void MainWindow::tblBSWVSetDeafault(int numberOfRows, int column)
     }
 }
 
-//void MainWindow::RequestSender(int messageNumber, int nextMessageChName)
-void MainWindow::RequestSender(int messageNumber)
-{
+
+//void MainWindow::RequestSender(int messageNumber)
+//{
 //    if (AdminTools==1) {
 //        numberOfRowsTestConsole++;
 //        if (numberOfRowsTestConsole>100){
@@ -2101,137 +2108,121 @@ void MainWindow::RequestSender(int messageNumber)
 //        ui->redMK3o->setVisible(true);
 //        ui->greenMK3r->setVisible(false);
 //        ui->redMK3r->setVisible(true);
+//        ListOfBSWVprov[0].readyToSend=0;
+//        ListOfBSWVprov[1].readyToSend=0;
+//        ListOfBSWVprov[2].readyToSend=0;
+//        ListOfBSWVprov[3].readyToSend=0;
+//        ListOfBSWVprov[4].readyToSend=0;
+//        ListOfBSWVprov[5].readyToSend=0;
+//        ListOfBSWVData[0].readyToSend=0;
+//        ListOfBSWVData[1].readyToSend=0;
+//        ListOfBSWVData[2].readyToSend=0;
+//        ListOfBSWVData[3].readyToSend=0;
+//        ListOfBSWVData[4].readyToSend=0;
+//        ListOfBSWVData[5].readyToSend=0;
 //        return;
 //    }else{
-//        delay(50);
-//        int MessageChName;
-//        for (int i=0;i<ListOfBSWVData.size();i++){
-//            if (ListOfBSWVData.at(i).namePort==comName) {
-//                MessageChName=i+1;
-//            }
-//        }
-//            switch (messageNumber){
+
+//        switch (messageNumber){
 //                case 1:
-//                if (AdminTools==1){
-//                    ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
-//                    ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-//                }
-//                switch (MessageChName){
-//                    case 6:
-//                    T1:
-//                        if (ListOfBSWVData.at(0).on_off_status==0){
-//                            goto T2;
+//                    if (ListOfBSWVData.at(0).on_off_status==0){ListOfBSWVData[0].readyToSend=1;}
+//                    if (ListOfBSWVData.at(1).on_off_status==0){ListOfBSWVData[1].readyToSend=1;}
+//                    if (ListOfBSWVData.at(2).on_off_status==0){ListOfBSWVData[2].readyToSend=1;}
+//                    if (ListOfBSWVData.at(3).on_off_status==0){ListOfBSWVData[3].readyToSend=1;}
+//                    if (ListOfBSWVData.at(4).on_off_status==0){ListOfBSWVData[4].readyToSend=1;}
+//                    if (ListOfBSWVData.at(5).on_off_status==0){ListOfBSWVData[5].readyToSend=1;}
+//                    if ((ListOfBSWVData.at(0).readyToSend==1)&&(ListOfBSWVData.at(1).readyToSend==1)&&(ListOfBSWVData.at(2).readyToSend==1)&&
+//                        (ListOfBSWVData.at(3).readyToSend==1)&&(ListOfBSWVData.at(4).readyToSend==1)&&(ListOfBSWVData.at(5).readyToSend==1)){
+//                        delay(timerDelay);
+//                        ListOfBSWVData[0].readyToSend=0;
+//                        ListOfBSWVData[1].readyToSend=0;
+//                        ListOfBSWVData[2].readyToSend=0;
+//                        ListOfBSWVData[3].readyToSend=0;
+//                        ListOfBSWVData[4].readyToSend=0;
+//                        ListOfBSWVData[5].readyToSend=0;
+//                        if (AdminTools==1){
+//                            ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
+//                            ui->consolTest->moveCursor(QTextCursor::End);//Scroll
 //                        }
-//                        tblBSWVSetDeafault(6, 0);
-//                        emit writeToPort1 (messageNumber,dataQ,otvetTelemSize);
-//                    break;
-//                    case 1:
-//                    T2:
-//                        if (ListOfBSWVData.at(1).on_off_status==0){
-//                            goto T3;
+//                        if (ListOfBSWVData.at(0).on_off_status==1){
+
+//                            emit writeToPort1 (messageNumber,dataQ,otvetTelemSize);
+//                        }
+//                        if (ListOfBSWVData.at(1).on_off_status==1){
+
+//                            emit writeToPort2 (messageNumber,dataQ,otvetTelemSize);
+//                        }
+//                        if (ListOfBSWVData.at(2).on_off_status==1){
+
+//                            emit writeToPort3 (messageNumber,dataQ,otvetTelemSize);
+//                        }
+//                        if (ListOfBSWVData.at(3).on_off_status==1){
+
+//                            emit writeToPort4 (messageNumber,dataQ,otvetTelemSize);
+//                        }
+//                        if (ListOfBSWVData.at(4).on_off_status==1){
+
+//                            emit writeToPort5 (messageNumber,dataQ,otvetTelemSize);
+//                        }
+//                        if (ListOfBSWVData.at(5).on_off_status==1){
+
+//                            emit writeToPort6 (messageNumber,dataQ,otvetTelemSize);
+//                        }
+//                    }else{
+//                        return;
 //                    }
-//                        tblBSWVSetDeafault(6, 1);
-//                        emit writeToPort2 (messageNumber,dataQ,otvetTelemSize);
-//                        break;
-//                    case 2:
-//                    T3:
-//                        if (ListOfBSWVData.at(2).on_off_status==0){
-//                            goto T4;
-//                        }
-//                        tblBSWVSetDeafault(6, 2);
-//                        emit writeToPort3 (messageNumber,dataQ,otvetTelemSize);
-//                        break;
-//                    case 3:
-//                    T4:
-//                        if (ListOfBSWVData.at(3).on_off_status==0){
-//                            goto T5;
-//                        }
-//                        tblBSWVSetDeafault(6, 3);
-//                        emit writeToPort4 (messageNumber,dataQ,otvetTelemSize);
-//                        break;
-//                    case 4:
-//                    T5:
-//                        if (ListOfBSWVData.at(4).on_off_status==0){
-//                            goto T6;
-//                        }
-//                        tblBSWVSetDeafault(6, 4);
-//                        emit writeToPort5 (messageNumber,dataQ,otvetTelemSize);
-//                        break;
-//                    case 5:
-//                    T6:
-//                        if (ListOfBSWVData.at(5).on_off_status==0){
-//                            goto T1;
-//                        }
-//                        tblBSWVSetDeafault(6, 5);
-//                        emit writeToPort6 (messageNumber,dataQ,otvetTelemSize);
-//                        break;
-//                }
 //                break;
 //                case 255:
-//                if (AdminTools==1){
-//                    ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
-//                    ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-//                }
-//                switch (MessageChName){
-//                    case 6:
-//                        if (ListOfBSWVData.at(5).on_off_status==0){
-//                            goto P1;
+//                    if (ListOfBSWVData.at(0).on_off_status==0){ListOfBSWVprov[0].readyToSend=1;}
+//                    if (ListOfBSWVData.at(1).on_off_status==0){ListOfBSWVprov[1].readyToSend=1;}
+//                    if (ListOfBSWVData.at(2).on_off_status==0){ListOfBSWVprov[2].readyToSend=1;}
+//                    if (ListOfBSWVData.at(3).on_off_status==0){ListOfBSWVprov[3].readyToSend=1;}
+//                    if (ListOfBSWVData.at(4).on_off_status==0){ListOfBSWVprov[4].readyToSend=1;}
+//                    if (ListOfBSWVData.at(5).on_off_status==0){ListOfBSWVprov[5].readyToSend=1;}
+//                    if ((ListOfBSWVprov.at(0).readyToSend==1)&&(ListOfBSWVprov.at(1).readyToSend==1)&&(ListOfBSWVprov.at(2).readyToSend==1)&&
+//                        (ListOfBSWVprov.at(3).readyToSend==1)&&(ListOfBSWVprov.at(4).readyToSend==1)&&(ListOfBSWVprov.at(5).readyToSend==1)){
+//                        delay(timerDelay);
+//                        ListOfBSWVprov[0].readyToSend=0;
+//                        ListOfBSWVprov[1].readyToSend=0;
+//                        ListOfBSWVprov[2].readyToSend=0;
+//                        ListOfBSWVprov[3].readyToSend=0;
+//                        ListOfBSWVprov[4].readyToSend=0;
+//                        ListOfBSWVprov[5].readyToSend=0;
+
+//                        if (AdminTools==1){
+//                            ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
+//                            ui->consolTest->moveCursor(QTextCursor::End);//Scroll
 //                        }
-//                        ui->greenMK3r->setVisible(false);
-//                        ui->redMK3r->setVisible(true);
-//                        emit  writeToPort6(messageNumber,dataQProv,otvetProvSize);
-//                        break;
-//                    case 1:
-//                    P1:
-//                        if (ListOfBSWVData.at(0).on_off_status==0){
-//                            goto P2;
+//                        if (ListOfBSWVData.at(5).on_off_status==1){
+//                            emit  writeToPort6(messageNumber,dataQProv,otvetProvSize);
 //                        }
-//                        ui->greenMK1o->setVisible(false);
-//                        ui->redMK1o->setVisible(true);
-//                        emit writeToPort1 (messageNumber,dataQProv,otvetProvSize);
-//                        break;
-//                    case 2:
-//                    P2:
-//                        if (ListOfBSWVData.at(1).on_off_status==0){
-//                            goto P3;
+//                        if (ListOfBSWVData.at(0).on_off_status==1){
+//                            emit writeToPort1 (messageNumber,dataQProv,otvetProvSize);
 //                        }
-//                        ui->greenMK1r->setVisible(false);
-//                        ui->redMK1r->setVisible(true);
-//                        emit writeToPort2 (messageNumber,dataQProv,otvetProvSize);
-//                        break;
-//                    case 3:
-//                    P3:
-//                    if (ListOfBSWVData.at(2).on_off_status==0){
-//                        goto P4;
+//                        if (ListOfBSWVData.at(1).on_off_status==1){
+//                            emit writeToPort2 (messageNumber,dataQProv,otvetProvSize);
+//                        }
+//                        if (ListOfBSWVData.at(2).on_off_status==1){
+//                            emit writeToPort3 (messageNumber,dataQProv,otvetProvSize);
+//                        }
+//                        if (ListOfBSWVData.at(3).on_off_status==1){
+//                            emit writeToPort4 (messageNumber,dataQProv,otvetProvSize);
+//                            }
+//                        if (ListOfBSWVData.at(4).on_off_status==1){
+//                            emit writeToPort5 (messageNumber,dataQProv,otvetProvSize);
+//                        }
+//                    }else{
+//                        return;
 //                    }
-//                        ui->greenMK2o->setVisible(false);
-//                        ui->redMK2o->setVisible(true);
-//                        emit writeToPort3 (messageNumber,dataQProv,otvetProvSize);
-//                        break;
-//                    case 4:
-//                    P4:
-//                    if (ListOfBSWVData.at(3).on_off_status==0){
-//                        goto P5;
-//                    }
-//                        ui->greenMK2r->setVisible(false);
-//                        ui->redMK2r->setVisible(true);
-//                        emit writeToPort4 (messageNumber,dataQProv,otvetProvSize);
-//                        break;
-//                    case 5:
-//                    P5:
-//                    if (ListOfBSWVData.at(4).on_off_status==0){
-//                        goto P1;
-//                    }
-//                        ui->greenMK3o->setVisible(false);
-//                        ui->redMK3o->setVisible(true);
-//                        emit writeToPort5 (messageNumber,dataQProv,otvetProvSize);
-//                        break;
-//                }
 //                break;
 //            }
-//        }
+//    }
+//}
 
-
+void MainWindow::RequestSender( )
+{
+//    int nextMessageNumber;
+//    if
     if (AdminTools==1) {
         numberOfRowsTestConsole++;
         if (numberOfRowsTestConsole>100){
@@ -2267,7 +2258,7 @@ void MainWindow::RequestSender(int messageNumber)
         return;
     }else{
 
-        switch (messageNumber){
+        switch (nextMessageNumber){
                 case 1:
                     if (ListOfBSWVData.at(0).on_off_status==0){ListOfBSWVData[0].readyToSend=1;}
                     if (ListOfBSWVData.at(1).on_off_status==0){ListOfBSWVData[1].readyToSend=1;}
@@ -2277,7 +2268,7 @@ void MainWindow::RequestSender(int messageNumber)
                     if (ListOfBSWVData.at(5).on_off_status==0){ListOfBSWVData[5].readyToSend=1;}
                     if ((ListOfBSWVData.at(0).readyToSend==1)&&(ListOfBSWVData.at(1).readyToSend==1)&&(ListOfBSWVData.at(2).readyToSend==1)&&
                         (ListOfBSWVData.at(3).readyToSend==1)&&(ListOfBSWVData.at(4).readyToSend==1)&&(ListOfBSWVData.at(5).readyToSend==1)){
-                        delay(200);
+                        delay(timerDelay);
                         ListOfBSWVData[0].readyToSend=0;
                         ListOfBSWVData[1].readyToSend=0;
                         ListOfBSWVData[2].readyToSend=0;
@@ -2289,29 +2280,31 @@ void MainWindow::RequestSender(int messageNumber)
                             ui->consolTest->moveCursor(QTextCursor::End);//Scroll
                         }
                         if (ListOfBSWVData.at(0).on_off_status==1){
-                            tblBSWVSetDeafault(6, 0);
+
                             emit writeToPort1 (messageNumber,dataQ,otvetTelemSize);
                         }
                         if (ListOfBSWVData.at(1).on_off_status==1){
-                            tblBSWVSetDeafault(6, 1);
+
                             emit writeToPort2 (messageNumber,dataQ,otvetTelemSize);
                         }
                         if (ListOfBSWVData.at(2).on_off_status==1){
-                            tblBSWVSetDeafault(6, 2);
+
                             emit writeToPort3 (messageNumber,dataQ,otvetTelemSize);
                         }
                         if (ListOfBSWVData.at(3).on_off_status==1){
-                            tblBSWVSetDeafault(6, 3);
+
                             emit writeToPort4 (messageNumber,dataQ,otvetTelemSize);
                         }
                         if (ListOfBSWVData.at(4).on_off_status==1){
-                            tblBSWVSetDeafault(6, 4);
+
                             emit writeToPort5 (messageNumber,dataQ,otvetTelemSize);
                         }
                         if (ListOfBSWVData.at(5).on_off_status==1){
-                            tblBSWVSetDeafault(6, 5);
+
                             emit writeToPort6 (messageNumber,dataQ,otvetTelemSize);
                         }
+                    }else{
+                        return;
                     }
                 break;
                 case 255:
@@ -2323,7 +2316,7 @@ void MainWindow::RequestSender(int messageNumber)
                     if (ListOfBSWVData.at(5).on_off_status==0){ListOfBSWVprov[5].readyToSend=1;}
                     if ((ListOfBSWVprov.at(0).readyToSend==1)&&(ListOfBSWVprov.at(1).readyToSend==1)&&(ListOfBSWVprov.at(2).readyToSend==1)&&
                         (ListOfBSWVprov.at(3).readyToSend==1)&&(ListOfBSWVprov.at(4).readyToSend==1)&&(ListOfBSWVprov.at(5).readyToSend==1)){
-                        delay(50);
+                        delay(timerDelay);
                         ListOfBSWVprov[0].readyToSend=0;
                         ListOfBSWVprov[1].readyToSend=0;
                         ListOfBSWVprov[2].readyToSend=0;
@@ -2345,20 +2338,16 @@ void MainWindow::RequestSender(int messageNumber)
                             emit writeToPort2 (messageNumber,dataQProv,otvetProvSize);
                         }
                         if (ListOfBSWVData.at(2).on_off_status==1){
-                            ui->greenMK2o->setVisible(false);
-                            ui->redMK2o->setVisible(true);
                             emit writeToPort3 (messageNumber,dataQProv,otvetProvSize);
                         }
                         if (ListOfBSWVData.at(3).on_off_status==1){
-                            ui->greenMK2r->setVisible(false);
-                            ui->redMK2r->setVisible(true);
                             emit writeToPort4 (messageNumber,dataQProv,otvetProvSize);
                             }
                         if (ListOfBSWVData.at(4).on_off_status==1){
-                            ui->greenMK3o->setVisible(false);
-                            ui->redMK3o->setVisible(true);
                             emit writeToPort5 (messageNumber,dataQProv,otvetProvSize);
                         }
+                    }else{
+                        return;
                     }
                 break;
             }
@@ -2367,12 +2356,16 @@ void MainWindow::RequestSender(int messageNumber)
 
 void MainWindow::ExchangeErrorAnalizer(QString channelName, int messageNumber, QString errorText, bool paramsNull)
 {
-     if (paramsNull){
+    if (errorText!=""){
+        Print(errorText);
+    }
+    if (paramsNull){
         switch (messageNumber){
             case 1:
                 for (int i=0;i<ListOfBSWVData.size();i++){
                     if (ListOfBSWVData.at(i).namePort==channelName){
                         tblBSWVSetDeafault(6, i);
+                        ListOfBSWVData[i].readyToSend=1;
                     }
                 }
             break;
@@ -2407,6 +2400,8 @@ void MainWindow::ExchangeErrorAnalizer(QString channelName, int messageNumber, Q
                         break;
 
                         }
+                        ListOfBSWVprov[i].readyToSend=1;
+
                     }
                 }
             break;
@@ -2471,6 +2466,7 @@ MainWindow::~MainWindow()
 
     delete window;
     //window->deleteLater();
+    //delete timerExchange;
     delete timerVivod;
     //timerVivod->deleteLater();
 
@@ -2484,37 +2480,44 @@ MainWindow::~MainWindow()
     //timerWriteInFile->deleteLater();
     delete timerCloseErrorWindow;
     //timerCloseErrorWindow->deleteLater();
-PortMK1osn->DisconnectPort();
-PortMK2osn->DisconnectPort();
-PortMK3osn->DisconnectPort();
-PortMK1rez->DisconnectPort();
-PortMK2rez->DisconnectPort();
-PortMK1rez->DisconnectPort();
-//    PortMK1osn->deleteLater();
-//    PortMK1rez->deleteLater();
-//    PortMK2osn->deleteLater();
-//    PortMK2rez->deleteLater();
-//    PortMK3osn->deleteLater();
-//    PortMK3rez->deleteLater();
-//    thread_MK1osn->deleteLater();
-//    thread_MK1rez->deleteLater();
-//    thread_MK2osn->deleteLater();
-//    thread_MK2rez->deleteLater();
-//    thread_MK3osn->deleteLater();
-//    thread_MK3rez->deleteLater();
-    delete ui;
-delete PortMK1osn;
-delete PortMK1rez;
-delete PortMK2osn;
-delete PortMK2rez;
-delete PortMK3osn;
-delete PortMK3rez;
-delete thread_MK1osn;
-delete thread_MK1rez;
-delete thread_MK2osn;
-delete thread_MK2rez;
-delete thread_MK3osn;
-delete thread_MK3rez;
+//PortMK1osn->DisconnectPort();
+//PortMK2osn->DisconnectPort();
+//PortMK3osn->DisconnectPort();
+//PortMK1rez->DisconnectPort();
+//PortMK2rez->DisconnectPort();
+//PortMK1rez->DisconnectPort();
+    PortMK1osn->deleteLater();
+    PortMK1rez->deleteLater();
+    PortMK2osn->deleteLater();
+    PortMK2rez->deleteLater();
+    PortMK3osn->deleteLater();
+    PortMK3rez->deleteLater();
+//        thread_MK1osn->quit();
+//         thread_MK1rez->quit();
+//        thread_MK2osn->quit();
+//        thread_MK2rez->quit();
+//        thread_MK3osn->quit();
+//        thread_MK3rez->quit();
+    thread_MK1osn->deleteLater();
+    thread_MK1rez->deleteLater();
+    thread_MK2osn->deleteLater();
+    thread_MK2rez->deleteLater();
+    thread_MK3osn->deleteLater();
+    thread_MK3rez->deleteLater();
+
+//delete PortMK1osn;
+//delete PortMK1rez;
+//delete PortMK2osn;
+//delete PortMK2rez;
+//delete PortMK3osn;
+//delete PortMK3rez;
+//delete thread_MK1osn;
+//delete thread_MK1rez;
+//delete thread_MK2osn;
+//delete thread_MK2rez;
+//delete thread_MK3osn;
+//delete thread_MK3rez;
+delete ui;
 }
 
 void MainWindow::on_pushButton_2_clicked()

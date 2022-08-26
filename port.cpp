@@ -52,7 +52,8 @@ void port::handleError(QSerialPort::SerialPortError error)//проверка о�
     emit errorMessage(error,thisPort.portName());
     if ( (thisPort.isOpen()) && (error == QSerialPort::ResourceError))
     {
-        //emit error_(thisPort.errorString().toLocal8Bit());
+        //emit error_(thisPort.portName()+" Ошибка: устройство стало недоступно");
+
         DisconnectPort();
     }
     QString errorDiscription;
@@ -100,7 +101,7 @@ void port::handleError(QSerialPort::SerialPortError error)//проверка о�
         errorDiscription=SettingsPort.name+" Ошибка: устройство не открыто";
     break;
     }
-    if ((error!=0)){//&&(error!=12)){
+    if ((error!=0)&&(error!=12)){
     emit error_(errorDiscription);
     }
 }
@@ -120,7 +121,7 @@ void port::DataAnalizer(QByteArray data)
                 emit nextMessage(255);
                 break;
             case 255:
-                    emit nextMessage(1);
+                emit nextMessage(1);
                 break;
             }
         otvetBuffer.clear();
@@ -143,7 +144,7 @@ void port::DataAnalizer(QByteArray data)
                 allrequiredbytes_time=sendingTime.msecsTo(QTime::currentTime());
                 errorText+=QString(", однако впоследствии за (%3мс) приняли %1 из %2").arg(otvetBuffer.size()).arg(currentOtvetSize).arg(allrequiredbytes_time);
                 paramsNull=false;
-                emit sendBSWVtm(otvetBuffer,comName,currentMessageNumber);
+                emit sendBSWVtm(otvetBuffer,comName);
 
             }
             emit errorExchange(comName,currentMessageNumber,errorText,paramsNull);
@@ -152,7 +153,7 @@ void port::DataAnalizer(QByteArray data)
                     emit nextMessage(255);
                     break;
                 case 255:
-                        emit nextMessage(1);
+                    emit nextMessage(1);
                     break;
                 }
             otvetBuffer.clear();
@@ -255,11 +256,11 @@ void port::Exchange(int messageNumber, QByteArray data, int otvetSize)
 //                paramsNull=true;
 
 //                do {//теперь продолжаем слушать канал, но уже до истечения времени listening_time, либо до принятия необходимого количества байт
-//                   thisPort.waitForReadyRead(5); //ждем ответа
+//                   thisPort.waitForReadyRead(10); //ждем ответа
 //                   responseData += thisPort.readAll();
 //                   numofread = responseData.size();
-//                   if (QTime::currentTime() >= listening_dieTime) listening_timeout = true;
-//                    else  listening_timeout = false;
+//                   if (QTime::currentTime() >= listening_dieTime) {listening_timeout = true;}
+//                    else  {listening_timeout = false;}
 //                } while ((numofread < otvetSize) && (!listening_timeout));//пока не приняли необходимое количество байт либо пока не наступил таймаут listening_time
 
 //                if (numofread >= otvetSize){ //если приняли данных больше либо равно, чем требовалось
@@ -268,6 +269,7 @@ void port::Exchange(int messageNumber, QByteArray data, int otvetSize)
 //                    paramsNull=false;                    //emit error_ (QString(" однако впоследствии (%3мс) приняли %1 из %2").arg(numofread).arg(otvetSize).arg(allrequiredbytes_time));
 //                }
 //            } else {
+
 //                if (numofread > otvetSize){
 //                    errorText+=QString(", почему-то приняли данных больше, чем должны были: %1 из %2").arg(numofread).arg(otvetSize);
 //                    paramsNull=false;                    //emit error_(QString("почему-то приняли данных больше, чем должны были: %1 из %2").arg(numofread).arg(otvetSize));
@@ -283,8 +285,8 @@ void port::Exchange(int messageNumber, QByteArray data, int otvetSize)
 //        }
 
 //    if (errorText!="") {
-//        emit error_(errorText);
-//        errorText+="код запроса="+QString::number(messageNumber)+" ";
+//        //emit error_(errorText);
+//        errorText+=", код запроса="+QString::number(messageNumber)+" ";
 //        emit errorExchange(comName,messageNumber,errorText,paramsNull);
 //    }
 //    if (responseData!="") emit sendBSWVtm(responseData,comName);
@@ -303,6 +305,6 @@ void port::Exchange(int messageNumber, QByteArray data, int otvetSize)
 
 port::~port()
 {    
-   thisPort.close();
-   //thisPort.deleteLater();
+//   thisPort.close();
+//   thisPort.deleteLater();
 }

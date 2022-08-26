@@ -108,18 +108,7 @@ public:
 private:
     Ui::MainWindow *ui;
     ErrorForm *window = new ErrorForm(this);
-    port *PortMK1osn = new port();
-    port *PortMK1rez = new port();
-    port *PortMK2osn = new port();
-    port *PortMK2rez = new port();
-    port *PortMK3osn = new port();
-    port *PortMK3rez = new port();
-    QThread* thread_MK1osn = new QThread;//Создаем поток для порта
-    QThread* thread_MK1rez = new QThread;
-    QThread* thread_MK2osn = new QThread;
-    QThread* thread_MK2rez = new QThread;
-    QThread* thread_MK3osn = new QThread;
-    QThread* thread_MK3rez = new QThread;
+
     bool AdminTools=true;
     int timerDelay = 1000;
     bool stopIfError = 0;
@@ -172,7 +161,19 @@ private:
 
 
 public:
-
+    port *PortMK1osn = new port;
+    port *PortMK1rez = new port;
+    port *PortMK2osn = new port;
+    port *PortMK2rez = new port;
+    port *PortMK3osn = new port;
+    port *PortMK3rez = new port;
+    QThread* thread_MK1osn = new QThread;//Создаем поток для порта
+    QThread* thread_MK1rez = new QThread;
+    QThread* thread_MK2osn = new QThread;
+    QThread* thread_MK2rez = new QThread;
+    QThread* thread_MK3osn = new QThread;
+    QThread* thread_MK3rez = new QThread;
+    QTimer *timerRequest;
     QTimer *timerZaprosaTelem;
     QTimer *timerZaprosaProv;
     QTimer *timerVivod;
@@ -233,8 +234,9 @@ public slots:
     void WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,int k);
 
     //void RequestSender(int messageNumber,int nextMessageChName);
-    void RequestSender(int messageNumber);
+    //void RequestSender(int messageNumber);
     void ExchangeErrorAnalizer(QString channelName, int messageNumber, QString errorText,bool paramsNull);
+
 
 private slots:
    void on_btnNomer_clicked();
@@ -247,6 +249,8 @@ private slots:
    void tblBSWVSetDeafault(int numberOfRows, int column);
 
    void on_pushButton_2_clicked();
+
+   void RequestSender();
 
 signals:
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
@@ -278,7 +282,7 @@ signals:
    void con1();void con2();void con3();void con4();void con5();void con6();
    void discon1();void discon2();void discon3();void discon4();void discon5();void discon6();
    void readyToAnalize(QByteArray otvet, QString comName);
-   void errorMessage(QString);
+   void errorMessageThis(QString);
    //void errorReconnect(QString);
    void msgTestRS485(QByteArray data, QString comName);
    void testRSMK1o(QByteArray);void testRSMK1r(QByteArray);void testRSMK2o(QByteArray);

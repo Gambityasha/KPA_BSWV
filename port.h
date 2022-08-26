@@ -27,8 +27,8 @@ public:
      Settings SettingsPort;
     QSerialPort thisPort;
     bool transactionInProgress=false;
-    int protocol_waiting_time=70;
-    int listening_time=150;
+    int protocol_waiting_time=100;
+    int listening_time=200;
     QTime sendingTime;
     QTime gettingTime;
     QTime gettingTime_die;
