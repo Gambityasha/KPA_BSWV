@@ -54,6 +54,8 @@ struct BSWVdata //создание структуры
     short errorStatus;//0 - нет ошибок порта, 1 - есть ошибки порта    
     bool on_off_status;
     bool readyToSend = false;
+    QTime sendTime;
+    int ping;
 
 };
 
