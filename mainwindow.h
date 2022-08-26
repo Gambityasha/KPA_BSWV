@@ -247,6 +247,7 @@ private slots:
    void on_tabWidget_currentChanged(int index);
    void on_pbReconnectRS485_clicked();
    void tblBSWVSetDeafault(int numberOfRows, int column);
+   void tblBSWVSetData(int numberOfChannel);
 
    void on_pushButton_2_clicked();
 

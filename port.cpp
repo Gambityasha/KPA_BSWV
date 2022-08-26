@@ -108,61 +108,72 @@ void port::handleError(QSerialPort::SerialPortError error)//проверка о�
 
 void port::DataAnalizer(QByteArray data)
 {
-
-    int allrequiredbytes_time;
     QString comName = thisPort.portName();
     otvetBuffer+=data;
-    QTime currentTime = QTime::currentTime();
     if (otvetBuffer.size()==currentOtvetSize){
-       // emit sendBSWVtm(otvetBuffer,comName,currentMessageNumber);
         emit sendBSWVtm(otvetBuffer,comName);
-        switch (currentMessageNumber) {
-            case 1:
-                emit nextMessage(255);
-                break;
-            case 255:
-                emit nextMessage(1);
-                break;
-            }
         otvetBuffer.clear();
-        errorText="";
-        currentMessageNumber=0;
         currentOtvetSize=0;
-        paramsNull=false;
-        return;
-    }else{
-        if ((otvetBuffer.size()<currentOtvetSize)&&(currentTime<gettingTime)){//ждем дальше данные
-            paramsNull=false;
-            return;
+    }else{ if (otvetBuffer.size()>currentOtvetSize){
+        errorText=QString("Принято больше данных %1 из %2").arg(otvetBuffer.size()).arg(currentOtvetSize);
+        emit error_(comName+": "+errorText);
         }else{
-            if ((otvetBuffer.size()<currentOtvetSize)&&(currentTime>gettingTime)&&(currentTime<gettingTime_die)){
-                errorText += QString("не удалось за отведенное время (%1мс) принять необходимое количество байт: приняли %2 из %3").arg(protocol_waiting_time).arg(otvetBuffer.size()).arg(currentOtvetSize);
-                paramsNull=true;
-                return;
-            }
-            if ((otvetBuffer.size()>=currentOtvetSize)&&(currentTime>gettingTime)&&(currentTime<gettingTime_die)){
-                allrequiredbytes_time=sendingTime.msecsTo(QTime::currentTime());
-                errorText+=QString(", однако впоследствии за (%3мс) приняли %1 из %2").arg(otvetBuffer.size()).arg(currentOtvetSize).arg(allrequiredbytes_time);
-                paramsNull=false;
-                emit sendBSWVtm(otvetBuffer,comName);
-
-            }
-            emit errorExchange(comName,currentMessageNumber,errorText,paramsNull);
-            switch (currentMessageNumber) {
-                case 1:
-                    emit nextMessage(255);
-                    break;
-                case 255:
-                    emit nextMessage(1);
-                    break;
-                }
-            otvetBuffer.clear();
-            errorText="";
-            currentMessageNumber=0;
-            currentOtvetSize=0;
-            paramsNull=false;
+            return;
         }
     }
+//    int allrequiredbytes_time;
+//    QString comName = thisPort.portName();
+//    otvetBuffer+=data;
+//    QTime currentTime = QTime::currentTime();
+//    if (otvetBuffer.size()==currentOtvetSize){
+//        emit sendBSWVtm(otvetBuffer,comName);
+//        switch (currentMessageNumber) {
+//            case 1:
+//                emit nextMessage(255);
+//                break;
+//            case 255:
+//                emit nextMessage(1);
+//                break;
+//            }
+//        otvetBuffer.clear();
+//        errorText="";
+//        currentMessageNumber=0;
+//        currentOtvetSize=0;
+//        paramsNull=false;
+//        return;
+//    }else{
+//        if ((otvetBuffer.size()<currentOtvetSize)&&(currentTime<gettingTime)){//ждем дальше данные
+//            paramsNull=false;
+//            return;
+//        }else{
+//            if ((otvetBuffer.size()<currentOtvetSize)&&(currentTime>gettingTime)&&(currentTime<gettingTime_die)){
+//                errorText += QString("не удалось за отведенное время (%1мс) принять необходимое количество байт: приняли %2 из %3").arg(protocol_waiting_time).arg(otvetBuffer.size()).arg(currentOtvetSize);
+//                paramsNull=true;
+//                return;
+//            }
+//            if ((otvetBuffer.size()>=currentOtvetSize)&&(currentTime>gettingTime)&&(currentTime<gettingTime_die)){
+//                allrequiredbytes_time=sendingTime.msecsTo(QTime::currentTime());
+//                errorText+=QString(", однако впоследствии за (%3мс) приняли %1 из %2").arg(otvetBuffer.size()).arg(currentOtvetSize).arg(allrequiredbytes_time);
+//                paramsNull=false;
+//                emit sendBSWVtm(otvetBuffer,comName);
+
+//            }
+//            emit errorExchange(comName,currentMessageNumber,errorText,paramsNull);
+//            switch (currentMessageNumber) {
+//                case 1:
+//                    emit nextMessage(255);
+//                    break;
+//                case 255:
+//                    emit nextMessage(1);
+//                    break;
+//                }
+//            otvetBuffer.clear();
+//            errorText="";
+//            currentMessageNumber=0;
+//            currentOtvetSize=0;
+//            paramsNull=false;
+//        }
+//    }
 
 }
 
