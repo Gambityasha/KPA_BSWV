@@ -204,6 +204,7 @@ public:
     QDir dir;
     bool converterError_status;
 
+
 //window = new ErrorForm(this);
 public slots:
    void Vivod(); //Вывод телеметрии в таблицу
@@ -238,6 +239,7 @@ public slots:
     //void RequestSender(int messageNumber,int nextMessageChName);
     //void RequestSender(int messageNumber);
     void ExchangeErrorAnalizer(QString channelName, int messageNumber, QString errorText,bool paramsNull);
+    void ErrorThread();
 
 
 private slots:
@@ -254,6 +256,8 @@ private slots:
    void on_pushButton_2_clicked();
 
    void RequestSender();
+
+   void on_tabWidget_tabBarClicked(int index);
 
 signals:
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);

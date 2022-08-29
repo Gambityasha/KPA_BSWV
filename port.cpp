@@ -108,17 +108,23 @@ void port::handleError(QSerialPort::SerialPortError error)//проверка о�
 
 void port::DataAnalizer(QByteArray data)
 {
-    QString comName = thisPort.portName();
-    otvetBuffer+=data;
-    if (otvetBuffer.size()==currentOtvetSize){
-        emit sendBSWVtm(otvetBuffer,comName);
-        otvetBuffer.clear();
-        currentOtvetSize=0;
-    }else{ if (otvetBuffer.size()>currentOtvetSize){
-        errorText=QString("Принято больше данных %1 из %2").arg(otvetBuffer.size()).arg(currentOtvetSize);
-        emit error_(comName+": "+errorText);
+    if (currentOtvetSize!=0){
+        QString comName = thisPort.portName();
+        otvetBuffer+=data;
+        if (otvetBuffer.size()==currentOtvetSize){
+            emit sendBSWVtm(otvetBuffer,comName);
+            otvetBuffer.clear();
+            currentOtvetSize=0;
         }else{
-            return;
+            if (otvetBuffer.size()>currentOtvetSize){
+            errorText=QString("Принято больше данных %1 из %2").arg(otvetBuffer.size()).arg(currentOtvetSize);
+            emit error_(comName+": "+errorText);
+            emit sendBSWVtm(otvetBuffer,comName);
+            currentOtvetSize=0;
+            errorText="";
+            }else{
+                return;
+            }
         }
     }
 //    int allrequiredbytes_time;
@@ -198,12 +204,12 @@ void port :: WriteToPort(int messageNumber,QByteArray data, int otvetSize){//З�
     if(thisPort.isOpen()){
         currentOtvetSize=otvetSize;
         currentMessageNumber=messageNumber;
-        sendingTime=QTime::currentTime();
-        gettingTime=QTime::currentTime().addMSecs(protocol_waiting_time);
-        gettingTime_die=QTime::currentTime().addMSecs(listening_time);
+//        sendingTime=QTime::currentTime();
+//        gettingTime=QTime::currentTime().addMSecs(protocol_waiting_time);
+//        gettingTime_die=QTime::currentTime().addMSecs(listening_time);
         thisPort.write(data,data.size());
         thisPort.flush();
-    //thisPort.waitForBytesWritten(1);
+    //thisPort.waitForBytesWritten(10);
     }
 }
 void port::WriteToPortTestRS(QByteArray data)

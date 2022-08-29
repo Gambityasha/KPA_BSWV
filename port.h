@@ -29,14 +29,14 @@ public:
     bool transactionInProgress=false;
     int protocol_waiting_time=100;
     int listening_time=200;
-    QTime sendingTime;
-    QTime gettingTime;
-    QTime gettingTime_die;
+//    QTime sendingTime;
+//    QTime gettingTime;
+//    QTime gettingTime_die;
     QString errorText;
     int currentMessageNumber=0;
     int currentOtvetSize;
     QByteArray otvetBuffer;
-    bool paramsNull=false;
+    //bool paramsNull=false;
  ~port();
 
  public slots:

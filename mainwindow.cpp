@@ -603,23 +603,19 @@ MainWindow::MainWindow(QWidget *parent)
     connect(PortMK1rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//,Qt::QueuedConnection);
     connect(PortMK2rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//,Qt::QueuedConnection);
     connect(PortMK3rez, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//,Qt::QueuedConnection);
-    LoadSettings();
-
 
     PortMK1osn->moveToThread(thread_MK1osn);
     PortMK2osn->moveToThread(thread_MK2osn);
     PortMK3osn->moveToThread(thread_MK3osn);
     PortMK1rez->moveToThread(thread_MK1rez);
     PortMK2rez->moveToThread(thread_MK2rez);
-    PortMK3rez->moveToThread(thread_MK3rez);
-
-    thread_MK1osn->start();//(QThread::TimeCriticalPriority);//Создаем поток для порта
-    thread_MK1rez->start();//(QThread::TimeCriticalPriority);
-    thread_MK2osn->start();//(QThread::TimeCriticalPriority);
-    thread_MK2rez->start();//(QThread::TimeCriticalPriority);
-    thread_MK3osn->start();//(QThread::TimeCriticalPriority);
-    thread_MK3rez->start();//(QThread::TimeCriticalPriority);
-
+    PortMK3rez->moveToThread(thread_MK3rez);      
+//    connect(thread_MK1osn,SIGNAL(started()),PortMK1osn,SLOT(process_Port()));
+//    connect(thread_MK2osn,SIGNAL(started()),PortMK2osn,SLOT(process_Port()));
+//    connect(thread_MK3osn,SIGNAL(started()),PortMK3osn,SLOT(process_Port()));
+//    connect(thread_MK1rez,SIGNAL(started()),PortMK1rez,SLOT(process_Port()));
+//    connect(thread_MK2rez,SIGNAL(started()),PortMK2rez,SLOT(process_Port()));
+//    connect(thread_MK3rez,SIGNAL(started()),PortMK3rez,SLOT(process_Port()));
 
     connect(PortMK1osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);
     connect(PortMK1rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);
@@ -641,12 +637,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
     connect(window,SIGNAL(hideError(bool)),this,SLOT(ErrorMessage(bool)));
-        connect(PortMK1osn, SIGNAL(error_(QString)),this,SLOT(Print(QString)));
-        connect(PortMK2osn, SIGNAL(error_(QString)),this,SLOT(Print(QString)));
-        connect(PortMK3osn, SIGNAL(error_(QString)),this,SLOT(Print(QString)));
-        connect(PortMK1rez, SIGNAL(error_(QString)),this,SLOT(Print(QString)));
-        connect(PortMK2rez, SIGNAL(error_(QString)),this,SLOT(Print(QString)));
-        connect(PortMK3rez, SIGNAL(error_(QString)),this,SLOT(Print(QString)));
+
 //    connect(this, SIGNAL(writeToPort1(int,QByteArray,int)),PortMK1osn,SLOT(Exchange(int,QByteArray,int)),Qt::QueuedConnection);
 //    connect(this, SIGNAL(writeToPort2(int,QByteArray,int)),PortMK1rez,SLOT(Exchange(int,QByteArray,int)),Qt::QueuedConnection);
 //    connect(this, SIGNAL(writeToPort3(int,QByteArray,int)),PortMK2osn,SLOT(Exchange(int,QByteArray,int)),Qt::QueuedConnection);
@@ -690,6 +681,28 @@ MainWindow::MainWindow(QWidget *parent)
 //    connect(thread_MK1rez,SIGNAL(finished()),PortMK1rez,SLOT(deleteLater()));
 //    connect(thread_MK2rez,SIGNAL(finished()),PortMK2rez,SLOT(deleteLater()));
 //    connect(thread_MK3rez,SIGNAL(finished()),PortMK3rez,SLOT(deleteLater()));
+    connect(thread_MK1osn,SIGNAL(finished()),this,SLOT(ErrorThread()));
+    connect(thread_MK2osn,SIGNAL(finished()),this,SLOT(ErrorThread()));
+    connect(thread_MK3osn,SIGNAL(finished()),this,SLOT(ErrorThread()));
+    connect(thread_MK1rez,SIGNAL(finished()),this,SLOT(ErrorThread()));
+    connect(thread_MK2rez,SIGNAL(finished()),this,SLOT(ErrorThread()));
+    connect(thread_MK3rez,SIGNAL(finished()),this,SLOT(ErrorThread()));
+
+    connect(this,SIGNAL(destroyed()),thread_MK1osn,SLOT(quit()));
+    connect(this,SIGNAL(destroyed()),thread_MK2osn,SLOT(quit()));
+    connect(this,SIGNAL(destroyed()),thread_MK3osn,SLOT(quit()));
+    connect(this,SIGNAL(destroyed()),thread_MK1rez,SLOT(quit()));
+    connect(this,SIGNAL(destroyed()),thread_MK2rez,SLOT(quit()));
+    connect(this,SIGNAL(destroyed()),thread_MK3rez,SLOT(quit()));
+
+    thread_MK1osn->start();//(QThread::TimeCriticalPriority);//Создаем поток для порта
+    thread_MK1rez->start();//(QThread::TimeCriticalPriority);
+    thread_MK2osn->start();//(QThread::TimeCriticalPriority);
+    thread_MK2rez->start();//(QThread::TimeCriticalPriority);
+    thread_MK3osn->start();//(QThread::TimeCriticalPriority);
+    thread_MK3rez->start();//(QThread::TimeCriticalPriority);
+     LoadSettings();
+
     timerRequest->setInterval(timerDelay);
     ui->tabWidget->setCurrentIndex(0);
     if (AdminTools==0){
@@ -780,32 +793,49 @@ void MainWindow::on_btnNomer_clicked()
     ui->tblNomer->setItem(1,2,itm1_2);
 
     OtpravkaZaprosaNomer();
-    QTimer::singleShot(2000,this,SLOT(ProverkaNomera()));
+    QTimer::singleShot(timerDelay,this,SLOT(ProverkaNomera()));
 }
 
 
 void MainWindow:: OtpravkaZaprosaTarir()
 {
-
+    for (int j=0;j<ListOfBSWVt.size();j++){
+        ListOfBSWVt[j].otvetPoluchen=0;
+    }
     //QByteArray dataQt = QByteArray::fromRawData((char*)dataT,sizeof(dataT));
-    emit writeData1 (dataQt);
-    emit writeData2 (dataQt);
-    emit writeData3 (dataQt);
-    emit writeData4 (dataQt);
-    emit writeData5 (dataQt);
-    emit writeData6 (dataQt);
+//    emit writeData1 (dataQt);
+//    emit writeData2 (dataQt);
+//    emit writeData3 (dataQt);
+//    emit writeData4 (dataQt);
+//    emit writeData5 (dataQt);
+//    emit writeData6 (dataQt);
+    emit writeToPort1 (17,dataQt,otvetTarirSize);
+    emit writeToPort2 (17,dataQt,otvetTarirSize);
+    emit writeToPort3 (17,dataQt,otvetTarirSize);
+    emit writeToPort4 (17,dataQt,otvetTarirSize);
+    emit writeToPort5 (17,dataQt,otvetTarirSize);
+    emit writeToPort6 (17,dataQt,otvetTarirSize);
 }
 
 void MainWindow::OtpravkaZaprosaNomer()
 {
 
     //QByteArray dataQNomer = QByteArray::fromRawData((char*)dataNomer,sizeof(dataNomer));
-    emit writeData1 (dataQNomer);
-    emit writeData2 (dataQNomer);
-    emit writeData3 (dataQNomer);
-    emit writeData4 (dataQNomer);
-    emit writeData5 (dataQNomer);
-    emit writeData6 (dataQNomer);
+//    emit writeData1 (dataQNomer);
+//    emit writeData2 (dataQNomer);
+//    emit writeData3 (dataQNomer);
+//    emit writeData4 (dataQNomer);
+//    emit writeData5 (dataQNomer);
+//    emit writeData6 (dataQNomer);
+    for (int f=0;f<ListOfBSWVnomer.size();f++){
+        ListOfBSWVnomer[f].otvetPoluchen=0;
+    }
+    emit writeToPort1 (34,dataQt,otvetMKSize);
+    emit writeToPort2 (34,dataQt,otvetMKSize);
+    emit writeToPort3 (34,dataQt,otvetMKSize);
+    emit writeToPort4 (34,dataQt,otvetMKSize);
+    emit writeToPort5 (34,dataQt,otvetMKSize);
+    emit writeToPort6 (34,dataQt,otvetMKSize);
 
 }
 
@@ -1297,7 +1327,7 @@ void MainWindow::ProverkaNomera(){
         }
         else {
             if (ListOfBSWVData[f].on_off_status == 1){
-            error = "Ответ на сообщение 34 от "+ ListOfBSWVprov.at(f).name +" не получен";
+            error = ("Ответ на сообщение 34 от "+ ListOfBSWVprov.at(f).name +" за %1 мс не получен").arg(timerDelay);
             emit errorMessageThis (error);
             }
         }        
@@ -1607,7 +1637,7 @@ void MainWindow::VivodACP()
             ui->tblAcp->setItem(6,j,itm6_0);
         }else{
             if (ListOfBSWVData[j].on_off_status == 1){
-            error = "Ответ на сообщение 17 от "+ ListOfBSWVt.at(j).name +" не получен";
+            error = ("Ответ на сообщение 17 от "+ ListOfBSWVt.at(j).name +" за %1 мс не получен").arg(timerDelay);
             emit errorMessageThis (error);
             QTableWidgetItem *itm91_91 = new QTableWidgetItem("-");
             QTableWidgetItem *itm92_92 = new QTableWidgetItem("-");
@@ -1852,22 +1882,28 @@ void MainWindow::on_pbTestRS485_clicked()
     QByteArray dataQ = QByteArray::fromRawData((char*)dataTestRS485,sizeof(dataTestRS485));
     switch (dataTestRS485[1]){
     case (MK1o):
-         emit testRSMK1o (dataQ);
+//         emit testRSMK1o (dataQ);
+         emit writeToPort1(99,dataQ,otvetTestRS485Size);
     break;
     case (MK1r):
-         emit testRSMK1r (dataQ);
+//         emit testRSMK1r (dataQ);
+        emit writeToPort2(99,dataQ,otvetTestRS485Size);
     break;
     case (MK2o):
-         emit testRSMK2o (dataQ);
+//         emit testRSMK2o (dataQ);
+        emit writeToPort2(99,dataQ,otvetTestRS485Size);
     break;
     case (MK2r):
-         emit testRSMK2r (dataQ);
+//         emit testRSMK2r (dataQ);
+        emit writeToPort3(99,dataQ,otvetTestRS485Size);
     break;
     case (MK3o):
-         emit testRSMK3o (dataQ);
+//         emit testRSMK3o (dataQ);
+        emit writeToPort4(99,dataQ,otvetTestRS485Size);
     break;
     case (MK3r):
-         emit testRSMK3r (dataQ);
+//         emit testRSMK3r (dataQ);
+        emit writeToPort5(99,dataQ,otvetTestRS485Size);
     break;
     }
     QTimer::singleShot(1000,this,SLOT(AnalizeRS485()));
@@ -1971,7 +2007,7 @@ void MainWindow::on_pbGetACPKalibr_clicked()
 {
     if ((ui->leTarirValue->text().toFloat())) {
         OtpravkaZaprosaTarir();
-        QTimer::singleShot(500,this,SLOT(VivodACP()));
+        QTimer::singleShot(timerDelay,this,SLOT(VivodACP()));
     }else{
         QMessageBox::information(this, trUtf8("Внимание!"),trUtf8("Введите корректное значение параметра для получения калибровочных данных"));
     }
@@ -2220,6 +2256,10 @@ void MainWindow::tblBSWVSetData(int numberOfChannel)
 
 void MainWindow::RequestSender( )
 {
+     for (int i=0;i<ListOfBSWVData.size();i++){
+         ListOfBSWVData[i].otvetBuffer.clear();
+         ListOfBSWVData[i].otvet.clear();
+     }
     int nextMessageNumber;
     switch (currentMessageNumber) {
         case 1:
@@ -2238,6 +2278,12 @@ void MainWindow::RequestSender( )
     }
     switch (nextMessageNumber){
             case 1:
+                PortMK1osn->otvetBuffer.clear();
+                PortMK1rez->otvetBuffer.clear();
+                PortMK2osn->otvetBuffer.clear();
+                PortMK2rez->otvetBuffer.clear();
+                PortMK3osn->otvetBuffer.clear();
+                PortMK3rez->otvetBuffer.clear();
                 if (AdminTools==1){
                     ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(data[0])+"/"+QString::number(data[1])+"/"+QString::number(data[2])+"/"+QString::number(data[3])+"/"+QString::number(data[4])+"/"+QString::number(data[5])+'\r'); // Вывод текста в консоль
                     ui->consolTest->moveCursor(QTextCursor::End);//Scroll
@@ -2249,8 +2295,13 @@ void MainWindow::RequestSender( )
                         ui->greenMK1o->setVisible(true);
                         ui->redMK1o->setVisible(false);
                     }else{
-                        ui->greenMK1o->setVisible(false);
-                        ui->redMK1o->setVisible(true);
+                        if (firstStart==false){
+                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(0).name).arg(timerDelay);
+                            WriteInFileError(errorMessage);
+                            Print(errorMessage);
+                            ui->greenMK1o->setVisible(false);
+                            ui->redMK1o->setVisible(true);
+                        }
                     }
                     ListOfBSWVprov[0].otvetPoluchen=0;
                     emit writeToPort1 (nextMessageNumber,dataQ,otvetTelemSize);
@@ -2260,8 +2311,13 @@ void MainWindow::RequestSender( )
                         ui->greenMK1r->setVisible(true);
                         ui->redMK1r->setVisible(false);
                     }else{
-                        ui->greenMK1r->setVisible(false);
-                        ui->redMK1r->setVisible(true);
+                        if (firstStart==false){
+                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(1).name).arg(timerDelay);
+                            WriteInFileError(errorMessage);
+                            Print(errorMessage);
+                            ui->greenMK1r->setVisible(false);
+                            ui->redMK1r->setVisible(true);
+                        }
                     }
                     ListOfBSWVprov[1].otvetPoluchen=0;
                     emit writeToPort2 (nextMessageNumber,dataQ,otvetTelemSize);
@@ -2271,8 +2327,13 @@ void MainWindow::RequestSender( )
                         ui->greenMK2o->setVisible(true);
                         ui->redMK2o->setVisible(false);
                     }else{
-                        ui->greenMK2o->setVisible(false);
-                        ui->redMK2o->setVisible(true);
+                        if (firstStart==false){
+                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(2).name).arg(timerDelay);
+                            WriteInFileError(errorMessage);
+                            Print(errorMessage);
+                            ui->greenMK2o->setVisible(false);
+                            ui->redMK2o->setVisible(true);
+                        }
                     }
                     ListOfBSWVprov[2].otvetPoluchen=0;
                     emit writeToPort3 (nextMessageNumber,dataQ,otvetTelemSize);
@@ -2282,8 +2343,13 @@ void MainWindow::RequestSender( )
                         ui->greenMK2r->setVisible(true);
                         ui->redMK2r->setVisible(false);
                     }else{
-                        ui->greenMK2r->setVisible(false);
-                        ui->redMK2r->setVisible(true);
+                        if (firstStart==false){
+                            ui->greenMK2r->setVisible(false);
+                            ui->redMK2r->setVisible(true);
+                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(3).name).arg(timerDelay);
+                            WriteInFileError(errorMessage);
+                            Print(errorMessage);
+                        }
                     }
                     ListOfBSWVprov[3].otvetPoluchen=0;
                     emit writeToPort4 (nextMessageNumber,dataQ,otvetTelemSize);
@@ -2293,8 +2359,13 @@ void MainWindow::RequestSender( )
                         ui->greenMK3o->setVisible(true);
                         ui->redMK3o->setVisible(false);
                     }else{
-                        ui->greenMK3o->setVisible(false);
-                        ui->redMK3o->setVisible(true);
+                        if (firstStart==false){
+                            ui->greenMK3o->setVisible(false);
+                            ui->redMK3o->setVisible(true);
+                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(4).name).arg(timerDelay);
+                            WriteInFileError(errorMessage);
+                            Print(errorMessage);
+                        }
                     }
                     ListOfBSWVprov[4].otvetPoluchen=0;
                     emit writeToPort5 (nextMessageNumber,dataQ,otvetTelemSize);
@@ -2304,8 +2375,13 @@ void MainWindow::RequestSender( )
                         ui->greenMK3r->setVisible(true);
                         ui->redMK3r->setVisible(false);
                     }else{
-                        ui->greenMK3r->setVisible(false);
-                        ui->redMK3r->setVisible(true);
+                        if (firstStart==false){
+                            ui->greenMK3r->setVisible(false);
+                            ui->redMK3r->setVisible(true);
+                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(5).name).arg(timerDelay);
+                            WriteInFileError(errorMessage);
+                            Print(errorMessage);
+                        }
                     }
                     ListOfBSWVprov[5].otvetPoluchen=0;
                     emit writeToPort6 (nextMessageNumber,dataQ,otvetTelemSize);
@@ -2314,60 +2390,90 @@ void MainWindow::RequestSender( )
             break;
             case 255:
 
+                    PortMK1osn->otvetBuffer.clear();
+                    PortMK1rez->otvetBuffer.clear();
+                    PortMK2osn->otvetBuffer.clear();
+                    PortMK2rez->otvetBuffer.clear();
+                    PortMK3osn->otvetBuffer.clear();
+                    PortMK3rez->otvetBuffer.clear();
                     if (AdminTools==1){
                         ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataProv[0])+"/"+QString::number(dataProv[1])+"/"+QString::number(dataProv[2])+"/"+QString::number(dataProv[3])+"/"+QString::number(dataProv[4])+"/"+QString::number(dataProv[5])+'\r'); // Вывод текста в консоль
                         ui->consolTest->moveCursor(QTextCursor::End);//Scroll
                     }
                     if (ListOfBSWVData.at(5).on_off_status==1){
-                        if (ListOfBSWVData.at(5).otvetPoluchen==1){
+                        if (ListOfBSWVData.at(5).otvetPoluchen==1){                            
+                            WriteInFileTemplate("MK3r",fileMK3r,5);
                             tblBSWVSetData(5);
                         }else{
                             tblBSWVSetDeafault(6,5);
+                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(5).name).arg(timerDelay);
+                            WriteInFileError(errorMessage);
+                            Print(errorMessage);
                         }
                         ListOfBSWVData[5].otvetPoluchen=0;
                         emit  writeToPort6(nextMessageNumber,dataQProv,otvetProvSize);
                     }
                     if (ListOfBSWVData.at(0).on_off_status==1){
                         if (ListOfBSWVData.at(0).otvetPoluchen==1){
+                            WriteInFileTemplate("MK1o",fileMK1o,0);
                             tblBSWVSetData(0);
                         }else{
                             tblBSWVSetDeafault(6,0);
+                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(0).name).arg(timerDelay);
+                            WriteInFileError(errorMessage);
+                            Print(errorMessage);
                         }
                         ListOfBSWVData[0].otvetPoluchen=0;
                         emit writeToPort1 (nextMessageNumber,dataQProv,otvetProvSize);
                     }
                     if (ListOfBSWVData.at(1).on_off_status==1){
-                        if (ListOfBSWVData.at(1).otvetPoluchen==1){
+                        if (ListOfBSWVData.at(1).otvetPoluchen==1){                           
+                            WriteInFileTemplate("MK1r",fileMK1r,1);
                             tblBSWVSetData(1);
                         }else{
                             tblBSWVSetDeafault(6,1);
+                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(1).name).arg(timerDelay);
+                            WriteInFileError(errorMessage);
+                            Print(errorMessage);
                         }
                         ListOfBSWVData[1].otvetPoluchen=0;
                         emit writeToPort2 (nextMessageNumber,dataQProv,otvetProvSize);
                     }
                     if (ListOfBSWVData.at(2).on_off_status==1){
                         if (ListOfBSWVData.at(2).otvetPoluchen==1){
-                            tblBSWVSetData(2);
+                            tblBSWVSetData(2);                            
+                            WriteInFileTemplate("MK2o",fileMK2o,2);
                         }else{
                             tblBSWVSetDeafault(6,2);
+                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(2).name).arg(timerDelay);
+                            WriteInFileError(errorMessage);
+                            Print(errorMessage);
                         }
                         ListOfBSWVData[2].otvetPoluchen=0;
                         emit writeToPort3 (nextMessageNumber,dataQProv,otvetProvSize);
                     }
                     if (ListOfBSWVData.at(3).on_off_status==1){
-                        if (ListOfBSWVData.at(3).otvetPoluchen==1){
-                            tblBSWVSetData(3);
+                        if (ListOfBSWVData.at(3).otvetPoluchen==1){                            
+                            tblBSWVSetData(3);                            
+                            WriteInFileTemplate("MK2r",fileMK2r,3);
                         }else{
+                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(3).name).arg(timerDelay);
                             tblBSWVSetDeafault(6,3);
+                            WriteInFileError(errorMessage);
+                            Print(errorMessage);
                         }
                         ListOfBSWVData[3].otvetPoluchen=0;
                         emit writeToPort4 (nextMessageNumber,dataQProv,otvetProvSize);
                         }
                     if (ListOfBSWVData.at(4).on_off_status==1){
-                        if (ListOfBSWVData.at(4).otvetPoluchen==1){
+                        if (ListOfBSWVData.at(4).otvetPoluchen==1){                            
+                            WriteInFileTemplate("MK3o",fileMK3o,4);
                             tblBSWVSetData(4);
                         }else{
                             tblBSWVSetDeafault(6,4);
+                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(4).name).arg(timerDelay);
+                            WriteInFileError(errorMessage);
+                            Print(errorMessage);
                         }
                         ListOfBSWVData[4].otvetPoluchen=0;
                         emit writeToPort5 (nextMessageNumber,dataQProv,otvetProvSize);
@@ -2375,6 +2481,7 @@ void MainWindow::RequestSender( )
                     currentMessageNumber=nextMessageNumber;
                 break;
           }
+    firstStart=false;
 }
 
 void MainWindow::ExchangeErrorAnalizer(QString channelName, int messageNumber, QString errorText, bool paramsNull)
@@ -2433,6 +2540,11 @@ void MainWindow::ExchangeErrorAnalizer(QString channelName, int messageNumber, Q
     }
 }
 
+void MainWindow::ErrorThread()
+{
+    Print("Thread Error!!!");
+}
+
 void MainWindow::on_btnStart_clicked()
 {
     //for (int i=0;i<ListOfBSWVData.size();i++) ListOfBSWVData[i].otvetBuffer.clear();
@@ -2441,6 +2553,7 @@ void MainWindow::on_btnStart_clicked()
 //        firstStart=true;
     if (timerRequest->isActive()){
         stopRequest=true;
+
         timerRequest->stop();
         ui->btnStart->setEnabled(false);
         ui->tblBSWV->setEnabled(false);
@@ -2469,7 +2582,8 @@ void MainWindow::on_btnStart_clicked()
         for (int i=0;i<ListOfBSWVData.size();i++){
             ListOfBSWVData[i].readyToSend=true;
         }
-        //firstStart=false;
+        firstStart=true;
+        //QTimer::singleShot(timerDelay*1.2,this,SLOT(firstStart=false));//
         //stopRequest=false;
         ui->tblBSWV->setEnabled(true);
         ui->tabWidget->setTabEnabled(0,false);
@@ -2554,4 +2668,10 @@ void MainWindow::on_pushButton_2_clicked()
 
 
 
+
+
+void MainWindow::on_tabWidget_tabBarClicked(int index)
+{
+    if (index==1) ChangeColor();
+}
 
