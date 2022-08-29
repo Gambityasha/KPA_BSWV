@@ -801,6 +801,7 @@ void MainWindow:: OtpravkaZaprosaTarir()
 {
     for (int j=0;j<ListOfBSWVt.size();j++){
         ListOfBSWVt[j].otvetPoluchen=0;
+        ListOfBSWVt[j].otvet.clear();
     }
     //QByteArray dataQt = QByteArray::fromRawData((char*)dataT,sizeof(dataT));
 //    emit writeData1 (dataQt);
@@ -829,13 +830,14 @@ void MainWindow::OtpravkaZaprosaNomer()
 //    emit writeData6 (dataQNomer);
     for (int f=0;f<ListOfBSWVnomer.size();f++){
         ListOfBSWVnomer[f].otvetPoluchen=0;
+        ListOfBSWVnomer[f].otvet.clear();
     }
-    emit writeToPort1 (34,dataQt,otvetMKSize);
-    emit writeToPort2 (34,dataQt,otvetMKSize);
-    emit writeToPort3 (34,dataQt,otvetMKSize);
-    emit writeToPort4 (34,dataQt,otvetMKSize);
-    emit writeToPort5 (34,dataQt,otvetMKSize);
-    emit writeToPort6 (34,dataQt,otvetMKSize);
+    emit writeToPort1 (34,dataQNomer,otvetMKSize);
+    emit writeToPort2 (34,dataQNomer,otvetMKSize);
+    emit writeToPort3 (34,dataQNomer,otvetMKSize);
+    emit writeToPort4 (34,dataQNomer,otvetMKSize);
+    emit writeToPort5 (34,dataQNomer,otvetMKSize);
+    emit writeToPort6 (34,dataQNomer,otvetMKSize);
 
 }
 
@@ -1149,7 +1151,7 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                  case 17:
                     for (int i=0;i<ListOfBSWVt.size();i++){
                         if (ListOfBSWVt.at(i).namePort == comName){
-                            ListOfBSWVt[i].readyToSend=1;
+                            //ListOfBSWVt[i].readyToSend=1;
                             unsigned char upperCRCR = Crc16(buffer,le)>>8;
                             unsigned char lowerCRCR = Crc16(buffer,le);
                             if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
@@ -1178,7 +1180,7 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                  case 34:
                       for (int i=0;i<ListOfBSWVnomer.size();i++){
                           if (ListOfBSWVnomer.at(i).namePort == comName){
-                              ListOfBSWVnomer[i].readyToSend=1;
+                              //ListOfBSWVnomer[i].readyToSend=1;
                               unsigned char upperCRCR = Crc16(buffer,le)>>8;
                               unsigned char lowerCRCR = Crc16(buffer,le);
                               if ((upperCRCR==upperCRC)&&(lowerCRCR==lowerCRC)){
