@@ -256,7 +256,9 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
         }
         else {
             timerReconnect->start();
-
+            if (!ui->pbCancelReconnect->isVisible()){
+                ui->pbCancelReconnect->setVisible(true);
+            }
             if (ui->lblError->isVisible()){//ничего не делать
             }else{
                 window->open();
@@ -272,7 +274,7 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
            (ListOfBSWVData.at(3).errorStatus==0)& (ListOfBSWVData.at(4).errorStatus==0)&(ListOfBSWVData.at(5).errorStatus==0)){
            timerReconnect->stop();
            delay(2000);
-
+           ui->pbCancelReconnect->setVisible(false);
            window->close();
            ui->lblError->setVisible(false);
         }
@@ -367,9 +369,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {    
     ui->setupUi(this);
-qRegisterMetaType<QSerialPort::SerialPortError>();
-
-
+    qRegisterMetaType<QSerialPort::SerialPortError>();//Очень важное дополнение, чтобы при мультипотоковой работе сообщения об ошибках выдавались
+    //и обрабатывались механизмами реконнекта
+    ui->pbCancelReconnect->setVisible(false);
     setWindowIcon(QIcon("KPABSWV.png"));
     ui->tabWidget->setTabEnabled(0,true);
     ui->lblError->setVisible(false);
@@ -2669,5 +2671,19 @@ void MainWindow::on_pushButton_2_clicked()
 void MainWindow::on_tabWidget_tabBarClicked(int index)
 {
     if (index==1) ChangeColor();
+}
+
+
+void MainWindow::on_pbCancelReconnect_clicked()
+{
+    if (timerReconnect->isActive()){
+        //ui->pbCancelReconnect->setText("Включить автоподключение конвертеров");
+        timerReconnect->disconnect();
+        ui->pbCancelReconnect->setEnabled(false);
+    }else{
+//        ui->pbCancelReconnect->setText("Отключить автоподключение конвертеров");
+//        connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
+//        timerReconnect->start();
+    }
 }
 

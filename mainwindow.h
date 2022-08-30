@@ -259,6 +259,8 @@ private slots:
 
    void on_tabWidget_tabBarClicked(int index);
 
+   void on_pbCancelReconnect_clicked();
+
 signals:
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
    void savesettings2(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);
