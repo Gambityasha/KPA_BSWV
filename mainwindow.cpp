@@ -63,8 +63,9 @@ void MainWindow::LoadSettings()
     QSettings setting("ports.ini", QSettings::IniFormat); //ports.ini файл должен быть в одной папке с exe
     setting.beginGroup("Admin");// [Admin] в ини файле
     AdminTools = setting.value("AdminTools","0").toBool();
+    timerDelay=setting.value("timerDelay","1000").toInt();
     if (AdminTools==1){
-        timerDelay=setting.value("timerDelay","1000").toInt();
+
         stopIfError=setting.value("stopIfError","0").toBool();
     }
     setting.endGroup();

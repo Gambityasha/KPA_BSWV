@@ -519,7 +519,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -728,12 +728,12 @@
           <rect>
            <x>10</x>
            <y>60</y>
-           <width>191</width>
+           <width>201</width>
            <height>16</height>
           </rect>
          </property>
          <property name="text">
-          <string>34    - Данные о номере МУК и канала</string>
+          <string>34    - Данные о номерах МУК и канала</string>
          </property>
         </widget>
         <widget class="QLabel" name="label_10">

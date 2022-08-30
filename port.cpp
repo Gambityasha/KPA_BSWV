@@ -6,6 +6,14 @@ port::port(QObject *parent) : QObject(parent)
     connect(&thisPort, SIGNAL(readyRead()),this,SLOT(ReadInPort()));
     connect(this, SIGNAL(dataForAnalize(QByteArray)),this,SLOT(DataAnalizer(QByteArray)));
 
+
+
+    QSettings setting("ports.ini", QSettings::IniFormat); //ports.ini файл должен быть в одной папке с exe
+    setting.beginGroup("Admin");// [Admin] в ини файле
+
+    timerDelay=setting.value("timerDelay","1000").toInt();
+    setting.endGroup();
+
 }
 
 
@@ -114,16 +122,25 @@ void port::DataAnalizer(QByteArray data)
         if (otvetBuffer.size()==currentOtvetSize){
             emit sendBSWVtm(otvetBuffer,comName);
             otvetBuffer.clear();
-            currentOtvetSize=0;
+            currentOtvetSize=0;            
         }else{
             if (otvetBuffer.size()>currentOtvetSize){
-            errorText=QString("Принято больше данных %1 из %2").arg(otvetBuffer.size()).arg(currentOtvetSize);
+            errorText=QString("Принято больше данных: %1 из %2").arg(otvetBuffer.size()).arg(currentOtvetSize);
             emit error_(comName+": "+errorText);
             emit sendBSWVtm(otvetBuffer,comName);
             currentOtvetSize=0;
             errorText="";
             }else{
-                return;
+                if (waitingTime< QTime::currentTime()){
+                    return;
+                }else{
+                    if (otvetBuffer!=nullptr){
+                        errorText=QString("Принято меньше данных: %1 из %2, за %3 мс").arg(otvetBuffer.size()).arg(currentOtvetSize).arg(timerDelay*0.8);
+                        emit error_(comName+": "+errorText);
+                        emit sendBSWVtm(otvetBuffer,comName);
+                        errorText="";
+                    }
+                }
             }
         }
     }
@@ -202,11 +219,13 @@ void port :: WriteToPort(QByteArray data){//Запись данных в пор�
 
 void port :: WriteToPort(int messageNumber,QByteArray data, int otvetSize){//Запись данных в порт
     if(thisPort.isOpen()){
+
         currentOtvetSize=otvetSize;
         currentMessageNumber=messageNumber;
 //        sendingTime=QTime::currentTime();
 //        gettingTime=QTime::currentTime().addMSecs(protocol_waiting_time);
 //        gettingTime_die=QTime::currentTime().addMSecs(listening_time);
+        waitingTime = QTime::currentTime().addMSecs(timerDelay*0.8);
         thisPort.write(data,data.size());
         thisPort.flush();
     //thisPort.waitForBytesWritten(10);

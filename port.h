@@ -8,6 +8,9 @@
 #include <QThread>
 #include <QTime>
 #pragma once //еще одна защита от повторного включения
+#include <QSettings>
+#include <QFile>
+#include <QMessageBox>
 
 struct Settings
 {
@@ -27,14 +30,15 @@ public:
      Settings SettingsPort;
     QSerialPort thisPort;
     bool transactionInProgress=false;
-    int protocol_waiting_time=100;
+    int protocol_waiting_time;
     int listening_time=200;
-//    QTime sendingTime;
+    QTime waitingTime;
 //    QTime gettingTime;
 //    QTime gettingTime_die;
     QString errorText;
     int currentMessageNumber=0;
     int currentOtvetSize;
+    int timerDelay;
     QByteArray otvetBuffer;
     //bool paramsNull=false;
  ~port();
