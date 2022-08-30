@@ -244,40 +244,40 @@ void MainWindow::ErrorMessage(bool status)
 void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName)
 {
 
-//    if ((error!=0)||(error!=12)){
+    if ((error!=0)&&(error!=12)){
 
-//        for (int i=0;i<ListOfBSWVData.size();i++){
-//            if (ListOfBSWVData[i].namePort==portName){
-//                ListOfBSWVData[i].errorStatus=1;
-//            }
-//        }
-//        if (timerReconnect->isActive()){
-//        //ничего не делать
-//        }
-//        else {
-//            timerReconnect->start();
+        for (int i=0;i<ListOfBSWVData.size();i++){
+            if (ListOfBSWVData[i].namePort==portName){
+                ListOfBSWVData[i].errorStatus=1;
+            }
+        }
+        if (timerReconnect->isActive()){
+        //ничего не делать
+        }
+        else {
+            timerReconnect->start();
 
-//            if (ui->lblError->isVisible()){//ничего не делать
-//            }else{
-//                window->open();
-//            }
-//        }
-//    }else {if ((error==0)||(error==12)) {
-//        for (int i=0;i<ListOfBSWVData.size();i++){
-//            if (ListOfBSWVData[i].namePort==portName){
-//                ListOfBSWVData[i].errorStatus=0;
-//            }
-//        }
-//        if ((ListOfBSWVData.at(0).errorStatus==0)&(ListOfBSWVData.at(1).errorStatus==0)&(ListOfBSWVData.at(2).errorStatus==0)&
-//           (ListOfBSWVData.at(3).errorStatus==0)& (ListOfBSWVData.at(4).errorStatus==0)&(ListOfBSWVData.at(5).errorStatus==0)){
-//           timerReconnect->stop();
-//           delay(2000);
+            if (ui->lblError->isVisible()){//ничего не делать
+            }else{
+                window->open();
+            }
+        }
+    }else {if ((error==0)||(error==12)) {
+        for (int i=0;i<ListOfBSWVData.size();i++){
+            if (ListOfBSWVData[i].namePort==portName){
+                ListOfBSWVData[i].errorStatus=0;
+            }
+        }
+        if ((ListOfBSWVData.at(0).errorStatus==0)&(ListOfBSWVData.at(1).errorStatus==0)&(ListOfBSWVData.at(2).errorStatus==0)&
+           (ListOfBSWVData.at(3).errorStatus==0)& (ListOfBSWVData.at(4).errorStatus==0)&(ListOfBSWVData.at(5).errorStatus==0)){
+           timerReconnect->stop();
+           delay(2000);
 
-//           window->close();
-//           ui->lblError->setVisible(false);
-//        }
-//    }
-//}
+           window->close();
+           ui->lblError->setVisible(false);
+        }
+    }
+}
 }
 
 void MainWindow::Reconnect( )
@@ -367,7 +367,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {    
     ui->setupUi(this);
-
+qRegisterMetaType<QSerialPort::SerialPortError>();
 
 
     setWindowIcon(QIcon("KPABSWV.png"));
@@ -597,6 +597,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(discon4()),PortMK2rez,SLOT(DisconnectPort()));
     connect(this, SIGNAL(discon5()),PortMK3osn,SLOT(DisconnectPort()));
     connect(this, SIGNAL(discon6()),PortMK3rez,SLOT(DisconnectPort()));
+
     connect(PortMK1osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//,Qt::QueuedConnection);//Лог ошибок соединения
     connect(PortMK2osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//,Qt::QueuedConnection);
     connect(PortMK3osn, SIGNAL(error_(QString)), this, SLOT(Print(QString)));//,Qt::QueuedConnection);
@@ -609,32 +610,25 @@ MainWindow::MainWindow(QWidget *parent)
     PortMK3osn->moveToThread(thread_MK3osn);
     PortMK1rez->moveToThread(thread_MK1rez);
     PortMK2rez->moveToThread(thread_MK2rez);
-    PortMK3rez->moveToThread(thread_MK3rez);      
-//    connect(thread_MK1osn,SIGNAL(started()),PortMK1osn,SLOT(process_Port()));
-//    connect(thread_MK2osn,SIGNAL(started()),PortMK2osn,SLOT(process_Port()));
-//    connect(thread_MK3osn,SIGNAL(started()),PortMK3osn,SLOT(process_Port()));
-//    connect(thread_MK1rez,SIGNAL(started()),PortMK1rez,SLOT(process_Port()));
-//    connect(thread_MK2rez,SIGNAL(started()),PortMK2rez,SLOT(process_Port()));
-//    connect(thread_MK3rez,SIGNAL(started()),PortMK3rez,SLOT(process_Port()));
+    PortMK3rez->moveToThread(thread_MK3rez);
 
     connect(PortMK1osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);
     connect(PortMK1rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);
     connect(PortMK2osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);
     connect(PortMK2rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);
     connect(PortMK3rez, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);
-    connect(PortMK3osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);
-    //connect(timerVivod, SIGNAL(timeout()), this, SLOT(Vivod()));
+    connect(PortMK3osn, SIGNAL(sendBSWVtm(QByteArray,QString)),this,SLOT(Kompanovka(QByteArray,QString)),Qt::QueuedConnection);    
     connect(this, SIGNAL(readyToAnalize(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
     connect(this, SIGNAL(errorMessageThis(QString)), this,SLOT(Print(QString)),Qt::QueuedConnection); //Не тот же эррор месадж, что от порта
     connect(this, SIGNAL(errorMessageThis(QString)), this,SLOT(WriteInFileError(QString)));
     //connect(timerVivod, SIGNAL(timeout()), this, SLOT(WriteInFile()));
     connect(timerWriteInFile, SIGNAL(timeout()), this, SLOT(WriteInFile()));
-//    connect(PortMK1osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
-//    connect(PortMK2osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
-//    connect(PortMK3osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
-//    connect(PortMK1rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
-//    connect(PortMK2rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
-//    connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK1osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK2osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK3osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK1rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK2rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
     connect(window,SIGNAL(hideError(bool)),this,SLOT(ErrorMessage(bool)));
 
@@ -1908,7 +1902,7 @@ void MainWindow::on_pbTestRS485_clicked()
         emit writeToPort5(99,dataQ,otvetTestRS485Size);
     break;
     }
-    QTimer::singleShot(1000,this,SLOT(AnalizeRS485()));
+    QTimer::singleShot(timerDelay,this,SLOT(AnalizeRS485()));
 }
 
 void MainWindow::AnalizeRS485()
