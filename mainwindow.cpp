@@ -711,6 +711,10 @@ void MainWindow::on_btnNomer_clicked()
 
 void MainWindow:: OtpravkaZaprosaTarir()
 {
+    if (AdminTools==1){
+        ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataT[0])+"/"+QString::number(dataT[1])+"/"+QString::number(dataT[2])+"/"+QString::number(dataT[3])+"/"+QString::number(dataT[4])+"/"+QString::number(dataT[5])+'\r'); // Вывод текста в консоль
+        ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+    }
     for (int j=0;j<ListOfBSWVt.size();j++){
         ListOfBSWVt[j].otvetPoluchen=0;
         ListOfBSWVt[j].otvet.clear();
@@ -725,6 +729,10 @@ void MainWindow:: OtpravkaZaprosaTarir()
 
 void MainWindow::OtpravkaZaprosaNomer()
 {
+    if (AdminTools==1){
+        ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+QString::number(dataNomer[0])+"/"+QString::number(dataNomer[1])+"/"+QString::number(dataNomer[2])+"/"+QString::number(dataNomer[3])+"/"+QString::number(dataNomer[4])+"/"+QString::number(dataNomer[5])+'\r'); // Вывод текста в консоль
+        ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+    }
     for (int f=0;f<ListOfBSWVnomer.size();f++){
         ListOfBSWVnomer[f].otvetPoluchen=0;
         ListOfBSWVnomer[f].otvet.clear();
@@ -972,7 +980,7 @@ void MainWindow::Analize(QByteArray otvet,QString comName)
                                     ListOfBSWVprov[i].otvetPoluchen=0;
 
                                     if (ListOfBSWVData[i].on_off_status == 1){
-                                        error = "Ответ на сообщение 255 от "+ListOfBSWVprov.at(i).name + " не получен";
+                                        error = "Корректный ответ на сообщение 255 от "+ListOfBSWVprov.at(i).name + " не получен";
                                         emit errorMessageThis (error);
                                         if (stopIfError==1){
                                             ui->btnStart->click();
@@ -1043,7 +1051,7 @@ void MainWindow::ProverkaNomera(){
         }
         else {
             if (ListOfBSWVData[f].on_off_status == 1){
-            error = ("Ответ на сообщение 34 от "+ ListOfBSWVprov.at(f).name +" за %1 мс не получен").arg(timerDelay);
+            error = ("Корректный ответ на сообщение 34 от "+ ListOfBSWVprov.at(f).name +" за %1 мс не получен").arg(timerDelay);
             emit errorMessageThis (error);
             }
         }        
@@ -1244,7 +1252,7 @@ void MainWindow::VivodACP()
             ui->tblAcp->setItem(6,j,itm6_0);
         }else{
             if (ListOfBSWVData[j].on_off_status == 1){
-            error = ("Ответ на сообщение 17 от "+ ListOfBSWVt.at(j).name +" за %1 мс не получен").arg(timerDelay);
+            error = ("Корректный ответ на сообщение 17 от "+ ListOfBSWVt.at(j).name +" за %1 мс не получен").arg(timerDelay);
             emit errorMessageThis (error);
             QTableWidgetItem *itm91_91 = new QTableWidgetItem("-");
             QTableWidgetItem *itm92_92 = new QTableWidgetItem("-");

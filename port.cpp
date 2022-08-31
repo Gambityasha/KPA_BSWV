@@ -134,7 +134,7 @@ void port::DataAnalizer(QByteArray data)
                 if (waitingTime> QTime::currentTime()){
                     return;
                 }else{
-                    if (otvetBuffer!=nullptr){
+                    if (otvetBuffer.size()!=0){
                         errorText=QString("Принято меньше данных: %1 из %2, за %3 мс").arg(otvetBuffer.size()).arg(currentOtvetSize).arg(timerDelay*0.95);
                         emit error_(comName+": "+errorText);
                         emit sendBSWVtm(otvetBuffer,comName);
