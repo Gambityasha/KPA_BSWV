@@ -131,15 +131,16 @@ void port::DataAnalizer(QByteArray data)
             currentOtvetSize=0;
             errorText="";
             }else{
-                if (waitingTime< QTime::currentTime()){
+                if (waitingTime> QTime::currentTime()){
                     return;
                 }else{
-//                    if (otvetBuffer!=nullptr){
-//                        errorText=QString("Принято меньше данных: %1 из %2, за %3 мс").arg(otvetBuffer.size()).arg(currentOtvetSize).arg(timerDelay*0.8);
-//                        emit error_(comName+": "+errorText);
-//                        emit sendBSWVtm(otvetBuffer,comName);
-//                        errorText="";
-                    //}
+                    if (otvetBuffer!=nullptr){
+                        errorText=QString("Принято меньше данных: %1 из %2, за %3 мс").arg(otvetBuffer.size()).arg(currentOtvetSize).arg(timerDelay*0.95);
+                        emit error_(comName+": "+errorText);
+                        emit sendBSWVtm(otvetBuffer,comName);
+                        errorText="";
+                        otvetBuffer.clear();
+                    }
                 }
             }
         }
@@ -225,7 +226,7 @@ void port :: WriteToPort(int messageNumber,QByteArray data, int otvetSize){//З�
 //        sendingTime=QTime::currentTime();
 //        gettingTime=QTime::currentTime().addMSecs(protocol_waiting_time);
 //        gettingTime_die=QTime::currentTime().addMSecs(listening_time);
-        waitingTime = QTime::currentTime().addMSecs(timerDelay*0.8);
+        waitingTime = QTime::currentTime().addMSecs(timerDelay*0.95);
         thisPort.write(data,data.size());
         thisPort.flush();
     //thisPort.waitForBytesWritten(10);

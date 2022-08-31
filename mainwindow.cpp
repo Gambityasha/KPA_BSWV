@@ -2295,7 +2295,7 @@ void MainWindow::RequestSender( )
                         ui->redMK1o->setVisible(false);
                     }else{
                         if (firstStart==false){
-                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(0).name).arg(timerDelay);
+                            QString errorMessage=QString("Не получен корректный ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(0).name).arg(timerDelay);
                             WriteInFileError(errorMessage);
                             Print(errorMessage);
                             ui->greenMK1o->setVisible(false);
@@ -2311,7 +2311,7 @@ void MainWindow::RequestSender( )
                         ui->redMK1r->setVisible(false);
                     }else{
                         if (firstStart==false){
-                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(1).name).arg(timerDelay);
+                            QString errorMessage=QString("Не получен корректный ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(1).name).arg(timerDelay);
                             WriteInFileError(errorMessage);
                             Print(errorMessage);
                             ui->greenMK1r->setVisible(false);
@@ -2327,7 +2327,7 @@ void MainWindow::RequestSender( )
                         ui->redMK2o->setVisible(false);
                     }else{
                         if (firstStart==false){
-                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(2).name).arg(timerDelay);
+                            QString errorMessage=QString("Не получен корректный ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(2).name).arg(timerDelay);
                             WriteInFileError(errorMessage);
                             Print(errorMessage);
                             ui->greenMK2o->setVisible(false);
@@ -2345,7 +2345,7 @@ void MainWindow::RequestSender( )
                         if (firstStart==false){
                             ui->greenMK2r->setVisible(false);
                             ui->redMK2r->setVisible(true);
-                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(3).name).arg(timerDelay);
+                            QString errorMessage=QString("Не получен корректный ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(3).name).arg(timerDelay);
                             WriteInFileError(errorMessage);
                             Print(errorMessage);
                         }
@@ -2361,7 +2361,7 @@ void MainWindow::RequestSender( )
                         if (firstStart==false){
                             ui->greenMK3o->setVisible(false);
                             ui->redMK3o->setVisible(true);
-                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(4).name).arg(timerDelay);
+                            QString errorMessage=QString("Не получен корректный ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(4).name).arg(timerDelay);
                             WriteInFileError(errorMessage);
                             Print(errorMessage);
                         }
@@ -2377,7 +2377,7 @@ void MainWindow::RequestSender( )
                         if (firstStart==false){
                             ui->greenMK3r->setVisible(false);
                             ui->redMK3r->setVisible(true);
-                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(5).name).arg(timerDelay);
+                            QString errorMessage=QString("Не получен корректный ответ от %1 за %2 мс, код сообщения: 255").arg(ListOfBSWVData.at(5).name).arg(timerDelay);
                             WriteInFileError(errorMessage);
                             Print(errorMessage);
                         }
@@ -2405,7 +2405,7 @@ void MainWindow::RequestSender( )
                             tblBSWVSetData(5);
                         }else{
                             tblBSWVSetDeafault(6,5);
-                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(5).name).arg(timerDelay);
+                            QString errorMessage=QString("Не получен корректный ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(5).name).arg(timerDelay);
                             WriteInFileError(errorMessage);
                             Print(errorMessage);
                         }
@@ -2418,7 +2418,7 @@ void MainWindow::RequestSender( )
                             tblBSWVSetData(0);
                         }else{
                             tblBSWVSetDeafault(6,0);
-                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(0).name).arg(timerDelay);
+                            QString errorMessage=QString("Не получен корректный ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(0).name).arg(timerDelay);
                             WriteInFileError(errorMessage);
                             Print(errorMessage);
                         }
@@ -2431,7 +2431,7 @@ void MainWindow::RequestSender( )
                             tblBSWVSetData(1);
                         }else{
                             tblBSWVSetDeafault(6,1);
-                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(1).name).arg(timerDelay);
+                            QString errorMessage=QString("Не получен корректный ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(1).name).arg(timerDelay);
                             WriteInFileError(errorMessage);
                             Print(errorMessage);
                         }
@@ -2444,7 +2444,7 @@ void MainWindow::RequestSender( )
                             WriteInFileTemplate("MK2o",fileMK2o,2);
                         }else{
                             tblBSWVSetDeafault(6,2);
-                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(2).name).arg(timerDelay);
+                            QString errorMessage=QString("Не получен корректный ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(2).name).arg(timerDelay);
                             WriteInFileError(errorMessage);
                             Print(errorMessage);
                         }
@@ -2456,7 +2456,7 @@ void MainWindow::RequestSender( )
                             tblBSWVSetData(3);                            
                             WriteInFileTemplate("MK2r",fileMK2r,3);
                         }else{
-                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(3).name).arg(timerDelay);
+                            QString errorMessage=QString("Не получен корректный ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(3).name).arg(timerDelay);
                             tblBSWVSetDeafault(6,3);
                             WriteInFileError(errorMessage);
                             Print(errorMessage);
@@ -2470,7 +2470,7 @@ void MainWindow::RequestSender( )
                             tblBSWVSetData(4);
                         }else{
                             tblBSWVSetDeafault(6,4);
-                            QString errorMessage=QString("Не получен ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(4).name).arg(timerDelay);
+                            QString errorMessage=QString("Не получен корректный ответ от %1 за %2 мс, код сообщения: 1").arg(ListOfBSWVData.at(4).name).arg(timerDelay);
                             WriteInFileError(errorMessage);
                             Print(errorMessage);
                         }
