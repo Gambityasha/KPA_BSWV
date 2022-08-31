@@ -717,8 +717,15 @@ void MainWindow:: OtpravkaZaprosaTarir()
     }
     for (int j=0;j<ListOfBSWVt.size();j++){
         ListOfBSWVt[j].otvetPoluchen=0;
-        ListOfBSWVt[j].otvet.clear();
+        ListOfBSWVt[j].otvet.clear();        
+        ListOfBSWVData[j].otvetBuffer.clear();
     }
+    PortMK1osn->currentOtvetSize=0;
+    PortMK2osn->currentOtvetSize=0;
+    PortMK3osn->currentOtvetSize=0;
+    PortMK1rez->currentOtvetSize=0;
+    PortMK2rez->currentOtvetSize=0;
+    PortMK3rez->currentOtvetSize=0;
     emit writeToPort1 (17,dataQt,otvetTarirSize);
     emit writeToPort2 (17,dataQt,otvetTarirSize);
     emit writeToPort3 (17,dataQt,otvetTarirSize);
@@ -736,7 +743,14 @@ void MainWindow::OtpravkaZaprosaNomer()
     for (int f=0;f<ListOfBSWVnomer.size();f++){
         ListOfBSWVnomer[f].otvetPoluchen=0;
         ListOfBSWVnomer[f].otvet.clear();
+        ListOfBSWVData[f].otvetBuffer.clear();
     }
+    PortMK1osn->currentOtvetSize=0;
+    PortMK2osn->currentOtvetSize=0;
+    PortMK3osn->currentOtvetSize=0;
+    PortMK1rez->currentOtvetSize=0;
+    PortMK2rez->currentOtvetSize=0;
+    PortMK3rez->currentOtvetSize=0;
     emit writeToPort1 (34,dataQNomer,otvetMKSize);
     emit writeToPort2 (34,dataQNomer,otvetMKSize);
     emit writeToPort3 (34,dataQNomer,otvetMKSize);

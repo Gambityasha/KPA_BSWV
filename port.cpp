@@ -122,7 +122,8 @@ void port::DataAnalizer(QByteArray data)
         if (otvetBuffer.size()==currentOtvetSize){
             emit sendBSWVtm(otvetBuffer,comName);
             otvetBuffer.clear();
-            currentOtvetSize=0;            
+            currentOtvetSize=0;
+            errorText="";
         }else{
             if (otvetBuffer.size()>currentOtvetSize){
             errorText=QString("Принято больше данных: %1 из %2").arg(otvetBuffer.size()).arg(currentOtvetSize);
@@ -135,11 +136,19 @@ void port::DataAnalizer(QByteArray data)
                     return;
                 }else{
                     if (otvetBuffer.size()!=0){
-                        errorText=QString("Принято меньше данных: %1 из %2, за %3 мс").arg(otvetBuffer.size()).arg(currentOtvetSize).arg(timerDelay*0.95);
+                        errorText=QString("Принято меньше данных: %1 из %2, за %3 мс").arg(otvetBuffer.size()).arg(currentOtvetSize).arg(timerDelay);
                         emit error_(comName+": "+errorText);
                         emit sendBSWVtm(otvetBuffer,comName);
                         errorText="";
                         otvetBuffer.clear();
+                        currentOtvetSize=0;
+                    }else{
+                        errorText=QString("Не приняты данные за %1 мс").arg(timerDelay);
+                        emit error_(comName+": "+errorText);
+                        emit sendBSWVtm(otvetBuffer,comName);
+                        errorText="";
+                        otvetBuffer.clear();
+                        currentOtvetSize=0;
                     }
                 }
             }

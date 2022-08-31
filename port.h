@@ -37,7 +37,7 @@ public:
 //    QTime gettingTime_die;
     QString errorText;
     int currentMessageNumber=0;
-    int currentOtvetSize;
+    int currentOtvetSize=0;
     int timerDelay;
     QByteArray otvetBuffer;
     //bool paramsNull=false;
