@@ -175,12 +175,9 @@ public:
     QThread* thread_MK2rez = new QThread;
     QThread* thread_MK3osn = new QThread;
     QThread* thread_MK3rez = new QThread;
-    QTimer *timerRequest;
-    QTimer *timerZaprosaTelem;
-    QTimer *timerZaprosaProv;
-    QTimer *timerVivod;
+    QTimer *timerRequest;   
+
     QTimer *timerReconnect;
-    QTimer *timerWriteInFile;
     QTimer *timerCloseErrorWindow;
     QByteArray otvet;
     BSWVdata BSWV;
@@ -204,27 +201,17 @@ public:
     QDir dir;
     bool converterError_status;
 
-
-//window = new ErrorForm(this);
 public slots:
-   void Vivod(); //Вывод телеметрии в таблицу
+
    void VivodACP();
-   void Vivod_1();
-   void Vivod_255();
-   void OtpravkaZaprosaTelem ();
    void OtpravkaZaprosaTarir ();
    void OtpravkaZaprosaNomer();
-   void OtpravkaZaprosaProv();
    void Print(QString dat);
    void Analize(QByteArray otvet, QString comName);
    void Kompanovka(QByteArray dataRead, QString comName);
    QString getPortName(QString dis, QString serial);
-   void TimerVivodStart();
-   void TimerProvStart();
-   void TimerTarirStart();
    void ChangeColor();
    void ProverkaNomera();
-   void WriteInFile();
    void WriteInFileError(QString error);
     void LoadSettings();
     void ErrorAnalyzer(QSerialPort::SerialPortError error,QString portName);
@@ -232,14 +219,11 @@ public slots:
     void ErrorMessage(bool status);
     void AnalizeRS485();
     void delay(int millisecondsToWait);
-    void TimerWriteInFileStart();
     void CloseErrorWindow();
     void WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,int k);
-
-    //void RequestSender(int messageNumber,int nextMessageChName);
-    //void RequestSender(int messageNumber);
     void ExchangeErrorAnalizer(QString channelName, int messageNumber, QString errorText,bool paramsNull);
     void ErrorThread();
+    void WriteInFile();
 
 
 private slots:
@@ -252,13 +236,9 @@ private slots:
    void on_pbReconnectRS485_clicked();
    void tblBSWVSetDeafault(int numberOfRows, int column);
    void tblBSWVSetData(int numberOfChannel);
-
    void on_pushButton_2_clicked();
-
    void RequestSender();
-
    void on_tabWidget_tabBarClicked(int index);
-
    void on_pbCancelReconnect_clicked();
 
 signals:
@@ -274,13 +254,6 @@ signals:
    void writeData4(QByteArray dataQ);
    void writeData5(QByteArray dataQ);
    void writeData6(QByteArray dataQ);
-
-//   void writeToPort1(int messageNumber,QByteArray data, int otvetSize, int chName);
-//   void writeToPort2(int messageNumber,QByteArray data, int otvetSize, int chName);
-//   void writeToPort3(int messageNumber,QByteArray data, int otvetSize, int chName);
-//   void writeToPort4(int messageNumber,QByteArray data, int otvetSize, int chName);
-//   void writeToPort5(int messageNumber,QByteArray data, int otvetSize, int chName);
-//   void writeToPort6(int messageNumber,QByteArray data, int otvetSize, int chName);
    void writeToPort1(int messageNumber,QByteArray data, int otvetSize);
    void writeToPort2(int messageNumber,QByteArray data, int otvetSize);
    void writeToPort3(int messageNumber,QByteArray data, int otvetSize);
