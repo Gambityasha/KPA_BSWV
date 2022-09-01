@@ -605,12 +605,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(readyToAnalize(QByteArray,QString)),this,SLOT(Analize(QByteArray,QString)));
     connect(this, SIGNAL(errorMessageThis(QString)), this,SLOT(Print(QString)),Qt::QueuedConnection); //Не тот же эррор месадж, что от порта
     connect(this, SIGNAL(errorMessageThis(QString)), this,SLOT(WriteInFileError(QString)));
-    connect(PortMK1osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
-    connect(PortMK2osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
-    connect(PortMK3osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
-    connect(PortMK1rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
-    connect(PortMK2rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
-    connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+
     connect(timerReconnect, SIGNAL(timeout()), this, SLOT(Reconnect()));
     connect(window,SIGNAL(hideError(bool)),this,SLOT(ErrorMessage(bool)));
 
@@ -620,14 +615,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(writeToPort4(int,QByteArray,int)),PortMK2rez,SLOT(WriteToPort(int,QByteArray,int)));
     connect(this, SIGNAL(writeToPort5(int,QByteArray,int)),PortMK3osn,SLOT(WriteToPort(int,QByteArray,int)));
     connect(this, SIGNAL(writeToPort6(int,QByteArray,int)),PortMK3rez,SLOT(WriteToPort(int,QByteArray,int)));
-
-    connect(PortMK1osn, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)),Qt::QueuedConnection);
-    connect(PortMK1rez, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)),Qt::QueuedConnection);
-    connect(PortMK2osn, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)),Qt::QueuedConnection);
-    connect(PortMK2rez, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)),Qt::QueuedConnection);
-    connect(PortMK3rez, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)),Qt::QueuedConnection);
-    connect(PortMK3osn, SIGNAL(errorExchange(QString,int,QString,bool)),this,SLOT(ExchangeErrorAnalizer(QString,int,QString,bool)),Qt::QueuedConnection);
-
     connect(thread_MK1osn,SIGNAL(finished()),this,SLOT(ErrorThread()));
     connect(thread_MK2osn,SIGNAL(finished()),this,SLOT(ErrorThread()));
     connect(thread_MK3osn,SIGNAL(finished()),this,SLOT(ErrorThread()));
@@ -678,6 +665,12 @@ MainWindow::MainWindow(QWidget *parent)
             ui->pbReconnectRS485->setVisible(true);
         }
     }
+    connect(PortMK1osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK2osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK3osn, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK1rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK2rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
+    connect(PortMK3rez, SIGNAL(errorMessage(QSerialPort::SerialPortError,QString)),this,SLOT(ErrorAnalyzer(QSerialPort::SerialPortError,QString)));
 }
 
 void MainWindow::on_btnNomer_clicked()
@@ -755,31 +748,31 @@ void MainWindow::OtpravkaZaprosaNomer()
 void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
 {
     //Печать буфера в тест консоль
-    unsigned char buffer [dataRead.size()];
-    memcpy( buffer, dataRead.data(), dataRead.size());
-    if (dataRead.size()==12){
-        if (AdminTools==1){
-            ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+comName+" - "+QString::number(buffer[0])+
-            "/"+QString::number(buffer[1])+"/"+QString::number(buffer[2])+"/"+QString::number(buffer[3])+
-            "/"+QString::number(buffer[4])+"/"+QString::number(buffer[5])+"/"+QString::number(buffer[6])+
-            "/"+QString::number(buffer[7])+"/"+QString::number(buffer[8])+"/"+QString::number(buffer[9])
-            +"/"+QString::number(buffer[10])+"/"+QString::number(buffer[11])+'\r'); // Вывод текста в консоль
-            ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-        }
-    }
-    //КОнец теста
-    //Печать буфера в тест консоль
-    if (dataRead.size()==6){
-    unsigned char buffer [dataRead.size()];
-    memcpy( buffer, dataRead.data(), dataRead.size());
-    if (AdminTools==1){
-        ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+comName+" - "+QString::number(buffer[0])+"/"+QString::number(buffer[1])+"/"+QString::number(buffer[2])+"/"+QString::number(buffer[3])+"/"+QString::number(buffer[4])+"/"+QString::number(buffer[5])+'\r'); // Вывод текста в консоль
-        ui->consolTest->moveCursor(QTextCursor::End);//Scroll
-    }
-}
-    //КОнец теста
-    //test start
-    if ((dataRead.size()!=6)&(dataRead.size()!=12)){
+//    unsigned char buffer [dataRead.size()];
+//    memcpy( buffer, dataRead.data(), dataRead.size());
+//    if (dataRead.size()==12){
+//        if (AdminTools==1){
+//            ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+comName+" - "+QString::number(buffer[0])+
+//            "/"+QString::number(buffer[1])+"/"+QString::number(buffer[2])+"/"+QString::number(buffer[3])+
+//            "/"+QString::number(buffer[4])+"/"+QString::number(buffer[5])+"/"+QString::number(buffer[6])+
+//            "/"+QString::number(buffer[7])+"/"+QString::number(buffer[8])+"/"+QString::number(buffer[9])
+//            +"/"+QString::number(buffer[10])+"/"+QString::number(buffer[11])+'\r'); // Вывод текста в консоль
+//            ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+//        }
+//    }
+//    //КОнец теста
+//    //Печать буфера в тест консоль
+//    if (dataRead.size()==6){
+//    unsigned char buffer [dataRead.size()];
+//    memcpy( buffer, dataRead.data(), dataRead.size());
+//    if (AdminTools==1){
+//        ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+comName+" - "+QString::number(buffer[0])+"/"+QString::number(buffer[1])+"/"+QString::number(buffer[2])+"/"+QString::number(buffer[3])+"/"+QString::number(buffer[4])+"/"+QString::number(buffer[5])+'\r'); // Вывод текста в консоль
+//        ui->consolTest->moveCursor(QTextCursor::End);//Scroll
+//    }
+//}
+//    //КОнец теста
+//    //test start
+//    if ((dataRead.size()!=6)&(dataRead.size()!=12)){
         unsigned char buffer [dataRead.size()];
         memcpy( buffer, dataRead.data(), dataRead.size());
         QString Data;
@@ -789,7 +782,7 @@ void MainWindow::Kompanovka(QByteArray dataRead, QString comName)
         if (AdminTools==1){
             ui->consolTest->textCursor().insertText(QTime::currentTime().toString("HH:mm:ss")+" - "+comName+" - "+Data+'\r');
         }
-    }
+    //}
     //test end
 
 
@@ -1952,7 +1945,6 @@ void MainWindow::on_btnStart_clicked()
    }
 }
 
-
 MainWindow::~MainWindow()
 {
 
@@ -1969,37 +1961,37 @@ MainWindow::~MainWindow()
 //PortMK1rez->DisconnectPort();
 //PortMK2rez->DisconnectPort();
 //PortMK1rez->DisconnectPort();
-    PortMK1osn->deleteLater();
-    PortMK1rez->deleteLater();
-    PortMK2osn->deleteLater();
-    PortMK2rez->deleteLater();
-    PortMK3osn->deleteLater();
-    PortMK3rez->deleteLater();
+//    PortMK1osn->deleteLater();
+//    PortMK1rez->deleteLater();
+//    PortMK2osn->deleteLater();
+//    PortMK2rez->deleteLater();
+//    PortMK3osn->deleteLater();
+//    PortMK3rez->deleteLater();
 //        thread_MK1osn->quit();
 //         thread_MK1rez->quit();
 //        thread_MK2osn->quit();
 //        thread_MK2rez->quit();
 //        thread_MK3osn->quit();
 //        thread_MK3rez->quit();
-    thread_MK1osn->deleteLater();
-    thread_MK1rez->deleteLater();
-    thread_MK2osn->deleteLater();
-    thread_MK2rez->deleteLater();
-    thread_MK3osn->deleteLater();
-    thread_MK3rez->deleteLater();
+//    thread_MK1osn->deleteLater();
+//    thread_MK1rez->deleteLater();
+//    thread_MK2osn->deleteLater();
+//    thread_MK2rez->deleteLater();
+//    thread_MK3osn->deleteLater();
+//    thread_MK3rez->deleteLater();
 
-//delete PortMK1osn;
-//delete PortMK1rez;
-//delete PortMK2osn;
-//delete PortMK2rez;
-//delete PortMK3osn;
-//delete PortMK3rez;
-//delete thread_MK1osn;
-//delete thread_MK1rez;
-//delete thread_MK2osn;
-//delete thread_MK2rez;
-//delete thread_MK3osn;
-//delete thread_MK3rez;
+delete PortMK1osn;
+delete PortMK1rez;
+delete PortMK2osn;
+delete PortMK2rez;
+delete PortMK3osn;
+delete PortMK3rez;
+delete thread_MK1osn;
+delete thread_MK1rez;
+delete thread_MK2osn;
+delete thread_MK2rez;
+delete thread_MK3osn;
+delete thread_MK3rez;
 delete ui;
 }
 
@@ -2008,15 +2000,10 @@ void MainWindow::on_pushButton_2_clicked()
     ui->consolTest->clear();
 }
 
-
-
-
-
 void MainWindow::on_tabWidget_tabBarClicked(int index)
 {
     if (index==1) ChangeColor();
 }
-
 
 void MainWindow::on_pbCancelReconnect_clicked()
 {
