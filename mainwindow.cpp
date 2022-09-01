@@ -227,14 +227,6 @@ void MainWindow::LoadSettings()
     setting.endGroup();
 }
 
-void MainWindow::CloseErrorWindow()
-{
-//    window->close();
-//    ErrorMessage(0);
-//    //ui->lblError->setVisible(false);
-//    timerReconnect->stop();
-//    timerCloseErrorWindow->stop();
-}
 
 void MainWindow::ErrorMessage(bool status)
 {
@@ -289,7 +281,7 @@ void MainWindow::Reconnect( )
     QSettings setting("ports.ini", QSettings::IniFormat); //ports.ini файл должен быть в одной папке с exe
     if (ListOfBSWVData[0].errorStatus==1) {
         setting.beginGroup("MK1-osn");// [MK1-osn] в ини файле
-        QString status1 = setting.value("work","0").toString();
+        QString status1 = setting.value("work","on").toString();
         if (status1 == "on") {
              dis1 = setting.value("description","0").toString();
              serial1 = setting.value("serialNumber","0").toString();
@@ -305,7 +297,7 @@ void MainWindow::Reconnect( )
     }
     if (ListOfBSWVData[1].errorStatus==1) {
         setting.beginGroup("MK1-rez");// [MK1-rez] в ини файле
-        QString status2 = setting.value("work","0").toString();
+        QString status2 = setting.value("work","on").toString();
         if (status2 == "on"){
             dis2 = setting.value("description","0").toString();
             serial2 = setting.value("serialNumber","0").toString();
@@ -317,7 +309,7 @@ void MainWindow::Reconnect( )
     }
     if (ListOfBSWVData[2].errorStatus==1) {
         setting.beginGroup("MK2-osn");// [MK2-osn] в ини файле
-        QString status3 = setting.value("work","0").toString();
+        QString status3 = setting.value("work","on").toString();
         if (status3 == "on") {
             dis3 = setting.value("description","0").toString();
             serial3 = setting.value("serialNumber","0").toString();
@@ -329,7 +321,7 @@ void MainWindow::Reconnect( )
     }
     if (ListOfBSWVData[3].errorStatus==1) {
         setting.beginGroup("MK2-rez");// [MK2-rez] в ини файле
-        QString status4 = setting.value("work","0").toString();
+        QString status4 = setting.value("work","on").toString();
         if (status4 == "on"){
             dis4 = setting.value("description","0").toString();
             serial4 = setting.value("serialNumber","0").toString();
@@ -341,7 +333,7 @@ void MainWindow::Reconnect( )
     }
     if (ListOfBSWVData[4].errorStatus==1) {
         setting.beginGroup("MK3-osn");// [MK3-osn] в ини файле
-        QString status5 = setting.value("work","0").toString();
+        QString status5 = setting.value("work","on").toString();
         if (status5 == "on") {
             dis5 = setting.value("description","0").toString();
             serial5 = setting.value("serialNumber","0").toString();
@@ -353,7 +345,7 @@ void MainWindow::Reconnect( )
      }
      if (ListOfBSWVData[5].errorStatus==1) {
          setting.beginGroup("MK3-rez");// [MK3-rez] в ини файле
-         QString status6 = setting.value("work","0").toString();
+         QString status6 = setting.value("work","on").toString();
          if (status6 == "on"){
              dis6 = setting.value("description","0").toString();
              serial6 = setting.value("serialNumber","0").toString();

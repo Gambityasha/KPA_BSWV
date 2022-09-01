@@ -28,19 +28,15 @@ class port : public QObject
 public:
     explicit port(QObject *parent = nullptr);
      Settings SettingsPort;
-    QSerialPort thisPort;
-    bool transactionInProgress=false;
-    int protocol_waiting_time;
-    int listening_time=200;
+    QSerialPort thisPort;    
+    int protocol_waiting_time;    
     QTime waitingTime;
-//    QTime gettingTime;
-//    QTime gettingTime_die;
     QString errorText;
     int currentMessageNumber=0;
     int currentOtvetSize=0;
     int timerDelay;
     QByteArray otvetBuffer;
-    //bool paramsNull=false;
+
  ~port();
 
  public slots:
@@ -63,9 +59,6 @@ signals:
    void error_(QString err);//Сигнал ошибок порта
    void outPort (QString data); //Сигнал вывода полученных данных
    void errorMessage(QSerialPort::SerialPortError error,QString);
-   //void nextMessage(int messageNumber, int chNumber);
-    void nextMessage(int messageNumber);
-    void errorExchange(QString channelName, int messageNumber, QString errorText,bool paramsNull);
     void dataForAnalize(QByteArray data);
 
 

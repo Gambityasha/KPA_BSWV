@@ -199,10 +199,8 @@ void port :: ReadInPort(){//Чтение данных из порта
      emit dataForAnalize(dataRead);
 }
 
-
-
 port::~port()
 {    
-//   thisPort.close();
+   thisPort.close();
 //   thisPort.deleteLater();
 }

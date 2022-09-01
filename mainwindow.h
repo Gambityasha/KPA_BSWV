@@ -219,7 +219,6 @@ public slots:
     void ErrorMessage(bool status);
     void AnalizeRS485();
     void delay(int millisecondsToWait);
-    void CloseErrorWindow();
     void WriteInFileTemplate(QString fnameTemplate,QFile &fileTemplate,int k);
     void ExchangeErrorAnalizer(QString channelName, int messageNumber, QString errorText,bool paramsNull);
     void ErrorThread();
