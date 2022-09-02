@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1276</width>
+    <width>1292</width>
     <height>683</height>
    </rect>
   </property>
@@ -15,6 +15,18 @@
     <horstretch>5</horstretch>
     <verstretch>5</verstretch>
    </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1292</width>
+    <height>683</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1292</width>
+    <height>683</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>КПА БСШ-В (RS485)</string>
@@ -512,6 +524,12 @@
         <height>361</height>
        </size>
       </property>
+      <property name="maximumSize">
+       <size>
+        <width>957</width>
+        <height>366</height>
+       </size>
+      </property>
       <property name="sizeIncrement">
        <size>
         <width>0</width>
@@ -519,7 +537,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -1064,7 +1082,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1276</width>
+     <width>1292</width>
      <height>20</height>
     </rect>
    </property>

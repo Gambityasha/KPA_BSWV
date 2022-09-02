@@ -654,7 +654,7 @@ MainWindow::MainWindow(QWidget *parent)
             ListOfSerialFact.append(serialPortInfo.serialNumber());
         }
         if (AdminTools==1){
-            Print(serialPortInfo.portName()+" Description: "+serialPortInfo.description()+" Serial: "+serialPortInfo.serialNumber());
+            Print(serialPortInfo.portName()+" Description: "+serialPortInfo.description()+" | Serial: "+serialPortInfo.serialNumber());
         }
     }
 
@@ -1544,6 +1544,12 @@ void MainWindow::on_tabWidget_currentChanged(int index)
          delay(100);
          QMainWindow::resize(1280,510);
 
+    break;
+    case 4:
+         ui->tabWidget->setMinimumSize(963,358);
+         ui->tabWidget->resize(963,358);
+         delay(100);
+         QMainWindow::resize(1280,680);
     break;
     }
 }
