@@ -702,6 +702,9 @@
           <height>311</height>
          </rect>
         </property>
+        <property name="maximumBlockCount">
+         <number>101</number>
+        </property>
        </widget>
        <widget class="QGroupBox" name="groupBox_2">
         <property name="geometry">
@@ -1050,6 +1053,9 @@
           <width>811</width>
           <height>321</height>
          </rect>
+        </property>
+        <property name="maximumBlockCount">
+         <number>101</number>
         </property>
        </widget>
        <widget class="QPushButton" name="pushButton_2">

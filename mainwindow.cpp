@@ -1634,13 +1634,13 @@ void MainWindow::RequestSender( )
             nextMessageNumber=1;
             break;
         }
-    if (AdminTools==1) {
-        numberOfRowsTestConsole++;
-        if (numberOfRowsTestConsole>30){
-            ui->consolTest->clear();
-            numberOfRowsTestConsole=0;
-        }
-    }
+//    if (AdminTools==1) {
+//        numberOfRowsTestConsole++;
+//        if (numberOfRowsTestConsole>30){
+//            ui->consolTest->clear();
+//            numberOfRowsTestConsole=0;
+//        }
+//    }
     switch (nextMessageNumber){
             case 1:
                 PortMK1osn->otvetBuffer.clear();
