@@ -537,7 +537,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -1053,6 +1053,9 @@
           <width>811</width>
           <height>321</height>
          </rect>
+        </property>
+        <property name="tabStopWidth">
+         <number>80</number>
         </property>
         <property name="maximumBlockCount">
          <number>101</number>
