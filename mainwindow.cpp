@@ -254,7 +254,12 @@ void MainWindow::ErrorAnalyzer(QSerialPort::SerialPortError error,QString portNa
             }
             if (ui->lblError->isVisible()){//ничего не делать
             }else{
-                window->open();
+                if (firstErrorOpen==true){
+                    window->open();
+                    firstErrorOpen=false;
+                }else{
+                    ui->lblError->setVisible(true);
+                }
             }
         }
     }else {if ((error==0)||(error==12)) {

@@ -157,7 +157,7 @@ private:
     int currentMessageNumber=0;
     bool stopRequest=false;
     bool firstStart=true;
-
+    bool firstErrorOpen=true;
 
 
 public:
