@@ -22,6 +22,7 @@
 #include <errorform.h>
 #include <QThread>
 #include <stdio.h>
+#include <QProcess>
 #define errorDelay 100
 
 //размеры пакетов данных (первые четыре байта всегда содержат начальный, адрес отправителя, адрес получателя и код сообщения, последние два байта - контрольная сумма)
@@ -237,6 +238,8 @@ private slots:
    void RequestSender();
    void on_tabWidget_tabBarClicked(int index);
    void on_pbCancelReconnect_clicked();
+
+   void on_pushButton_3_clicked();
 
 signals:
    void savesettings1(QString name, int baudrate, int DataBits, int Parity, int StopBits, int FlowControl);

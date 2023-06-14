@@ -2029,3 +2029,10 @@ void MainWindow::on_pbCancelReconnect_clicked()
     }
 }
 
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    QProcess  process (this);
+    process.startDetached("LCard");
+}
+
